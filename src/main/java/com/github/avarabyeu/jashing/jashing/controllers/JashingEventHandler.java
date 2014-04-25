@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.jashing;
+package com.github.avarabyeu.jashing.jashing.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.avarabyeu.jashing.jashing.events.JashingEvent;

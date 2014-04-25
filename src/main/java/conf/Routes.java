@@ -17,7 +17,7 @@
 package conf;
 
 
-import controllers.ApplicationController;
+import com.github.avarabyeu.jashing.jashing.controllers.ApplicationController;
 import ninja.AssetsController;
 import ninja.Results;
 import ninja.Router;

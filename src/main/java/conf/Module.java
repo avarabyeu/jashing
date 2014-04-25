@@ -16,7 +16,7 @@
 
 package conf;
 
-import com.github.avarabyeu.jashing.jashing.JashingEventHandler;
+import com.github.avarabyeu.jashing.jashing.controllers.JashingEventHandler;
 import com.github.avarabyeu.jashing.jashing.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.jashing.subscribers.ServerSentEventHandler;
 import com.github.avarabyeu.jashing.jashing.events.ShutdownEvent;

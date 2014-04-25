@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.jashing;
+package com.github.avarabyeu.jashing.jashing.controllers;
 
 /**
  * Created by andrey.vorobyov on 18/04/14.
