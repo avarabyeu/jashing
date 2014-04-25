@@ -1,11 +1,11 @@
-package com.github.avarabyeu.jashing.jashing.subscribers;
+package com.github.avarabyeu.jashing.subscribers;
 
-import com.github.avarabyeu.jashing.jashing.events.ShutdownEvent;
+import com.github.avarabyeu.jashing.events.ShutdownEvent;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 
 /**
- * Abstract implementation of {@link com.github.avarabyeu.jashing.jashing.subscribers.EventSubscriber}
+ * Abstract implementation of {@link com.github.avarabyeu.jashing.subscribers.EventSubscriber}
  * with possibility to subscribe and unsubscribe yourself from {@link com.google.common.eventbus.EventBus}
  * Automatically unsubsribes yourself from {@link com.google.common.eventbus.EventBus} on system shutdown
  *

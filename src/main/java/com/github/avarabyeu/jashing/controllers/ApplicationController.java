@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.avarabyeu.jashing.jashing.controllers;
+package com.github.avarabyeu.jashing.controllers;
 
-import com.github.avarabyeu.jashing.jashing.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;

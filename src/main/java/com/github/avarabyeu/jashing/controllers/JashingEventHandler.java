@@ -1,8 +1,8 @@
-package com.github.avarabyeu.jashing.jashing.controllers;
+package com.github.avarabyeu.jashing.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.avarabyeu.jashing.jashing.events.JashingEvent;
-import com.github.avarabyeu.jashing.jashing.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.events.JashingEvent;
+import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 

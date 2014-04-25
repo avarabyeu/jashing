@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.jashing.events;
+package com.github.avarabyeu.jashing.events;
 
 /**
  * Created by andrey.vorobyov on 24/04/14.
