@@ -1,8 +1,8 @@
-package com.github.avarabyeu.jashing.jashing.subscribers;
+package com.github.avarabyeu.jashing.subscribers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.avarabyeu.jashing.jashing.controllers.ServerSentEvent;
+import com.github.avarabyeu.jashing.controllers.ServerSentEvent;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

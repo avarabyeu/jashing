@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.jashing.events;
+package com.github.avarabyeu.jashing.events;
 
 
 /**

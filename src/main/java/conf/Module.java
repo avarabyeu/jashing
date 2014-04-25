@@ -16,11 +16,11 @@
 
 package conf;
 
-import com.github.avarabyeu.jashing.jashing.controllers.JashingEventHandler;
-import com.github.avarabyeu.jashing.jashing.LoggingSubscriberExceptionHandler;
-import com.github.avarabyeu.jashing.jashing.subscribers.ServerSentEventHandler;
-import com.github.avarabyeu.jashing.jashing.events.ShutdownEvent;
-import com.github.avarabyeu.jashing.jashing.events.SynergyEvent;
+import com.github.avarabyeu.jashing.controllers.JashingEventHandler;
+import com.github.avarabyeu.jashing.LoggingSubscriberExceptionHandler;
+import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.events.ShutdownEvent;
+import com.github.avarabyeu.jashing.events.SynergyEvent;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractScheduledService;
