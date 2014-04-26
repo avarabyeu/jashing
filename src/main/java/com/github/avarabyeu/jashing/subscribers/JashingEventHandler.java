@@ -1,9 +1,9 @@
-package com.github.avarabyeu.jashing.controllers;
+package com.github.avarabyeu.jashing.subscribers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.avarabyeu.jashing.ServerSentEvent;
 import com.github.avarabyeu.jashing.events.JashingEvent;
-import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
 import com.google.common.eventbus.EventBus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 /**
@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 public class JashingEventHandler extends ServerSentEventHandler<JashingEvent> {
 
     @Inject
-    public JashingEventHandler(EventBus eventBus, ObjectMapper serializer) {
+    public JashingEventHandler(EventBus eventBus, Gson serializer) {
         super(eventBus, serializer);
     }
 

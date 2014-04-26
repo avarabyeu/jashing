@@ -1,19 +1,19 @@
 package com.github.avarabyeu.jashing.subscribers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.avarabyeu.jashing.controllers.ServerSentEvent;
-import com.google.common.base.Charsets;
+import com.github.avarabyeu.jashing.ServerSentEvent;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
-import ninja.Context;
-import ninja.Result;
-import ninja.Results;
+import spark.Request;
+import spark.Response;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Server Sent Events handler.
@@ -26,37 +26,40 @@ import java.io.PrintWriter;
  */
 public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T> {
 
-    /**
-     * Initialized via constructor
-     */
-    private Context context;
-    private ObjectMapper serializer;
+
+    private Gson serializer;
+    private Semaphore semaphore = new Semaphore(0);
+    private Lock lock = new ReentrantLock();
 
     /**
-     * Will be set via {@link #handle(ninja.Context)} method
+     * Will be set via {@link #handle(spark.Request, spark.Response)} method
      */
     private PrintWriter writer;
 
 
     @Inject
-    public ServerSentEventHandler(EventBus eventBus, ObjectMapper serializer) {
+    public ServerSentEventHandler(EventBus eventBus, Gson serializer) {
         super(eventBus);
         this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
     }
 
-    public Result handle(Context context) throws IOException {
+    public void handle(Request request, Response response) throws IOException {
+        response.header("Cache-Control", "no-cache");
+        response.header("Connection", "keep-alive");
+        response.type("text/event-stream");
+        //result.charset(Charsets.UTF_8.displayName());
+
 
         /* Obtains output writer from received request */
-        Result result = Results.contentType("text/event-stream").addHeader("Cache-Control", "no-cache").addHeader("Connection", "keep-alive");
-        result.charset(Charsets.UTF_8.displayName());
-        this.context = context;
-        this.writer = new PrintWriter(context.finalizeHeaders(result).getWriter());
+        this.writer = new PrintWriter(response.raw().getWriter());
 
         /* subscribes yourself to event bus */
         subscribe();
-
-        /* returns async Ninja result to keep connection opened */
-        return Results.async();
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -67,28 +70,23 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     @Override
     public void unsubscribe() {
         super.unsubscribe();
-        context.asyncRequestComplete();
+        semaphore.release();
     }
 
     protected void writeEvent(ServerSentEvent event) {
          /* Lock is not necessary here once Guice guarantee that this method called synchronously */
-        try {
-            if (!Strings.isNullOrEmpty(event.getId())) {
-                writer.write("id: ");
-                writer.write(event.getId());
-                writer.write("\n");
-            }
+        if (!Strings.isNullOrEmpty(event.getId())) {
+            writer.write("id: ");
+            writer.write(event.getId());
+            writer.write("\n");
+        }
 
-            writer.write("data: ");
-            writer.write(serializer.writeValueAsString(event.getData()));
-            writer.write("\n\n");
-            writer.flush();
-            if (writer.checkError()) {
-                unsubscribe();
-            }
-        } catch (JsonProcessingException e) {
-            //TODO smth wrong with JSON mappings. Throw or not?
-            e.printStackTrace();
+        writer.write("data: ");
+        writer.write(serializer.toJson(event.getData()));
+        writer.write("\n\n");
+        writer.flush();
+        if (writer.checkError()) {
+            unsubscribe();
         }
     }
 

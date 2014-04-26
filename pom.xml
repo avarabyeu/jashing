@@ -11,14 +11,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jashing</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <groupId>com.github.avarabyeu</groupId>
     <version>1.0-SNAPSHOT</version>
 
     <name>Jashing</name>
     <description>Port of Dashing on Java</description>
     <url>https://github.com/avarabyeu</url>
-
 
     <properties>
         <ninja.version>3.1.4</ninja.version>
@@ -29,9 +28,9 @@
         <maven.compiler.target>1.6</maven.compiler.target>
 
 
-        <assets.sources>${basedir}/src/main/resources/assets</assets.sources>
+        <assets.sources>${basedir}/src/main/resources/statics</assets.sources>
         <assets.temp>${project.build.directory}/assets-temp</assets.temp>
-        <assets.destination>${project.build.directory}/classes/assets</assets.destination>
+        <assets.destination>${project.build.directory}/classes/statics</assets.destination>
     </properties>
 
     <scm>
@@ -43,7 +42,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -51,80 +49,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                </configuration>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <bannedDependencies>
-                                    <excludes>
-                                        <exclude>commons-logging</exclude>
-                                    </excludes>
-                                </bannedDependencies>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <contextPath>/</contextPath>
-                    <stopKey>stop</stopKey>
-                    <stopPort>8889</stopPort>
-                    <scanIntervalSeconds>1</scanIntervalSeconds>
-                    <reload>automatic</reload>
-                    <scanTargetPatterns>
-                        <scanTargetPattern>
-                            <directory>target/classes</directory>
-                            <includes>
-                                <include>**/*</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*.ftl.html</exclude>
-                                <exclude>assets/**</exclude>
-                            </excludes>
-                        </scanTargetPattern>
-                    </scanTargetPatterns>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>ninja.mode</name>
-                            <value>dev</value>
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
-            </plugin>
-
-            <!-- Allows you to run Ninja via the SuperDevMode. -->
-            <!-- run "mvn ninja:run" on the command line for the best -->
-            <!-- development experience. -->
-            <plugin>
-                <groupId>org.ninjaframework</groupId>
-                <artifactId>ninja-maven-plugin</artifactId>
-                <version>${ninja.version}</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <skip>true</skip>
                 </configuration>
             </plugin>
 
@@ -137,7 +61,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ninja.standalone.NinjaJetty</mainClass>
+                            <mainClass>com.github.avarabyeu.jashing.Jashing</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -148,7 +72,7 @@
                 <artifactId>coffee-maven-plugin</artifactId>
                 <version>1.4.7</version>
                 <configuration>
-                    <coffeeOutputDirectory>${assets.destination}/javascripts</coffeeOutputDirectory>
+                    <coffeeOutputDirectory>${assets.destination}/assets/javascripts</coffeeOutputDirectory>
                     <compileIndividualFiles>false</compileIndividualFiles>
                     <coffeeJoinSets>
                         <joinSet>
@@ -167,7 +91,7 @@
                         <joinSet>
                             <id>dashing</id>
                             <fileSet>
-                                <directory>${assets.sources}/javascripts/dashing</directory>
+                                <directory>${assets.sources}/assets/javascripts/dashing</directory>
                                 <includes>
                                     <include>**/*.coffee</include>
                                 </includes>
@@ -177,9 +101,9 @@
                             </fileSet>
                         </joinSet>
                     </coffeeJoinSets>
-                    <minifiedFile>${assets.destination}/javascripts/libs-all.js</minifiedFile>
+                    <minifiedFile>${assets.destination}/assets/javascripts/libs-all.js</minifiedFile>
                     <setOfFilesToMinify>
-                        <directory>${assets.sources}/javascripts</directory>
+                        <directory>${assets.sources}/assets/javascripts</directory>
                         <includes>
                             <include>**/dashing/*.js</include>
                             <include>**/gridster/*.js</include>
@@ -204,8 +128,8 @@
                 <artifactId>sass-maven-plugin</artifactId>
                 <version>1.1.1</version>
                 <configuration>
-                    <sassSourceDirectory>${assets.sources}</sassSourceDirectory>
-                    <destination>${assets.destination}/stylesheets</destination>
+                    <sassSourceDirectory>src/main/resources/statics</sassSourceDirectory>
+                    <destination>${assets.destination}/assets/stylesheets</destination>
                 </configuration>
                 <executions>
                     <execution>
@@ -227,21 +151,14 @@
                         <id>minify-css</id>
                         <configuration>
                             <charset>UTF-8</charset>
-                            <webappSourceDir>${assets.destination}</webappSourceDir>
-                            <webappTargetDir>${assets.destination}</webappTargetDir>
+                            <webappSourceDir>${assets.destination}/assets</webappSourceDir>
+                            <webappTargetDir>${assets.destination}/assets</webappTargetDir>
                             <cssSourceDir>stylesheets</cssSourceDir>
                             <cssTargetDir>stylesheets</cssTargetDir>
                             <cssSourceIncludes>
                                 <cssSourceInclude>**/*.css</cssSourceInclude>
                             </cssSourceIncludes>
                             <cssFinalFile>application-all.css</cssFinalFile>
-
-                            <!--<jsSourceDir>javascripts</jsSourceDir>-->
-                            <!--<jsTargetDir>javascripts</jsTargetDir>-->
-                            <!--<jsSourceExcludes>-->
-                            <!--<jsSourceExclude>**/*.js</jsSourceExclude>-->
-                            <!--</jsSourceExcludes>-->
-                            <!--<jsFinalFile>libs-all.js</jsFinalFile>-->
                         </configuration>
                         <goals>
                             <goal>minify</goal>
@@ -273,105 +190,45 @@
 
     <dependencies>
 
+
         <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>tinymce-jquery</artifactId>
-            <version>3.4.9</version>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-template-freemarker</artifactId>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.3.172</version>
-        </dependency>
-
-        <!-- If you want to deploy to a war please -->
-        <!-- comment ninja-standalone dependency and  -->
-        <!-- uncomment the dependency for ninja-servlet -->
-        <!--
-        <dependency>
-            <groupId>org.ninjaframework</groupId>
-            <artifactId>ninja-servlet</artifactId>
-            <version>${ninja.version}</version>
-        </dependency>
-        -->
-
-        <dependency>
-            <groupId>org.ninjaframework</groupId>
-            <artifactId>ninja-standalone</artifactId>
-            <version>${ninja.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jsoup</groupId>
-                    <artifactId>jsoup</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-email</artifactId>
-                </exclusion>
-
-                <!--<exclusion>-->
-                    <!--<groupId>commons-fileupload</groupId>-->
-                    <!--<artifactId>commons-fileupload</artifactId>-->
-                <!--</exclusion>-->
-
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate-validator</artifactId>
-                </exclusion>
-
-                <!--<exclusion>-->
-                    <!--<groupId>net.sf.ehcache</groupId>-->
-                    <!--<artifactId>ehcache</artifactId>-->
-                <!--</exclusion>-->
-
-                <exclusion>
-                    <groupId>net.spy</groupId>
-                    <artifactId>spymemcached</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.googlecode.flyway</groupId>
-                    <artifactId>flyway-core</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.google.inject.extensions</groupId>
-                    <artifactId>guice-persist</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate-entitymanager</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate-c3p0</artifactId>
-                </exclusion>
-
-            </exclusions>
+            <groupId>args4j</groupId>
+            <artifactId>args4j</artifactId>
+            <version>2.0.26</version>
         </dependency>
 
         <dependency>
-            <groupId>org.ninjaframework</groupId>
-            <artifactId>ninja-test-utilities</artifactId>
-            <version>${ninja.version}</version>
-            <scope>test</scope>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
         </dependency>
 
     </dependencies>
