@@ -18,6 +18,7 @@ package conf;
 
 import com.github.avarabyeu.jashing.controllers.JashingEventHandler;
 import com.github.avarabyeu.jashing.LoggingSubscriberExceptionHandler;
+import com.github.avarabyeu.jashing.eventsource.EventsModule;
 import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
 import com.github.avarabyeu.jashing.events.ShutdownEvent;
 import com.github.avarabyeu.jashing.events.SynergyEvent;
@@ -40,30 +41,12 @@ public class Module extends AbstractModule {
 
 
     protected void configure() {
+        binder().install(new EventsModule());
+
         final EventBus eventBus = new EventBus(new LoggingSubscriberExceptionHandler("default"));
         binder().bind(EventBus.class).toInstance(eventBus);
 
         binder().bind(ServerSentEventHandler.class).to(JashingEventHandler.class);
-
-        Service service = new AbstractScheduledService() {
-
-            private Random r = new Random();
-
-            @Override
-            protected void runOneIteration() throws Exception {
-                eventBus.post(new SynergyEvent((byte) r.nextInt(100)));
-            }
-
-            @Override
-            protected Scheduler scheduler() {
-                return Scheduler.newFixedRateSchedule(0, 5l, TimeUnit.SECONDS);
-            }
-        };
-
-        ServiceManager manager = new ServiceManager(Lists.newArrayList(service));
-
-
-        binder().bind(ServiceManager.class).toInstance(manager);
         binder().bind(Module.Bootstrap.class);
 
 
