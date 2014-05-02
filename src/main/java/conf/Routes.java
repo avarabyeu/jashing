@@ -28,18 +28,17 @@ public class Routes implements ApplicationRoutes {
     @Override
     public void init(Router router) {
 
-        router.GET().route("/events").with(ApplicationController.class, "events");
+        /* Assets (pictures / javascript) */
+        router.GET().route("/favicon.ico").with(Results.redirect("/assets/images/logo.png"));
+        router.GET().route("/assets/webjars/{fileName: .*}").with(AssetsController.class, "serveWebJars");
+        router.GET().route("/assets/{fileName: .*}").with(AssetsController.class, "serveStatic");
 
+
+        /* Application Routes */
+        router.GET().route("/events").with(ApplicationController.class, "events");
         router.GET().route("/").with(Results.redirect("/sample"));
         router.GET().route("/{name}").with(ApplicationController.class, "dashboard");
         router.GET().route("/views/{widget}.html").with(ApplicationController.class, "widget");
-
-
-        ///////////////////////////////////////////////////////////////////////
-        // Assets (pictures / javascript)
-        ///////////////////////////////////////////////////////////////////////    
-        router.GET().route("/assets/webjars/{fileName: .*}").with(AssetsController.class, "serveWebJars");
-        router.GET().route("/assets/{fileName: .*}").with(AssetsController.class, "serveStatic");
 
         ///////////////////////////////////////////////////////////////////////
         // Index / Catchall shows index page
