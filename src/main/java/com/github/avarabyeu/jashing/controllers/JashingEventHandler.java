@@ -25,6 +25,6 @@ public class JashingEventHandler extends ServerSentEventHandler<JashingEvent> {
      */
     @Override
     public void onEvent(JashingEvent event) {
-        writeEvent(new ServerSentEvent(null, event));
+        writeEvent(new ServerSentEvent<>(null, event));
     }
 }
