@@ -5,11 +5,9 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import spark.ModelAndView;
 import spark.Spark;
-import spark.template.freemarker.FreeMarkerRoute;
+import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,10 +23,16 @@ public class JashingServer extends AbstractIdleService {
 
     private final int port;
     private final Provider<ServerSentEventHandler> serverSentEventHandler;
+    private FreeMarkerEngine freemarkerEngine;
 
     public JashingServer(int port, Provider<ServerSentEventHandler> serverSentEventHandler) {
         this.port = port;
         this.serverSentEventHandler = serverSentEventHandler;
+
+        freemarkerEngine = new FreeMarkerEngine();
+        Configuration conf = new Configuration();
+        conf.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
+        freemarkerEngine.setConfiguration(conf);
     }
 
     @Override
@@ -36,44 +40,32 @@ public class JashingServer extends AbstractIdleService {
         Spark.setPort(port);
         staticFileLocation("/statics");
 
-        get(new Route("/") {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.redirect("/sample");
-                return response;
-            }
-        });
+        get("/", (request, response) -> {
+                    response.redirect("/sample");
+                    return response;
+                }
+        );
 
-        get(new Route("/events") {
-            @Override
-            public Object handle(Request request, Response response) {
-
-                try {
-                    serverSentEventHandler.get().handle(request, response);
-                } catch (IOException e) {
+        get("/events", (request, response) ->
+                {
+                    try {
+                        serverSentEventHandler.get().handle(request, response);
+                    } catch (IOException e) {
+                        return null;
+                    }
                     return null;
                 }
-                return null;
-            }
-        });
+        );
 
-        get(new Route("views/:widget") {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.redirect("/widgets/" + StringUtils.substringBefore(request.params(":widget"), ".html") + "/" + request.params(":widget"));
-                return response;
-            }
-        });
+        get("views/:widget", (request, response) -> {
+                    response.redirect("/widgets/" + StringUtils.substringBefore(request.params(":widget"), ".html") + "/" + request.params(":widget"));
+                    return response;
+                }
+        );
 
-        get(new FreeMarkerRoute("/:dashboard") {
-            @Override
-            public Object handle(Request request, Response response) {
-                Configuration conf = new Configuration();
-                conf.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
-                setConfiguration(conf);
-                return modelAndView(Collections.EMPTY_MAP, "/statics/assets/views/dashboards/" + request.params(":dashboard") + ".ftl.html");
-            }
-        });
+        get("/:dashboard", (request, response) ->
+                        new ModelAndView(Collections.EMPTY_MAP, "/statics/assets/views/dashboards/" + request.params(":dashboard") + ".ftl.html"), this.freemarkerEngine
+        );
 
 
     }

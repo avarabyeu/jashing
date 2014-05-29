@@ -24,8 +24,8 @@
         <jetty.version>9.1.2.v20140210</jetty.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
 
         <assets.sources>${basedir}/src/main/resources/statics</assets.sources>
@@ -47,8 +47,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
@@ -194,12 +194,12 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>1.1.1</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-template-freemarker</artifactId>
-            <version>1.0</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>
@@ -222,6 +222,17 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
         </dependency>
 
 
