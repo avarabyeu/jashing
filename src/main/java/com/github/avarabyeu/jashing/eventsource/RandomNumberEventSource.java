@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.eventsource;
 
-import com.github.avarabyeu.jashing.events.ValuationEvent;
+import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.google.common.util.concurrent.AbstractScheduledService;
 
 import java.util.Random;
@@ -9,18 +9,18 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by andrey.vorobyov on 31/05/14.
  */
-public class RandomValuationEventSource extends ScheduledEventSource<ValuationEvent> {
+public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
 
     private Random r = new Random();
 
     private int lastValue;
 
     @Override
-    protected ValuationEvent produceEvent() {
+    protected NumberEvent produceEvent() {
         int current = r.nextInt(1000);
         int previous = this.lastValue;
         this.lastValue = current;
-        return new ValuationEvent(current, previous);
+        return new NumberEvent(current, previous);
     }
 
     @Override

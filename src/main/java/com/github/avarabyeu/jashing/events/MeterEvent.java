@@ -3,11 +3,11 @@ package com.github.avarabyeu.jashing.events;
 /**
  * Created by andrey.vorobyov on 24/04/14.
  */
-public class SynergyEvent extends JashingEvent {
+public class MeterEvent extends JashingEvent {
 
     private byte value;
 
-    public SynergyEvent(byte value) {
+    public MeterEvent(byte value) {
         super("synergy");
         this.value = value;
     }
