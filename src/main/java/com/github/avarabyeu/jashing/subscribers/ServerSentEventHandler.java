@@ -46,8 +46,7 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     public void handle(Request request, Response response) throws IOException {
         response.header("Cache-Control", "no-cache");
         response.header("Connection", "keep-alive");
-        response.type("text/event-stream");
-        //result.charset(Charsets.UTF_8.displayName());
+        response.type("text/event-stream;charset=UTF-8");
 
 
         /* Obtains output writer from received request */
