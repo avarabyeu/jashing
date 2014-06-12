@@ -1,9 +1,11 @@
 package com.github.avarabyeu.jashing;
 
 /**
- * Created by andrey.vorobyov on 25/04/14.
+ * Jashing startup parameters bean
+ *
+ * @author avarabyeu
  */
-public class LaunchProperties {
+public class BootstrapProperties {
     private int port = 8080;
 
     public int getPort() {

@@ -3,10 +3,19 @@ package com.github.avarabyeu.jashing;
 import com.google.common.base.Strings;
 
 /**
- * Created by andrey.vorobyov on 25/04/14.
+ * Set of usefull stuff for working with strings
+ *
+ * @author avarabyeu
  */
 public class StringUtils {
 
+    /**
+     * Returns substring before provided string
+     *
+     * @param str       String to be truncated
+     * @param separator Separator
+     * @return Null of initial string is Null, empty if provided string is empty, otherwise substring before
+     */
     public static String substringBefore(final String str, final String separator) {
         if (Strings.isNullOrEmpty(str)) {
             return str;

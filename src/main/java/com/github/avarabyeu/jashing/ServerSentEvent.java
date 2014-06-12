@@ -1,7 +1,9 @@
 package com.github.avarabyeu.jashing;
 
 /**
- * Created by andrey.vorobyov on 18/04/14.
+ * Server Sent Event representation. Contains Event ID and data
+ *
+ * @author avarabyeu
  */
 public class ServerSentEvent<T> {
 
@@ -10,10 +12,9 @@ public class ServerSentEvent<T> {
     private T data;
 
     public ServerSentEvent(String id, T data) {
-        this.id = id;
         this.data = data;
+        this.id = id;
     }
-
 
     public String getId() {
         return id;

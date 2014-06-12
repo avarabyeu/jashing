@@ -1,19 +1,24 @@
 package com.github.avarabyeu.jashing.eventsource;
 
+import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.NumberEvent;
-import com.google.common.util.concurrent.AbstractScheduledService;
 
+import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by andrey.vorobyov on 31/05/14.
  */
+@HandlesEvent(Events.NUMBER)
 public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
 
     private Random r = new Random();
 
     private int lastValue;
+
+    public RandomNumberEventSource(String eventId, Duration period) {
+        super(eventId, period);
+    }
 
     @Override
     protected NumberEvent produceEvent() {
@@ -23,8 +28,5 @@ public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
         return new NumberEvent(current, previous);
     }
 
-    @Override
-    protected AbstractScheduledService.Scheduler scheduler() {
-        return AbstractScheduledService.Scheduler.newFixedDelaySchedule(0, 3l, TimeUnit.SECONDS);
-    }
+
 }

@@ -1,22 +1,26 @@
 package com.github.avarabyeu.jashing.events;
 
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
 
 /**
- * Created by andrey.vorobyov on 24/04/14.
+ * Base Event for all Jashing events
+ *
+ * @author avarabyeu
  */
 public class JashingEvent {
     private String id;
     private long updatedAt;
 
-    public JashingEvent(String id) {
-        this.id = id;
-        this.updatedAt = TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTimeInMillis());
+    public JashingEvent() {
+        this.updatedAt = Instant.now().toEpochMilli();
     }
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getUpdatedAt() {

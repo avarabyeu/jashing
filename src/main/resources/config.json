@@ -1,0 +1,21 @@
+{
+    "events": [
+        {
+            "id": "welcome",
+            "type": "text",
+            "frequency": 5
+        },
+        {
+            "id": "synergy",
+            "type": "meter",
+            "frequency": 3
+        },
+        {
+            "id": "valuation",
+            "type": "number",
+            "frequency": 3
+        }
+
+    ]
+
+}

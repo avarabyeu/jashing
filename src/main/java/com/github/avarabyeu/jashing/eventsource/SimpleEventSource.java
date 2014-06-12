@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.eventsource;
 
+import com.github.avarabyeu.jashing.events.JashingEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 
@@ -8,7 +9,7 @@ import javax.inject.Inject;
 /**
  * Created by andrey.vorobyov on 25/04/14.
  */
-abstract class SimpleEventSource<T> extends AbstractIdleService implements EventSource<T> {
+abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleService implements EventSource<T> {
 
 
     @Inject

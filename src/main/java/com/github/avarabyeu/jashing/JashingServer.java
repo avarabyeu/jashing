@@ -16,7 +16,9 @@ import static spark.Spark.get;
 import static spark.Spark.staticFileLocation;
 
 /**
- * Created by andrey.vorobyov on 11/04/14.
+ * HTTP Server Controller. Bootstraps server and specifies all needed mappings and request handlers
+ *
+ * @author avarabyeu
  */
 public class JashingServer extends AbstractIdleService {
 

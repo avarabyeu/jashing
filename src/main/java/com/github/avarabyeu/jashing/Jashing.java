@@ -17,12 +17,12 @@ import java.io.IOException;
 public class Jashing {
 
     public static void main(String... args) throws InterruptedException, IOException {
-        LaunchProperties launchProperties = new LaunchProperties();
-        CmdLineParser cmdLineParser = new CmdLineParser(launchProperties);
+        BootstrapProperties bootstrapProperties = new BootstrapProperties();
+        CmdLineParser cmdLineParser = new CmdLineParser(bootstrapProperties);
         try {
             /* Parse CLI arguments */
             cmdLineParser.parseArgument(args);
-            Injector injector = Guice.createInjector(new JashingModule(launchProperties));
+            Injector injector = Guice.createInjector(new JashingModule(bootstrapProperties));
 
 
             /* bootstrap server */

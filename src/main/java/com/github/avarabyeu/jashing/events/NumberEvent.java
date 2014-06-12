@@ -1,7 +1,10 @@
 package com.github.avarabyeu.jashing.events;
 
 /**
- * Created by andrey.vorobyov on 31/05/14.
+ * Number Event <br>
+ * Contains current and last values
+ *
+ * @author Andrei Varabyeu
  */
 public class NumberEvent extends JashingEvent {
 
@@ -9,7 +12,6 @@ public class NumberEvent extends JashingEvent {
     private int last;
 
     public NumberEvent(int current, int last) {
-        super("valuation");
         this.current = current;
         this.last = last;
     }
