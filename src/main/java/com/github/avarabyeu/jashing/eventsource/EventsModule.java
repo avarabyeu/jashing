@@ -7,6 +7,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,6 +46,8 @@ public class EventsModule extends AbstractModule {
                     Class<?> handlerClass = eventHandlers.get(event.getType());
                     EventSource eventSource = (EventSource) TypeToken.of(handlerClass).constructor(handlerClass.getConstructor(String.class, Duration.class))
                             .invoke(null, event.getId(), Duration.ofSeconds(event.getFrequency()));
+
+                    BeanUtils.populate(eventSource, event.getProperties());
                     binder().requestInjection(eventSource);
                     eventSources.add(eventSource);
 

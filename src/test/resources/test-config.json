@@ -1,0 +1,14 @@
+{
+    "events": [
+        {
+            "id": "test",
+            "type": "test",
+            "frequency": 100,
+            "properties": {
+                "propertyString": "string",
+                "propertyInt": 100
+            }
+        }
+    ]
+
+}

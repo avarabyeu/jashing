@@ -1,6 +1,7 @@
 package com.github.avarabyeu.jashing;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Application configuration. Used for configuring event sources
@@ -23,6 +24,7 @@ public class Configuration {
         private String id;
         private String type;
         private long frequency;
+        private Map<String, ? extends Object> properties;
 
 
         public String getId() {
@@ -47,6 +49,14 @@ public class Configuration {
 
         public void setFrequency(long frequency) {
             this.frequency = frequency;
+        }
+
+        public Map<String, ? extends Object> getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Map<String, ? extends Object> properties) {
+            this.properties = properties;
         }
     }
 

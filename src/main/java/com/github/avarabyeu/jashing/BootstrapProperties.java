@@ -6,7 +6,7 @@ package com.github.avarabyeu.jashing;
  * @author avarabyeu
  */
 public class BootstrapProperties {
-    private int port = 8080;
+    private int port = 8089;
 
     public int getPort() {
         return port;
