@@ -7,7 +7,9 @@ import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import org.apache.commons.beanutils.BeanUtils;
+import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +26,11 @@ import java.util.Map;
  */
 public class EventsModule extends AbstractModule {
 
-    private Configuration configuration;
+    private List<Configuration.EventConfig> eventConfigs;
 
     @Inject
-    public EventsModule(Configuration configuration) {
-        this.configuration = Preconditions.checkNotNull(configuration, "Configuration shouldn't be null");
+    public EventsModule(List<Configuration.EventConfig> eventConfigs) {
+        this.eventConfigs = Preconditions.checkNotNull(eventConfigs, "Event configs shouldn't be null");
     }
 
     @Override
@@ -37,23 +39,43 @@ public class EventsModule extends AbstractModule {
             Map<String, Class<?>> eventHandlers = EventUtils.mapEventHandlers();
 
             List<EventSource> eventSources = new ArrayList<>();
-            configuration.getEvents().stream().forEach(event -> {
-                try {
-                    if (!eventHandlers.containsKey(event.getType())) {
-                        throw new IncorrectConfigurationException("Unable to find handler for event with type '" + event.getType() + "'");
+            eventConfigs.stream().forEach(event -> {
+
+                if (!eventHandlers.containsKey(event.getType())) {
+                    throw new IncorrectConfigurationException("Unable to find handler for event with type '" + event.getType() + "'");
+                }
+
+                install(new PrivateModule() {
+                    @Override
+                    protected void configure() {
+                        try {
+                            Class<? extends EventSource> handlerClass = (Class<? extends EventSource>) eventHandlers.get(event.getType());
+                            EventSource eventSource = TypeToken.of(handlerClass).constructor(handlerClass.getConstructor(String.class, Duration.class))
+                                    .invoke(null, event.getId(), Duration.ofSeconds(event.getFrequency()));
+
+                            if (null != event.getProperties()) {
+                                event.getProperties().entrySet().forEach(entry -> {
+                                    bindProperty(entry.getKey(), entry.getValue());
+                                });
+                            }
+
+                            binder().requestInjection(eventSource);
+                            eventSources.add(eventSource);
+
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            throw new IncorrectConfigurationException("Unable to load event handler class", e);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                    Class<?> handlerClass = eventHandlers.get(event.getType());
-                    EventSource eventSource = (EventSource) TypeToken.of(handlerClass).constructor(handlerClass.getConstructor(String.class, Duration.class))
-                            .invoke(null, event.getId(), Duration.ofSeconds(event.getFrequency()));
+                    private <T> void bindProperty(String key, T value) {
+                        TypeLiteral<T> type = TypeLiteral.get((Class<T>) value.getClass());
+                        bind(type).annotatedWith(Names.named(key)).toInstance(value);
+                    }
+                });
 
-                    BeanUtils.populate(eventSource, event.getProperties());
-                    binder().requestInjection(eventSource);
-                    eventSources.add(eventSource);
 
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new IncorrectConfigurationException("Unable to load event handler class", e);
-                }
             });
 
             ServiceManager instance = new ServiceManager(eventSources);

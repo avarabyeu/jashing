@@ -3,7 +3,7 @@ package com.github.avarabyeu.jashing;
 import com.google.common.base.Strings;
 
 /**
- * Set of usefull stuff for working with strings
+ * Set of useful stuff for working with strings
  *
  * @author avarabyeu
  */

@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class Configuration {
 
+    private Map<String, String> properties;
+
     private List<EventConfig> events;
 
     public List<EventConfig> getEvents() {
@@ -18,6 +20,14 @@ public class Configuration {
 
     public void setEvents(List<EventConfig> events) {
         this.events = events;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     public static class EventConfig {

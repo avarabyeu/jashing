@@ -3,6 +3,8 @@ package com.github.avarabyeu.jashing;
 import com.github.avarabyeu.jashing.events.ShutdownEvent;
 import com.github.avarabyeu.jashing.eventsource.EventsModule;
 import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
+import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
+import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
 import com.github.avarabyeu.jashing.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
@@ -15,7 +17,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Names;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.net.URL;
 
@@ -28,6 +33,7 @@ public class JashingModule extends AbstractModule {
 
 
     public static final String APPLICATION_CONFIG = "config.json";
+
     /* Bootstrap properties */
     private final BootstrapProperties bootstrapProperties;
 
@@ -48,8 +54,12 @@ public class JashingModule extends AbstractModule {
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
 
+        /* binds properties. Replaces property files */
+        Configuration configuration = provideConfiguration(gson);
+        configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
-        binder().install(new EventsModule(provideConfiguration(gson)));
+        /* install module with events configuration */
+        binder().install(new EventsModule(configuration.getEvents()));
     }
 
 
@@ -59,6 +69,12 @@ public class JashingModule extends AbstractModule {
         JashingServer jashing = new JashingServer(bootstrapProperties.getPort(), serverSentEventHandlerProvider);
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownServiceTask(jashing, eventBus)));
         return jashing;
+    }
+
+    @Inject
+    @Provides
+    public VCSClient provideSvnClient(@Named("svnUrl") String url, @Named("svnUser") String user, @Named("svnPassword") String password) {
+        return new SvnClient(url, user, password);
     }
 
 

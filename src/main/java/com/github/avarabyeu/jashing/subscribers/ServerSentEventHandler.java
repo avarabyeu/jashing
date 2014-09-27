@@ -12,8 +12,6 @@ import spark.Response;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Server Sent Events handler.
@@ -29,7 +27,6 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
 
     private Gson serializer;
     private Semaphore semaphore = new Semaphore(0);
-    private Lock lock = new ReentrantLock();
 
     /**
      * Will be set via {@link #handle(spark.Request, spark.Response)} method
@@ -55,9 +52,10 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
         /* subscribes yourself to event bus */
         subscribe();
         try {
+            /* locks current request (keeps opened) until this handler subscribed to event bus */
             semaphore.acquire();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -69,6 +67,8 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     @Override
     public void unsubscribe() {
         super.unsubscribe();
+
+        /* releases current request, because already unsubscribed from event bus. No need to keep request opened if there is no event appears */
         semaphore.release();
     }
 

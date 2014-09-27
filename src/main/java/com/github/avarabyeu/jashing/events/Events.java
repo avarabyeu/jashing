@@ -16,4 +16,8 @@ public final class Events {
     public static final String NUMBER = "number";
 
     public static final String TEXT = "text";
+
+    public static final String LIST = "list";
+
+    public static final String SVN_COMMITS_PROGRESS = "svnCommitsProgress";
 }
