@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.integration.vcs.svn;
 
+import com.github.avarabyeu.jashing.integration.vcs.AbstractVCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClientException;
 import com.google.common.net.UrlEscapers;
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Andrey Vorobyov
  */
-public class SvnClient implements VCSClient {
+public class SvnClient extends AbstractVCSClient implements VCSClient {
 
     private final SvnOperationFactory svnOperationFactory;
 
@@ -74,9 +75,6 @@ public class SvnClient implements VCSClient {
 
     }
 
-    public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from) {
-        return getCommitsPerUser(from, null);
-    }
 
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
         try {
@@ -96,10 +94,5 @@ public class SvnClient implements VCSClient {
             throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]");
         }
     }
-
-    public long getCommitsForPeriod(@Nonnull Instant from) {
-        return getCommitsForPeriod(from, null);
-    }
-
 
 }

@@ -14,6 +14,7 @@ import java.util.Collections;
 
 import static spark.Spark.get;
 import static spark.Spark.staticFileLocation;
+import static spark.SparkBase.setPort;
 
 /**
  * HTTP Server Controller. Bootstraps server and specifies all needed mappings and request handlers
@@ -39,7 +40,7 @@ public class JashingServer extends AbstractIdleService {
 
     @Override
     protected void startUp() throws Exception {
-        Spark.setPort(port);
+        setPort(port);
         staticFileLocation("/statics");
 
         get("/", (request, response) -> {
@@ -55,6 +56,7 @@ public class JashingServer extends AbstractIdleService {
                     } catch (IOException e) {
                         return null;
                     }
+                    //return null anyway. handler takes care about response content
                     return null;
                 }
         );
