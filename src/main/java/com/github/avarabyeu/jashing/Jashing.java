@@ -8,6 +8,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
+import java.lang.reflect.Parameter;
 
 /**
  * Application Entry Point. Creates Guava's Injector and runs spark server
@@ -34,7 +35,7 @@ public class Jashing {
             eventSources.startAsync();
         } catch (CmdLineException e) {
             e.printStackTrace();
-            e.getParser().printUsage(System.out);
+            e.getParser().printUsage(System.err);
         }
 
     }

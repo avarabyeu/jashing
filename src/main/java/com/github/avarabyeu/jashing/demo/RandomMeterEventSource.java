@@ -1,7 +1,9 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.demo;
 
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;
+import com.github.avarabyeu.jashing.eventsource.HandlesEvent;
+import com.github.avarabyeu.jashing.eventsource.ScheduledEventSource;
 
 import java.time.Duration;
 import java.util.Random;

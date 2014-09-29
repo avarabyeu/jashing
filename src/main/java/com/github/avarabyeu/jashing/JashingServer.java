@@ -6,7 +6,6 @@ import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import spark.ModelAndView;
-import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.IOException;

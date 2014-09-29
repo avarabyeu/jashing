@@ -46,6 +46,7 @@ public class JashingModule extends AbstractModule {
 
         binder().requireExplicitBindings();
 
+        /* Event Bus. In charge of dispatching events from message sources to event handlers */
         final EventBus eventBus = new EventBus(new LoggingSubscriberExceptionHandler());
         binder().bind(EventBus.class).toInstance(eventBus);
         binder().bind(ServerSentEventHandler.class).to(JashingEventHandler.class);
@@ -54,7 +55,7 @@ public class JashingModule extends AbstractModule {
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
 
-        /* binds properties. Replaces property files */
+        /* binds properties. Replaces property files with json-based configuration. Just to have all properties in one file */
         Configuration configuration = provideConfiguration(gson);
         configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
