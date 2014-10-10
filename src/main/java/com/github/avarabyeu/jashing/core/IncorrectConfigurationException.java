@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.exception;
+package com.github.avarabyeu.jashing.core;
 
 /**
  * Incorrect configuration exception

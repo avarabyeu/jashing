@@ -2,7 +2,7 @@ package com.github.avarabyeu.jashing.eventsource;
 
 import com.github.avarabyeu.jashing.core.Configuration;
 import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
-import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
+import com.github.avarabyeu.jashing.core.IncorrectConfigurationException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;

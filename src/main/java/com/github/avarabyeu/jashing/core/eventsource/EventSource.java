@@ -9,6 +9,6 @@ import com.google.common.util.concurrent.Service;
  *
  * @author avarabyeu
  */
-interface EventSource<T extends JashingEvent> extends Service {
+public interface EventSource<T extends JashingEvent> extends Service {
     void sendEvent(T t);
 }

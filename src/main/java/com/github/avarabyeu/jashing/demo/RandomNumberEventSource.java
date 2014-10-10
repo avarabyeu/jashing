@@ -1,14 +1,10 @@
 package com.github.avarabyeu.jashing.demo;
 
-import com.github.avarabyeu.jashing.events.Events;
-import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.events.Events;
+import com.github.avarabyeu.jashing.events.NumberEvent;
 
-import javax.inject.Inject;
-import java.time.Duration;
 import java.util.Random;
 
 /**
@@ -21,10 +17,6 @@ public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
 
     private int lastValue;
 
-    @Inject
-    public RandomNumberEventSource(@EventId String eventId, @Frequency Duration period) {
-        super(eventId, period);
-    }
 
     @Override
     protected NumberEvent produceEvent() {

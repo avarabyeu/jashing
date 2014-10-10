@@ -1,12 +1,11 @@
 package com.github.avarabyeu.jashing.eventsource;
 
+import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-import java.time.Duration;
+import javax.inject.Named;
 
 /**
  * Created by andrey.vorobyov on 12/06/14.
@@ -21,10 +20,6 @@ public class TestEventSource extends ScheduledEventSource<JashingEvent> {
     @Inject(optional = true)
     @Named("propertyInt")
     private Double propertyInt;
-
-    public TestEventSource(String eventId, Duration period) {
-        super(eventId, period);
-    }
 
 
     public String getPropertyString() {

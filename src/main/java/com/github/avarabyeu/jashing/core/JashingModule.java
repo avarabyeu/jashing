@@ -1,7 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
-import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;

@@ -3,7 +3,7 @@ package com.github.avarabyeu.jashing.core.eventsource;
 import com.github.avarabyeu.jashing.core.Configuration;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
-import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
+import com.github.avarabyeu.jashing.core.IncorrectConfigurationException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
@@ -45,6 +45,8 @@ public class EventsModule extends AbstractModule {
                 }
 
                 install(new PrivateModule() {
+
+                    @SuppressWarnings("unchecked")
                     @Override
                     protected void configure() {
                         Class<? extends EventSource> handlerClass = (Class<? extends EventSource>) eventHandlers.get(event.getType());

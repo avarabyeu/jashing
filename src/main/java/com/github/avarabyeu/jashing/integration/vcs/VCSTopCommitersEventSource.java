@@ -1,15 +1,12 @@
 package com.github.avarabyeu.jashing.integration.vcs;
 
-import com.github.avarabyeu.jashing.events.Events;
-import com.github.avarabyeu.jashing.events.ListEvent;
 import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.events.Events;
+import com.github.avarabyeu.jashing.events.ListEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
@@ -35,11 +32,6 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
     @Named("forPeriod")
     private Double daysBefore;
 
-
-    @Inject
-    public VCSTopCommitersEventSource(@EventId String eventId, @Frequency Duration period) {
-        super(eventId, period);
-    }
 
     @Override
     protected ListEvent<Integer> produceEvent() {

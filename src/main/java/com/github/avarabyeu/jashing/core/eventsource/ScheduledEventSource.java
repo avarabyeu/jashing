@@ -17,17 +17,18 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ScheduledEventSource<T extends JashingEvent> extends AbstractScheduledService implements EventSource<T> {
 
-    private final Duration period;
-    private final String eventId;
+
+    @Frequency
+    @Inject
+    private Duration period;
+
+    @EventId
+    @Inject
+    private String eventId;
 
     @Inject
     private EventBus eventBus;
 
-    @Inject
-    public ScheduledEventSource(@EventId String eventId, @Frequency Duration period) {
-        this.period = period;
-        this.eventId = eventId;
-    }
 
     @Override
     protected final void runOneIteration() throws Exception {

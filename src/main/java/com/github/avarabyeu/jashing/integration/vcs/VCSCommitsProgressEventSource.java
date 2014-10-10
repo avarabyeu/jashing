@@ -1,16 +1,13 @@
 package com.github.avarabyeu.jashing.integration.vcs;
 
-import com.github.avarabyeu.jashing.events.Events;
-import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.events.Events;
+import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 
 import javax.inject.Inject;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -34,10 +31,6 @@ public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEv
         }
     }, 1, TimeUnit.HOURS);
 
-    @Inject
-    public VCSCommitsProgressEventSource(@EventId String eventId, @Frequency Duration period) {
-        super(eventId, period);
-    }
 
     @Override
     protected NumberEvent produceEvent() {
