@@ -31,6 +31,9 @@
         <assets.sources>${basedir}/src/main/resources/statics</assets.sources>
         <assets.temp>${project.build.directory}/assets-temp</assets.temp>
         <assets.destination>${project.build.directory}/classes/statics</assets.destination>
+
+        <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
+        <guice.version>4.0-beta5</guice.version>
     </properties>
 
     <scm>
@@ -193,7 +196,7 @@
         <dependency>
             <groupId>com.github.avarabyeu</groupId>
             <artifactId>restendpoint</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
 
         <dependency>
@@ -216,12 +219,18 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>${guice.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
+            <version>18.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -243,11 +252,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.2</version>
         </dependency>
 
         <!-- SVN API -->

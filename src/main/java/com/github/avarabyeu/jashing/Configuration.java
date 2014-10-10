@@ -4,14 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Application configuration. Used for configuring event sources
+ * Events and event sources configuration
  *
  * @author avarabyeu
  */
 public class Configuration {
 
+    /**
+     * application-scope properties, might be injected into event source beans
+     */
     private Map<String, String> properties;
 
+    /**
+     * events configuration
+     */
     private List<EventConfig> events;
 
     public List<EventConfig> getEvents() {
@@ -34,7 +40,11 @@ public class Configuration {
         private String id;
         private String type;
         private long frequency;
-        private Map<String, ? extends Object> properties;
+
+        /**
+         * Event-scope properties. Might be injected into event source bean related to this particular event
+         */
+        private Map<String, ?> properties;
 
 
         public String getId() {

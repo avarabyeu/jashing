@@ -21,11 +21,11 @@ abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleSer
 
     @Override
     protected void startUp() throws Exception {
-
+        /* no any lifecycle-related logic */
     }
 
     @Override
     protected void shutDown() throws Exception {
-
+        /* no any lifecycle-related logic */
     }
 }

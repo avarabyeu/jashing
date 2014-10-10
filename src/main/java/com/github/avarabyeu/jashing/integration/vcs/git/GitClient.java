@@ -18,9 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 /**
@@ -30,10 +30,9 @@ import java.util.function.Function;
  */
 public class GitClient extends AbstractVCSClient implements VCSClient {
 
+    private static final String HEAD_REVISION = "HEAD";
 
     private Repository repository;
-
-    private Git git;
 
 
     public GitClient(Path localRepoRoot, String repoName, String repositoryUrl) {
@@ -50,13 +49,11 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
             // now open the created repository
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
-            System.out.println(repositoryUrl);
             this.repository = builder.setWorkTree(repositoryDir)
                     .readEnvironment() // scan environment GIT_* variables
                     .findGitDir() // scan up the file system tree
                     .setMustExist(true)
                     .build();
-            this.git = new Git(repository);
 
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
@@ -83,20 +80,19 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
-        final Long[] commits = new Long[]{0l};
+        final AtomicLong commits = new AtomicLong();
         Function<RevCommit, Void> countCommitsFunction = commit -> {
-            commits[0]++;
+            commits.incrementAndGet();
             return null;
         };
         walkThroughCommits(from, to, countCommitsFunction);
-        return commits[0];
+        return commits.get();
     }
 
 
     private void walkThroughCommits(@Nonnull Instant from, @Nullable Instant to, Function<RevCommit, ?> function) {
         RevFilter revFilter;
         if (null == to) {
-            System.out.println(from.atZone(ZoneId.systemDefault()));
             revFilter = CommitTimeRevFilter.after(from.toEpochMilli());
         } else {
             revFilter = CommitTimeRevFilter.between(from.toEpochMilli(), to.toEpochMilli());
@@ -108,7 +104,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
         walk.setRevFilter(revFilter);
         walk.setRetainBody(true);
         try {
-            ObjectId head = repository.resolve("HEAD");
+            ObjectId head = repository.resolve(HEAD_REVISION);
             walk.markStart(walk.lookupCommit(head));
             walk.forEach(function::apply);
         } catch (IOException e) {

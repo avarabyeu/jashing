@@ -4,6 +4,8 @@ import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.ListEvent;
 import com.github.avarabyeu.jashing.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.eventsource.ScheduledEventSource;
+import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,7 +36,8 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
     private Double daysBefore;
 
 
-    public VCSTopCommitersEventSource(String eventId, Duration period) {
+    @Inject
+    public VCSTopCommitersEventSource(@EventId String eventId, @Frequency Duration period) {
         super(eventId, period);
     }
 

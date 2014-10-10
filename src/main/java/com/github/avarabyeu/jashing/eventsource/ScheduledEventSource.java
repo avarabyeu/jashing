@@ -1,6 +1,8 @@
 package com.github.avarabyeu.jashing.eventsource;
 
 import com.github.avarabyeu.jashing.events.JashingEvent;
+import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Inject;
@@ -21,7 +23,8 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     @Inject
     private EventBus eventBus;
 
-    public ScheduledEventSource(String eventId, Duration period) {
+    @Inject
+    public ScheduledEventSource(@EventId String eventId, @Frequency Duration period) {
         this.period = period;
         this.eventId = eventId;
     }

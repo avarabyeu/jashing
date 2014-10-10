@@ -1,6 +1,8 @@
 package com.github.avarabyeu.jashing.eventsource;
 
 import com.google.common.reflect.ClassPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
  */
 public class EventUtils {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventUtils.class);
+
     /**
      * Scans whole application classpath and find events handlers. Returns result in 'event name' -> 'handler class' map
      *
@@ -24,7 +28,7 @@ public class EventUtils {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
-        System.out.println("Scanning classpath for EventHandlers... " + classes.size() + " items");
+        LOGGER.info("Scanning classpath for EventHandlers.... Found {} items", classes.size());
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
         return classes.parallelStream().map(classInfo -> {

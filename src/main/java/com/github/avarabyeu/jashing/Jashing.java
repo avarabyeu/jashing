@@ -36,6 +36,8 @@ public class Jashing {
         } catch (CmdLineException e) {
             e.printStackTrace();
             e.getParser().printUsage(System.err);
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
     }

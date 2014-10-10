@@ -42,12 +42,18 @@ public class JashingServer extends AbstractIdleService {
         setPort(port);
         staticFileLocation("/statics");
 
+        /**
+         * Redirect to the default dashboard
+         */
         get("/", (request, response) -> {
                     response.redirect("/sample");
                     return response;
                 }
         );
 
+        /**
+         * Creates new SSE event handler which pushes events into response output stream
+         */
         get("/events", (request, response) ->
                 {
                     try {
@@ -60,12 +66,19 @@ public class JashingServer extends AbstractIdleService {
                 }
         );
 
+        /**
+         * Opens widget
+         */
         get("views/:widget", (request, response) -> {
+                    /* path to widget is /widgets/{widget folder == widget name}/{widget name}.html */
                     response.redirect("/widgets/" + StringUtils.substringBefore(request.params(":widget"), ".html") + "/" + request.params(":widget"));
                     return response;
                 }
         );
 
+        /**
+         * Opens dashboard
+         */
         get("/:dashboard", (request, response) ->
                         new ModelAndView(Collections.EMPTY_MAP, "/statics/assets/views/dashboards/" + request.params(":dashboard") + ".ftl.html"), this.freemarkerEngine
         );

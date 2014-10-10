@@ -4,6 +4,7 @@ import com.github.avarabyeu.jashing.events.JashingEvent;
 import com.google.common.util.concurrent.Service;
 
 /**
+ * //TODO do this abstraction really needed?
  * EventSource for {@link com.github.avarabyeu.jashing.events.JashingEvent}. Takes care about sending events
  *
  * @author avarabyeu

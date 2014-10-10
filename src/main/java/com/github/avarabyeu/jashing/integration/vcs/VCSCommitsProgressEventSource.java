@@ -4,11 +4,12 @@ import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.github.avarabyeu.jashing.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.eventsource.ScheduledEventSource;
+import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,11 +25,7 @@ public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEv
     @Inject
     private VCSClient svnClient;
 
-    @Inject
-    @Named("logPeriod")
-    private Double daysBefore;
-
-    /* recalculate yestarday commits count each our. Think about better approach of expiration */
+    /* recalculate yesterday commits count each our. Think about better approach of expiration */
     private Supplier<Long> yestardayCommitsCount = Suppliers.memoizeWithExpiration(new Supplier<Long>() {
         @Override
         public Long get() {
@@ -37,7 +34,8 @@ public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEv
         }
     }, 1, TimeUnit.HOURS);
 
-    public VCSCommitsProgressEventSource(String eventId, Duration period) {
+    @Inject
+    public VCSCommitsProgressEventSource(@EventId String eventId, @Frequency Duration period) {
         super(eventId, period);
     }
 
