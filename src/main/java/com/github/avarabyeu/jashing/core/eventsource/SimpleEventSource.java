@@ -1,6 +1,6 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
-import com.github.avarabyeu.jashing.events.JashingEvent;
+import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 

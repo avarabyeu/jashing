@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
@@ -8,7 +8,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
-import java.lang.reflect.Parameter;
 
 /**
  * Application Entry Point. Creates Guava's Injector and runs spark server

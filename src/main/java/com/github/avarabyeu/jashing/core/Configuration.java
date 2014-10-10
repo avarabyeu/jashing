@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
 import java.util.List;
 import java.util.Map;

@@ -1,11 +1,11 @@
-package com.github.avarabyeu.jashing.subscribers;
+package com.github.avarabyeu.jashing.core.subscribers;
 
-import com.github.avarabyeu.jashing.events.ShutdownEvent;
+import com.github.avarabyeu.jashing.core.ShutdownEvent;
 import com.google.common.eventbus.Subscribe;
 
 /**
  * Represents subscriber to Guava's {@link com.google.common.eventbus.EventBus}
- * Forces to handle {@link #onShutdown(com.github.avarabyeu.jashing.events.ShutdownEvent)} event to
+ * Forces to handle {@link #onShutdown(com.github.avarabyeu.jashing.core.ShutdownEvent)} event to
  * close opened resources. Interface method already have Guava's annotations so subclasses should not duplicate them
  *
  * @author avarabyeu

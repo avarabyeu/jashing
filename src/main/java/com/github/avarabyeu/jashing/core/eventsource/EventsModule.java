@@ -1,8 +1,8 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
-import com.github.avarabyeu.jashing.Configuration;
-import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.core.Configuration;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ServiceManager;

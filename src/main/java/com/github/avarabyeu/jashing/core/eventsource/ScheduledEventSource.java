@@ -1,8 +1,8 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
-import com.github.avarabyeu.jashing.events.JashingEvent;
-import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.core.JashingEvent;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Inject;

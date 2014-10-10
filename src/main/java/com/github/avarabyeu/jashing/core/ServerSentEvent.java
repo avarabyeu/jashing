@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
 /**
  * Server Sent Event representation. Contains Event ID and data

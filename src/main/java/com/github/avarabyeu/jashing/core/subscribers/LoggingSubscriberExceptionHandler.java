@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.subscribers;
+package com.github.avarabyeu.jashing.core.subscribers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;

@@ -1,13 +1,12 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.events.ShutdownEvent;
-import com.github.avarabyeu.jashing.eventsource.EventsModule;
+import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
 import com.github.avarabyeu.jashing.exception.IncorrectConfigurationException;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
-import com.github.avarabyeu.jashing.subscribers.JashingEventHandler;
-import com.github.avarabyeu.jashing.subscribers.LoggingSubscriberExceptionHandler;
-import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
+import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
@@ -29,7 +28,7 @@ import java.net.URL;
  *
  * @author avarabyeu
  */
-public class JashingModule extends AbstractModule {
+class JashingModule extends AbstractModule {
 
 
     public static final String APPLICATION_CONFIG = "config.json";

@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
 import com.google.common.base.Strings;
 

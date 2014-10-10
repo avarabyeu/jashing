@@ -1,6 +1,6 @@
-package com.github.avarabyeu.jashing.subscribers;
+package com.github.avarabyeu.jashing.core.subscribers;
 
-import com.github.avarabyeu.jashing.ServerSentEvent;
+import com.github.avarabyeu.jashing.core.ServerSentEvent;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;

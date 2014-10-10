@@ -1,5 +1,7 @@
 package com.github.avarabyeu.jashing.events;
 
+import com.github.avarabyeu.jashing.core.JashingEvent;
+
 /**
  * Number Event <br>
  * Contains current and last values

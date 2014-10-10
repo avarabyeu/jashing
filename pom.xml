@@ -64,7 +64,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.avarabyeu.jashing.Jashing</mainClass>
+                            <mainClass>com.github.avarabyeu.jashing.core.Jashing</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

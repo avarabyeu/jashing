@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.eventsource.annotation;
+package com.github.avarabyeu.jashing.core.eventsource.annotation;
 
 import com.google.inject.BindingAnnotation;
 

@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

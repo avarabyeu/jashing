@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.google.common.reflect.ClassPath;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
-package com.github.avarabyeu.jashing.subscribers;
+package com.github.avarabyeu.jashing.core.subscribers;
 
-import com.github.avarabyeu.jashing.ServerSentEvent;
-import com.github.avarabyeu.jashing.events.JashingEvent;
+import com.github.avarabyeu.jashing.core.ServerSentEvent;
+import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.Inject;

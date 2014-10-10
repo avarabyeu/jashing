@@ -1,6 +1,6 @@
-package com.github.avarabyeu.jashing;
+package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
@@ -21,7 +21,7 @@ import static spark.SparkBase.setPort;
  *
  * @author avarabyeu
  */
-public class JashingServer extends AbstractIdleService {
+class JashingServer extends AbstractIdleService {
 
 
     /* 4567 is default Spart port */

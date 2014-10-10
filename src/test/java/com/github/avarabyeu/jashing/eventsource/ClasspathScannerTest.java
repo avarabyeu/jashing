@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.eventsource;
 
+import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.google.common.base.Joiner;
 import com.google.common.reflect.ClassPath;
 import org.junit.Test;

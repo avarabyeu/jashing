@@ -1,11 +1,11 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
-import com.github.avarabyeu.jashing.events.JashingEvent;
+import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.common.util.concurrent.Service;
 
 /**
  * //TODO do this abstraction really needed?
- * EventSource for {@link com.github.avarabyeu.jashing.events.JashingEvent}. Takes care about sending events
+ * EventSource for {@link com.github.avarabyeu.jashing.core.JashingEvent}. Takes care about sending events
  *
  * @author avarabyeu
  */

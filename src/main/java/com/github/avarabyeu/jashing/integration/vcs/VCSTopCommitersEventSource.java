@@ -2,10 +2,10 @@ package com.github.avarabyeu.jashing.integration.vcs;
 
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.ListEvent;
-import com.github.avarabyeu.jashing.eventsource.HandlesEvent;
-import com.github.avarabyeu.jashing.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.eventsource.annotation.EventId;
-import com.github.avarabyeu.jashing.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
+import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 
 import javax.inject.Inject;
 import javax.inject.Named;
