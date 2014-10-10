@@ -18,7 +18,7 @@ public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
 
     private List<VCSClient> delegates;
 
-    public CompositeVCSClient(List<VCSClient> delegates) {
+    public CompositeVCSClient(@Nonnull List<VCSClient> delegates) {
         this.delegates = delegates;
     }
 

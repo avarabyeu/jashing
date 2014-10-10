@@ -8,6 +8,7 @@ import freemarker.template.Configuration;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -23,11 +24,13 @@ import static spark.SparkBase.setPort;
 public class JashingServer extends AbstractIdleService {
 
 
+    /* 4567 is default Spart port */
     private final int port;
+
     private final Provider<ServerSentEventHandler> serverSentEventHandler;
     private FreeMarkerEngine freemarkerEngine;
 
-    public JashingServer(int port, Provider<ServerSentEventHandler> serverSentEventHandler) {
+    public JashingServer(int port, @Nonnull Provider<ServerSentEventHandler> serverSentEventHandler) {
         this.port = port;
         this.serverSentEventHandler = serverSentEventHandler;
 
@@ -89,6 +92,6 @@ public class JashingServer extends AbstractIdleService {
 
     @Override
     protected void shutDown() throws Exception {
-
+        /* do nothing */
     }
 }
