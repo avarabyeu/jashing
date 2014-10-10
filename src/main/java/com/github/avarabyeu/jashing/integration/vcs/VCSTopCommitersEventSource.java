@@ -32,7 +32,7 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
     private VCSClient svnClient;
 
     @Inject
-    @Named("logPeriod")
+    @Named("forPeriod")
     private Double daysBefore;
 
 
