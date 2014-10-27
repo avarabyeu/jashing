@@ -16,18 +16,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Andrey Vorobyov
  */
-@HandlesEvent(Events.SVN_COMMITS_PROGRESS)
+@HandlesEvent(Events.VCS_COMMITS_PROGRESS)
 public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEvent> {
 
     @Inject
     private VCSClient svnClient;
 
-    /* recalculate yesterday commits count each our. Think about better approach of expiration */
+    /* recalculate yesterday commits count each hour. Think about better approach of expiration policy*/
     private Supplier<Long> yestardayCommitsCount = Suppliers.memoizeWithExpiration(new Supplier<Long>() {
         @Override
         public Long get() {
             LocalDate today = LocalDate.now();
-            return svnClient.getCommitsForPeriod(today.minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            return svnClient.getCommitsForPeriod(today.minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    today.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
     }, 1, TimeUnit.HOURS);
 

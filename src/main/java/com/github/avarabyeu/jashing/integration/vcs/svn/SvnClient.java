@@ -10,10 +10,7 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc2.SvnLog;
-import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
-import org.tmatesoft.svn.core.wc2.SvnRevisionRange;
-import org.tmatesoft.svn.core.wc2.SvnTarget;
+import org.tmatesoft.svn.core.wc2.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,7 +64,7 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
                     commiters.put(svnLogEntry.getAuthor(), ++authorCommits);
                 }
             });
-            log.run();
+            run(log);
             return commiters;
         } catch (SVNException e) {
             throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]");
@@ -88,11 +85,16 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
 
             final AtomicInteger count = new AtomicInteger(0);
             log.setReceiver((svnTarget, svnLogEntry) -> count.incrementAndGet());
-            log.run();
+            run(log);
             return count.get();
         } catch (SVNException e) {
             throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]");
         }
+    }
+
+    /* Looks like smth is unsynchronized in SvnKit. Put all operations into synchronization block */
+    private synchronized void run(SvnOperation<?> operation) throws SVNException {
+        operation.run();
     }
 
 }

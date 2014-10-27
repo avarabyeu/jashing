@@ -19,5 +19,5 @@ public final class Events {
 
     public static final String LIST = "list";
 
-    public static final String SVN_COMMITS_PROGRESS = "svnCommitsProgress";
+    public static final String VCS_COMMITS_PROGRESS = "vcsCommitsProgress";
 }

@@ -1,26 +1,28 @@
 package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
-import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
-import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.integration.vcs.CompositeVCSClient;
+import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
+import com.github.avarabyeu.jashing.integration.vcs.git.GitClient;
+import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.*;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Main application configuration module. Starts HTTP server and all necessary stuff
@@ -59,8 +61,25 @@ class JashingModule extends AbstractModule {
 
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents()));
+
+        bindCvs(configuration.getVcs());
     }
 
+
+    private void bindCvs(Configuration.VCS cvsConfig) {
+        Multibinder<VCSClient> multibinder = Multibinder.newSetBinder(binder(), VCSClient.class);
+        cvsConfig.getSvns().stream().forEach(config -> multibinder.addBinding().toProvider(() -> new SvnClient(config.getUrl(), config.getUsername(), config.getPassword())));
+
+        cvsConfig.getGits().stream().forEach(config -> multibinder.addBinding()
+                .toProvider(() -> new GitClient(config.getUrl(), config.getRepoName())));
+    }
+
+    @Provides
+    @Singleton
+    public VCSClient vcsClient(Set<VCSClient> clients) {
+        System.out.println("this is composite");
+        return new CompositeVCSClient(clients);
+    }
 
     @Provides
     @Singleton
@@ -68,12 +87,6 @@ class JashingModule extends AbstractModule {
         JashingServer jashing = new JashingServer(bootstrapProperties.getPort(), serverSentEventHandlerProvider);
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownServiceTask(jashing, eventBus)));
         return jashing;
-    }
-
-    @Inject
-    @Provides
-    public VCSClient provideSvnClient(@Named("svnUrl") String url, @Named("svnUser") String user, @Named("svnPassword") String password) {
-        return new SvnClient(url, user, password);
     }
 
 

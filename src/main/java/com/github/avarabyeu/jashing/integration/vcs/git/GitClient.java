@@ -2,11 +2,13 @@ package com.github.avarabyeu.jashing.integration.vcs.git;
 
 import com.github.avarabyeu.jashing.integration.vcs.AbstractVCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
+import com.google.common.io.Files;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.CommitTimeRevFilter;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
@@ -16,7 +18,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,13 +32,14 @@ import java.util.function.Function;
 public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private static final String HEAD_REVISION = "HEAD";
+    private Git git;
 
     private Repository repository;
 
 
-    public GitClient(Path localRepoRoot, String repoName, String repositoryUrl) {
+    public GitClient(String repositoryUrl, String repoName) {
         try {
-            File repositoryDir = new File(localRepoRoot.toFile(), repoName);
+            File repositoryDir = new File(Files.createTempDir(), repoName);
             if (!repositoryDir.exists()) {
 
                 Git.cloneRepository()
@@ -51,9 +53,11 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             this.repository = builder.setWorkTree(repositoryDir)
                     .readEnvironment() // scan environment GIT_* variables
-                    .findGitDir() // scan up the file system tree
+                            //.findGitDir() // scan up the file system tree
                     .setMustExist(true)
                     .build();
+
+            this.git = new Git(repository);
 
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
@@ -63,6 +67,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
+        pull();
         Map<String, Integer> commiters = new HashMap<>();
         Function<RevCommit, Void> mapCommitersFunction = commit -> {
             String name = commit.getAuthorIdent().getName();
@@ -80,6 +85,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
+        pull();
         final AtomicLong commits = new AtomicLong();
         Function<RevCommit, Void> countCommitsFunction = commit -> {
             commits.incrementAndGet();
@@ -90,7 +96,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
     }
 
 
-    private void walkThroughCommits(@Nonnull Instant from, @Nullable Instant to, Function<RevCommit, ?> function) {
+    private synchronized void walkThroughCommits(@Nonnull Instant from, @Nullable Instant to, Function<RevCommit, ?> function) {
         RevFilter revFilter;
         if (null == to) {
             revFilter = CommitTimeRevFilter.after(from.toEpochMilli());
@@ -106,12 +112,21 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
         try {
             ObjectId head = repository.resolve(HEAD_REVISION);
             walk.markStart(walk.lookupCommit(head));
+            walk.sort(RevSort.COMMIT_TIME_DESC);
             walk.forEach(function::apply);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            walk.release();
+            walk.dispose();
         }
 
+    }
+
+    private synchronized void pull() {
+        try {
+            git.pull().call();
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+        }
     }
 }

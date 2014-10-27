@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
  */
 public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
 
-    private List<VCSClient> delegates;
+    private Collection<VCSClient> delegates;
 
-    public CompositeVCSClient(@Nonnull List<VCSClient> delegates) {
+    public CompositeVCSClient(@Nonnull Collection<VCSClient> delegates) {
         this.delegates = delegates;
     }
 
