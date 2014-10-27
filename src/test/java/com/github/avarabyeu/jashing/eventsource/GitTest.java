@@ -3,7 +3,8 @@ package com.github.avarabyeu.jashing.eventsource;
 import com.github.avarabyeu.jashing.integration.vcs.git.GitClient;
 import org.junit.Test;
 
-import java.nio.file.FileSystems;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
@@ -15,14 +16,10 @@ public class GitTest {
 
     @Test
     public void testGit() {
-
-        String property = System.getProperty("java.io.tmpdir");
-        System.out.println(property);
-        GitClient gitClient = new GitClient(FileSystems.getDefault().
-                getPath(property), "restendpoint",
-                "git@github.com:avarabyeu/restendpoint.git");
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime before = now.minusMonths(30);
+        GitClient gitClient = new GitClient(
+                "git@github.com:avarabyeu/restendpoint.git", "restendpoint");
+        LocalDate now = LocalDate.now();
+        Instant before = now.minusDays(4).atStartOfDay(ZoneId.systemDefault()).toInstant();
         Map<String, Integer> commitsPerUser = gitClient.
                 getCommitsPerUser(before.
                         atZone(ZoneId.systemDefault()).toInstant());
