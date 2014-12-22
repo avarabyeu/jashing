@@ -1,10 +1,28 @@
 {
     "properties": {
-        "svnUrl": "http://svn.rix.cte/xcasino/trunk",
-        "svnUser": "andrey.vorobyov",
-        "svnPassword": "gmir7V6D",
         "logPeriod": 3
     },
+
+    "vcs": {
+        "gits": [
+            {
+                "name": "restendpoint",
+                "repoName": "restendpoint",
+                "url": "git@github.com:avarabyeu/restendpoint.git"
+
+
+            }
+        ],
+        "svns": [
+            {
+                "name": "casino",
+                "url": "YOUR URL",
+                "user": "YOUR USER",
+                "password": "YOUR PASS"
+            }
+        ]
+    },
+
     "events": [
         {
             "id": "synergy",
@@ -17,17 +35,17 @@
             "frequency": 3
         },
         {
-            "id": "svnTopCommiters",
+            "id": "vcsTopCommiters",
             "type": "list",
             "frequency": 5,
             "properties": {
-                "logPeriod": 3
+                "forPeriod": 1
 
             }
         },
         {
-            "id": "svnCommitsProgress",
-            "type": "svnCommitsProgress",
+            "id": "vcsCommitsProgress",
+            "type": "vcsCommitsProgress",
             "frequency": 5
         }
 
