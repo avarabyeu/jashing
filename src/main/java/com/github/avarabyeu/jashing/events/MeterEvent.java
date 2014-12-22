@@ -15,6 +15,11 @@ public class MeterEvent extends JashingEvent {
         this.value = value;
     }
 
+    public MeterEvent(String title, byte value) {
+        this.value = value;
+        setTitle(title);
+    }
+
     public byte getValue() {
         return value;
     }

@@ -32,16 +32,16 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
 
     @Override
     protected final void runOneIteration() throws Exception {
-        T t = produceEvent();
-        assert null != t;
-        t.setId(eventId);
-        sendEvent(t);
+        sendEvent(produceEvent());
     }
 
 
     @Override
     public final void sendEvent(T t) {
-        this.eventBus.post(t);
+        if (null != t){
+            t.setId(eventId);
+            this.eventBus.post(t);
+        }
     }
 
     @Override
