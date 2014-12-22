@@ -24,7 +24,7 @@ import java.util.Set;
  */
 public class EventsModule extends AbstractModule {
 
-    private List<Configuration.EventConfig> eventConfigs;
+    private final List<Configuration.EventConfig> eventConfigs;
 
     @Inject
     public EventsModule(List<Configuration.EventConfig> eventConfigs) {

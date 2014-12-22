@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
 
-    private Collection<VCSClient> delegates;
+    private final Collection<VCSClient> delegates;
 
     public CompositeVCSClient(@Nonnull Collection<VCSClient> delegates) {
         this.delegates = delegates;
@@ -25,9 +25,7 @@ public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
     @Override
     public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
         List<Map<String, Integer>> results = new ArrayList<>(delegates.size());
-        for (VCSClient delegate : delegates) {
-            results.add(delegate.getCommitsPerUser(from, to));
-        }
+        results.addAll(delegates.stream().map(delegate -> delegate.getCommitsPerUser(from, to)).collect(Collectors.toList()));
         return results.stream()
                 .map(Map::entrySet)          // converts each map into an entry set
                 .flatMap(Collection::stream) // converts each set into an entry stream, then

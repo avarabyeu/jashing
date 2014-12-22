@@ -25,8 +25,8 @@ import java.util.concurrent.Semaphore;
 public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T> {
 
 
-    private Gson serializer;
-    private Semaphore semaphore = new Semaphore(0);
+    private final Gson serializer;
+    private final Semaphore semaphore = new Semaphore(0);
 
     /**
      * Will be set via {@link #handle(spark.Request, spark.Response)} method
@@ -55,7 +55,7 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
             /* locks current request (keeps opened) until this handler subscribed to event bus */
             semaphore.acquire();
         } catch (InterruptedException e) {
-
+            //do nothing
         }
     }
 

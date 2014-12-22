@@ -8,12 +8,12 @@ import com.github.avarabyeu.jashing.events.NumberEvent;
 import java.util.Random;
 
 /**
- * Created by andrey.vorobyov on 31/05/14.
+ * @author Andrei Varabyeu
  */
 @HandlesEvent(Events.NUMBER)
 public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
 
-    private Random r = new Random();
+    private final Random r = new Random();
 
     private int lastValue;
 

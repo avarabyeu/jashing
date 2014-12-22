@@ -28,7 +28,7 @@ class JashingServer extends AbstractIdleService {
     private final int port;
 
     private final Provider<ServerSentEventHandler> serverSentEventHandler;
-    private FreeMarkerEngine freemarkerEngine;
+    private final FreeMarkerEngine freemarkerEngine;
 
     public JashingServer(int port, @Nonnull Provider<ServerSentEventHandler> serverSentEventHandler) {
         this.port = port;

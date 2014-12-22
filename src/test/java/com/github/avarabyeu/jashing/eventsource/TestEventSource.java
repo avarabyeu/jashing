@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Created by andrey.vorobyov on 12/06/14.
+ * @author Andrei Varabyeu
  */
 @HandlesEvent("test")
 public class TestEventSource extends ScheduledEventSource<JashingEvent> {

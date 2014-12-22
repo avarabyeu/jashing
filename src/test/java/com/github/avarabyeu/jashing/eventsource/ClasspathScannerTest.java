@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by andrey.vorobyov on 25/04/14.
+ * @author Andrei Varabyeu
  */
 public class ClasspathScannerTest {
 

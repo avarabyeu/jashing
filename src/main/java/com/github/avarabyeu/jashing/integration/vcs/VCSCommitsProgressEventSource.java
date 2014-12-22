@@ -23,7 +23,7 @@ public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEv
     private VCSClient svnClient;
 
     /* recalculate yesterday commits count each hour. Think about better approach of expiration policy*/
-    private Supplier<Long> yestardayCommitsCount = Suppliers.memoizeWithExpiration(new Supplier<Long>() {
+    private final Supplier<Long> yestardayCommitsCount = Suppliers.memoizeWithExpiration(new Supplier<Long>() {
         @Override
         public Long get() {
             LocalDate today = LocalDate.now();

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Set if utility method to simplify working with events-related stuff
  */
-public class EventUtils {
+class EventUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventUtils.class);
 

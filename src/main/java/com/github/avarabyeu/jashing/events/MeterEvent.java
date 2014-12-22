@@ -9,7 +9,7 @@ import com.github.avarabyeu.jashing.core.JashingEvent;
  */
 public class MeterEvent extends JashingEvent {
 
-    private byte value;
+    private final byte value;
 
     public MeterEvent(byte value) {
         this.value = value;

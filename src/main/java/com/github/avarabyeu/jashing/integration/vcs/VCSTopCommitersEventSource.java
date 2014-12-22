@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @HandlesEvent(Events.LIST)
 public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<Integer>> {
 
-    public static final Comparator<ListEvent.Item<Integer>> ITEM_COMPARATOR = ((item1, item2) -> item1.getValue().compareTo(item2.getValue()));
+    private static final Comparator<ListEvent.Item<Integer>> ITEM_COMPARATOR = ((item1, item2) -> item1.getValue().compareTo(item2.getValue()));
 
     @Inject
     private VCSClient svnClient;

@@ -5,12 +5,11 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
 /**
- * Created by andrey.vorobyov on 9/27/14.
+ * @author Andrei Varabyeu
  */
 public class GitTest {
 

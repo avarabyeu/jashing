@@ -8,12 +8,12 @@ import com.github.avarabyeu.jashing.events.TextEvent;
 import java.util.Random;
 
 /**
- * Created by andrey.vorobyov on 31/05/14.
+ * @author Andrei Varabyeu
  */
 @HandlesEvent(Events.TEXT)
 public class RandomTextEventSource extends ScheduledEventSource<TextEvent> {
 
-    private Random r = new Random();
+    private final Random r = new Random();
 
 
     @Override

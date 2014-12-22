@@ -7,9 +7,9 @@ package com.github.avarabyeu.jashing.core;
  */
 public class ServerSentEvent<T> {
 
-    private String id;
+    private final String id;
 
-    private T data;
+    private final T data;
 
     public ServerSentEvent(String id, T data) {
         this.data = data;

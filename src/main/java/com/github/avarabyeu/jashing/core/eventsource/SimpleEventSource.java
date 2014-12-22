@@ -7,7 +7,7 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import javax.inject.Inject;
 
 /**
- * Created by andrey.vorobyov on 25/04/14.
+ * @author Andrei Varabyeu
  */
 abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleService implements EventSource<T> {
 

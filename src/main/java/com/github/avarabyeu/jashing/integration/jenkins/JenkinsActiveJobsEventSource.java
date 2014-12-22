@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by andrey.vorobyov on 10/27/14.
+ * @author Andrei Varabyeu
  */
 public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEvent> {
 
@@ -31,7 +31,7 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
 
     public class JobTracker extends AbstractScheduledService {
 
-        private String job;
+        private final String job;
 
         public JobTracker(String job) {
             this.job = job;

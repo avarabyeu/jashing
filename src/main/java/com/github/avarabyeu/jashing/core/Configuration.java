@@ -81,11 +81,11 @@ public class Configuration {
             this.frequency = frequency;
         }
 
-        public Map<String, ? extends Object> getProperties() {
+        public Map<String, ?> getProperties() {
             return properties;
         }
 
-        public void setProperties(Map<String, ? extends Object> properties) {
+        public void setProperties(Map<String, ?> properties) {
             this.properties = properties;
         }
     }

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class ListEvent<T> extends JashingEvent {
 
-    private List<Item<T>> items;
+    private final List<Item<T>> items;
 
     public ListEvent(List<Item<T>> items) {
         this.items = items;

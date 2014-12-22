@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Created by andrey.vorobyov on 12/06/14.
+ * @author Andrei Varabyeu
  */
 public class ConfigurationReaderTest {
 

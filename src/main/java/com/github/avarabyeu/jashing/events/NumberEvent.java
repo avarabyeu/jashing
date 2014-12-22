@@ -10,8 +10,8 @@ import com.github.avarabyeu.jashing.core.JashingEvent;
  */
 public class NumberEvent extends JashingEvent {
 
-    private int current;
-    private int last;
+    private final int current;
+    private final int last;
 
     public NumberEvent(int current, int last) {
         this.current = current;

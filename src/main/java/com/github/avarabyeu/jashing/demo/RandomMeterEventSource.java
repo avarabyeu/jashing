@@ -13,7 +13,7 @@ import java.util.Random;
 @HandlesEvent(Events.METER)
 public class RandomMeterEventSource extends ScheduledEventSource<MeterEvent> {
 
-    private Random r = new Random();
+    private final Random r = new Random();
 
     @Override
     protected MeterEvent produceEvent() {

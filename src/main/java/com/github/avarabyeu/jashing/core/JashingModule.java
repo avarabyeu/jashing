@@ -13,15 +13,15 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,7 +32,7 @@ import java.util.Set;
 class JashingModule extends AbstractModule {
 
 
-    public static final String APPLICATION_CONFIG = "config.json";
+    private static final String APPLICATION_CONFIG = "config.json";
 
     /* Bootstrap properties */
     private final BootstrapProperties bootstrapProperties;
@@ -107,7 +107,7 @@ class JashingModule extends AbstractModule {
     }
 
 
-    public Configuration provideConfiguration(Gson gson) {
+    private Configuration provideConfiguration(Gson gson) {
         try {
             URL config = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_CONFIG);
             assert config != null;
