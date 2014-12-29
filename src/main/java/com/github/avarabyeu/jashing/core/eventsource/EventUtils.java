@@ -19,9 +19,9 @@ class EventUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventUtils.class);
 
     /**
-     * Scans whole application classpath and find events handlers. Returns result in 'event name' -> 'handler class' map
+     * Scans whole application classpath and find events handlers
      *
-     * @return
+     * @return 'event name' -> 'handler class' map
      * @throws IOException
      */
     public static Map<String, Class<?>> mapEventHandlers() throws IOException {

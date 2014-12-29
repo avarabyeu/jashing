@@ -37,9 +37,9 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
     protected ListEvent<Integer> produceEvent() {
         LocalDateTime fromDateTime = LocalDateTime.now().minusDays(daysBefore.longValue());
         Map<String, Integer> commitsPerUser = svnClient.getCommitsPerUser(fromDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        return new ListEvent<Integer>(commitsPerUser.entrySet()
+        return new ListEvent<>(commitsPerUser.entrySet()
                 .stream()
-                .map(entry -> new ListEvent.Item<Integer>(entry.getKey(), entry.getValue()))
+                .map(entry -> new ListEvent.Item<>(entry.getKey(), entry.getValue()))
                 .sorted(ITEM_COMPARATOR.reversed())
                 .collect(Collectors.toList()));
     }

@@ -62,9 +62,8 @@ public class EventsModule extends AbstractModule {
                         eventSourceMultibinder.addBinding().to(eventSourceKey);
 
                         if (null != event.getProperties()) {
-                            event.getProperties().entrySet().forEach(entry -> {
-                                bindProperty(entry.getKey(), entry.getValue());
-                            });
+                            event.getProperties().entrySet().forEach(entry ->
+                                    bindProperty(entry.getKey(), entry.getValue()));
                         }
 
                     }

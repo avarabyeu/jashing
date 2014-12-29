@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import spark.ModelAndView;
+import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import javax.annotation.Nonnull;
@@ -14,7 +15,6 @@ import java.util.Collections;
 
 import static spark.Spark.get;
 import static spark.Spark.staticFileLocation;
-import static spark.SparkBase.setPort;
 
 /**
  * HTTP Server Controller. Bootstraps server and specifies all needed mappings and request handlers
@@ -42,7 +42,7 @@ class JashingServer extends AbstractIdleService {
 
     @Override
     protected void startUp() throws Exception {
-        setPort(port);
+        Spark.port(port);
         staticFileLocation("/statics");
 
         /**

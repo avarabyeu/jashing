@@ -39,7 +39,7 @@ public abstract class IndependentSubscriber<T> implements EventSubscriber<T> {
     /**
      * Automativally unsubscribes yourself in case of system shutdown
      *
-     * @param shutdownEvent
+     * @param shutdownEvent ShutdownEvent
      */
     @Override
     public void onShutdown(ShutdownEvent shutdownEvent) {
