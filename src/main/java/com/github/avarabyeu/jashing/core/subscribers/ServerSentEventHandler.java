@@ -26,7 +26,7 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
 
 
     private final Gson serializer;
-    private final Semaphore semaphore = new Semaphore(0);
+    private final Semaphore requestLock = new Semaphore(0);
 
     /**
      * Will be set via {@link #handle(spark.Request, spark.Response)} method
@@ -53,23 +53,22 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
         subscribe();
         try {
             /* locks current request (keeps opened) until this handler subscribed to event bus */
-            semaphore.acquire();
+            requestLock.acquire();
         } catch (InterruptedException e) {
-            //do nothing
+            unsubscribe();
         }
     }
 
 
     /**
-     * Unsubscribes yourself from event bus and marks request as completed
-     * to get to know Ninja that request is completed
+     * Unsubscribes yourself from event bus and marks and releases request lock
      */
     @Override
     public void unsubscribe() {
         super.unsubscribe();
 
         /* releases current request, because already unsubscribed from event bus. No need to keep request opened if there is no event appears */
-        semaphore.release();
+        requestLock.release();
     }
 
     protected void writeEvent(ServerSentEvent event) {

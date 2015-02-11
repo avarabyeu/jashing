@@ -77,7 +77,6 @@ class JashingModule extends AbstractModule {
     @Provides
     @Singleton
     public VCSClient vcsClient(Set<VCSClient> clients) {
-        System.out.println("this is composite");
         return new CompositeVCSClient(clients);
     }
 

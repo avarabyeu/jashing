@@ -71,7 +71,7 @@
             <plugin>
                 <groupId>com.theoryinpractise</groupId>
                 <artifactId>coffee-maven-plugin</artifactId>
-                <version>1.4.11</version>
+                <version>1.4.12</version>
                 <configuration>
                     <coffeeOutputDirectory>${assets.destination}/assets/javascripts</coffeeOutputDirectory>
                     <compileIndividualFiles>false</compileIndividualFiles>
@@ -194,7 +194,7 @@
         <dependency>
             <groupId>com.github.avarabyeu</groupId>
             <artifactId>restendpoint</artifactId>
-            <version>0.0.7</version>
+            <version>0.0.8</version>
         </dependency>
 
         <dependency>
@@ -250,7 +250,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.9</version>
+            <version>1.7.10</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -262,14 +262,14 @@
         <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
-            <version>1.8.5</version>
+            <version>1.8.7</version>
         </dependency>
 
         <!-- GIT API -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>3.5.3.201412180710-r</version>
+            <version>3.6.2.201501210735-r</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
