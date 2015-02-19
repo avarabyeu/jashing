@@ -71,8 +71,11 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
         requestLock.release();
     }
 
-    protected void writeEvent(ServerSentEvent event) {
-         /* Lock is not necessary here once Guice guarantee that this method called synchronously */
+    protected synchronized void writeEvent(ServerSentEvent event) {
+         /* Actually, synchronization is not necessary here because Guava EventBus guarantee that this method called synchronously
+          * Anyway, keep it synchronized to avoid misunderstanding
+          */
+
         if (!Strings.isNullOrEmpty(event.getId())) {
             writer.write("id: ");
             writer.write(event.getId());

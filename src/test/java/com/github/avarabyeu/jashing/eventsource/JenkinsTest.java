@@ -8,6 +8,7 @@ import com.github.avarabyeu.restendpoint.serializer.StringSerializer;
 import com.github.avarabyeu.restendpoint.serializer.json.GsonSerializer;
 import com.github.avarabyeu.restendpoint.serializer.xml.JaxbSerializer;
 import com.google.common.net.UrlEscapers;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -16,6 +17,7 @@ import org.junit.Test;
 public class JenkinsTest {
 
     @Test
+    @Ignore
     public void testClient() throws SerializerException {
         JenkinsClient jenkinsClient = RestEndpoints.create().withBaseUrl("http://jenkins.cte-minsk.local:8080/")
                 .withSerializer(new JaxbSerializer(Jobs.class)).withSerializer(new GsonSerializer()).withSerializer(new StringSerializer())

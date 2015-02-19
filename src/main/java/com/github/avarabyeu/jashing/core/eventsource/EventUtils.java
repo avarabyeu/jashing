@@ -28,10 +28,10 @@ class EventUtils {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
-        LOGGER.info("Scanning classpath for EventHandlers.... Found {} items", classes.size());
+        LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
-        return classes.parallelStream().map(classInfo -> {
+        Map<String, Class<?>> collected = classes.parallelStream().map(classInfo -> {
             try {
                 return Optional.<Class<?>>of(classInfo.load());
             } catch (Throwable e) {
@@ -39,5 +39,7 @@ class EventUtils {
             }
         }).filter(((Predicate<Optional<Class<?>>>) Optional::isPresent).and(classOptional -> classOptional.get().isAnnotationPresent(HandlesEvent.class))).map(Optional::get)
                 .collect(Collectors.toMap(clazz -> clazz.getAnnotation(HandlesEvent.class).value(), clazz -> clazz));
+        LOGGER.info("Found {} event handlers", collected.size());
+        return collected;
     }
 }

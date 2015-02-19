@@ -1,6 +1,7 @@
 package com.github.avarabyeu.jashing.eventsource;
 
 import com.github.avarabyeu.jashing.integration.vcs.git.GitClient;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class GitTest {
 
     @Test
+    @Ignore
     public void testGit() {
         GitClient gitClient = new GitClient(
                 "git@github.com:avarabyeu/restendpoint.git", "restendpoint");

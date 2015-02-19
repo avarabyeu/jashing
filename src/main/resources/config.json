@@ -1,54 +1,40 @@
 {
-    "properties": {
-        "logPeriod": 3
+  "properties": {
+    "logPeriod": 3
+  },
+  "events": [
+    {
+      "id": "synergy",
+      "type": "meter",
+      "frequency": 3
     },
-
-    "vcs": {
-        "gits": [
-            {
-                "name": "restendpoint",
-                "repoName": "restendpoint",
-                "url": "git@github.com:avarabyeu/restendpoint.git"
-
-
-            }
-        ],
-        "svns": [
-            {
-                "name": "casino",
-                "url": "YOUR URL",
-                "user": "YOUR USER",
-                "password": "YOUR PASS"
-            }
-        ]
+    {
+      "id": "valuation",
+      "type": "number",
+      "frequency": 3
     },
-
-    "events": [
-        {
-            "id": "synergy",
-            "type": "meter",
-            "frequency": 3
-        },
-        {
-            "id": "valuation",
-            "type": "number",
-            "frequency": 3
-        },
-        {
-            "id": "vcsTopCommiters",
-            "type": "list",
-            "frequency": 5,
-            "properties": {
-                "forPeriod": 1
-
-            }
-        },
-        {
-            "id": "vcsCommitsProgress",
-            "type": "vcsCommitsProgress",
-            "frequency": 5
-        }
-
-    ]
-
+    {
+      "id": "convergence",
+      "type": "graph",
+      "frequency": 5
+    },
+    {
+      "id": "progress_bars",
+      "type": "progress-bars",
+      "frequency": 5
+    },
+    {
+      "id": "vcsTopCommiters",
+      "type": "list",
+      "frequency": 5,
+      "properties": {
+        "forPeriod": 7
+      }
+    },
+    {
+      "id": "vcsCommitsProgress",
+      "type": "vcsCommitsProgress",
+      "frequency": 7
+    }
+  ]
 }

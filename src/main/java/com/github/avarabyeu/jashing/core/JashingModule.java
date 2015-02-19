@@ -4,25 +4,17 @@ import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
-import com.github.avarabyeu.jashing.integration.vcs.CompositeVCSClient;
-import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
-import com.github.avarabyeu.jashing.integration.vcs.git.GitClient;
-import com.github.avarabyeu.jashing.integration.vcs.svn.SvnClient;
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.multibindings.Multibinder;
+import com.google.inject.*;
 import com.google.inject.name.Names;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Main application configuration module. Starts HTTP server and all necessary stuff
@@ -37,8 +29,11 @@ class JashingModule extends AbstractModule {
     /* Bootstrap properties */
     private final BootstrapProperties bootstrapProperties;
 
-    public JashingModule(BootstrapProperties bootstrapProperties) {
+    private final List<Module> extensions;
+
+    public JashingModule(BootstrapProperties bootstrapProperties, List<Module> extensions) {
         this.bootstrapProperties = bootstrapProperties;
+        this.extensions = extensions;
     }
 
     @Override
@@ -59,26 +54,13 @@ class JashingModule extends AbstractModule {
         Configuration configuration = provideConfiguration(gson);
         configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
+        extensions.stream().forEach(this::install);
+
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents()));
 
-        bindCvs(configuration.getVcs());
     }
 
-
-    private void bindCvs(Configuration.VCS cvsConfig) {
-        Multibinder<VCSClient> multibinder = Multibinder.newSetBinder(binder(), VCSClient.class);
-        cvsConfig.getSvns().stream().forEach(config -> multibinder.addBinding().toProvider(() -> new SvnClient(config.getUrl(), config.getUsername(), config.getPassword())));
-
-        cvsConfig.getGits().stream().forEach(config -> multibinder.addBinding()
-                .toProvider(() -> new GitClient(config.getUrl(), config.getRepoName())));
-    }
-
-    @Provides
-    @Singleton
-    public VCSClient vcsClient(Set<VCSClient> clients) {
-        return new CompositeVCSClient(clients);
-    }
 
     @Provides
     @Singleton

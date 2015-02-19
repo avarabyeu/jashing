@@ -19,5 +19,9 @@ public final class Events {
 
     public static final String LIST = "list";
 
+    public static final String GRAPH = "graph";
+
     public static final String VCS_COMMITS_PROGRESS = "vcsCommitsProgress";
+
+    public static final String PROGRESS_BAR = "progress-bars";
 }
