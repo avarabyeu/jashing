@@ -10,24 +10,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jashing</artifactId>
-    <packaging>jar</packaging>
-    <groupId>com.github.avarabyeu</groupId>
+    <artifactId>jashing-parent</artifactId>
+    <packaging>pom</packaging>
+    <groupId>com.github.avarabyeu.jashing</groupId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>Jashing</name>
+    <name>jashing-parent</name>
     <description>Port of Dashing on Java</description>
     <url>https://github.com/avarabyeu</url>
 
+    <modules>
+        <module>jashing</module>
+        <module>extensions/jashing-cvs</module>
+        <module>extensions/jashing-svn</module>
+        <module>extensions/jashing-git</module>
+    </modules>
+
     <properties>
+        <jashing.parent.relative.path>../../jashing</jashing.parent.relative.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
-
-        <assets.sources>${basedir}/src/main/resources/statics</assets.sources>
-        <assets.temp>${project.build.directory}/assets-temp</assets.temp>
-        <assets.destination>${project.build.directory}/classes/statics</assets.destination>
 
         <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
         <guice.version>4.0-beta5</guice.version>
@@ -50,122 +53,6 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.github.avarabyeu.jashing.core.Jashing</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.theoryinpractise</groupId>
-                <artifactId>coffee-maven-plugin</artifactId>
-                <version>1.4.12</version>
-                <configuration>
-                    <coffeeOutputDirectory>${assets.destination}/assets/javascripts</coffeeOutputDirectory>
-                    <compileIndividualFiles>false</compileIndividualFiles>
-                    <coffeeJoinSets>
-                        <joinSet>
-                            <id>application</id>
-                            <fileSet>
-                                <directory>${assets.sources}</directory>
-                                <includes>
-                                    <include>**/*.coffee</include>
-                                </includes>
-                                <excludes>
-                                    <exclude>**/jointest3.*</exclude>
-                                    <exclude>**/dashing.*</exclude>
-                                </excludes>
-                            </fileSet>
-                        </joinSet>
-                        <joinSet>
-                            <id>dashing</id>
-                            <fileSet>
-                                <directory>${assets.sources}/assets/javascripts/dashing</directory>
-                                <includes>
-                                    <include>**/*.coffee</include>
-                                </includes>
-                                <excludes>
-                                    <exclude>**/jointest3.*</exclude>
-                                </excludes>
-                            </fileSet>
-                        </joinSet>
-                    </coffeeJoinSets>
-                    <minifiedFile>${assets.destination}/assets/javascripts/libs-all.js</minifiedFile>
-                    <setOfFilesToMinify>
-                        <directory>${assets.sources}/assets/javascripts</directory>
-                        <includes>
-                            <include>**/dashing/*.js</include>
-                            <include>**/gridster/*.js</include>
-                            <include>**/*.js</include>
-                        </includes>
-                    </setOfFilesToMinify>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>coffee</id>
-                        <goals>
-                            <goal>coffee</goal>
-                            <goal>minify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Processes SASS's SCSS files -->
-            <plugin>
-                <groupId>org.jasig.maven</groupId>
-                <artifactId>sass-maven-plugin</artifactId>
-                <version>1.1.1</version>
-                <configuration>
-                    <sassSourceDirectory>src/main/resources/statics</sassSourceDirectory>
-                    <destination>${assets.destination}/assets/stylesheets</destination>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>update-stylesheets</id>
-                        <goals>
-                            <goal>update-stylesheets</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Minifies CSS styles generated by  'sass-maven-plugin' -->
-            <plugin>
-                <groupId>com.samaxes.maven</groupId>
-                <artifactId>minify-maven-plugin</artifactId>
-                <version>1.7.2</version>
-                <executions>
-                    <execution>
-                        <id>minify-css</id>
-                        <configuration>
-                            <charset>UTF-8</charset>
-                            <webappSourceDir>${assets.destination}/assets</webappSourceDir>
-                            <webappTargetDir>${assets.destination}/assets</webappTargetDir>
-                            <cssSourceDir>stylesheets</cssSourceDir>
-                            <cssTargetDir>stylesheets</cssTargetDir>
-                            <cssSourceIncludes>
-                                <cssSourceInclude>**/*.css</cssSourceInclude>
-                            </cssSourceIncludes>
-                            <cssFinalFile>application-all.css</cssFinalFile>
-                        </configuration>
-                        <goals>
-                            <goal>minify</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
 
@@ -191,34 +78,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.github.avarabyeu</groupId>
-            <artifactId>restendpoint</artifactId>
-            <version>0.0.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-template-freemarker</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>args4j</groupId>
-            <artifactId>args4j</artifactId>
-            <version>2.0.29</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -241,11 +100,6 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -257,27 +111,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
         </dependency>
-
-        <!-- SVN API -->
-        <dependency>
-            <groupId>org.tmatesoft.svnkit</groupId>
-            <artifactId>svnkit</artifactId>
-            <version>1.8.7</version>
-        </dependency>
-
-        <!-- GIT API -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>3.6.2.201501210735-r</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
 
         <dependency>
             <groupId>junit</groupId>
