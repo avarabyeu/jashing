@@ -1,8 +1,6 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.Configuration;
-import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
-import com.github.avarabyeu.jashing.core.IncorrectConfigurationException;
+import com.github.avarabyeu.jashing.core.eventsource.TestEventSource;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;

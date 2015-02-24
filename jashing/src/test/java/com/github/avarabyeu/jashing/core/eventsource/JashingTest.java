@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.github.avarabyeu.jashing.core.Jashing;
 import org.junit.Ignore;

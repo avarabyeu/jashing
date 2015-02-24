@@ -1,4 +1,4 @@
-package com.github.avarabyeu.jashing.eventsource;
+package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.github.avarabyeu.jashing.integration.jenkins.JenkinsClient;
 import com.github.avarabyeu.jashing.integration.jenkins.Jobs;
@@ -7,7 +7,6 @@ import com.github.avarabyeu.restendpoint.http.exception.SerializerException;
 import com.github.avarabyeu.restendpoint.serializer.StringSerializer;
 import com.github.avarabyeu.restendpoint.serializer.json.GsonSerializer;
 import com.github.avarabyeu.restendpoint.serializer.xml.JaxbSerializer;
-import com.google.common.net.UrlEscapers;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ public class JenkinsTest {
                 .forInterface(JenkinsClient.class);
         System.out.println(jenkinsClient.getRunningJobs());
         //System.out.println(jenkinsClient.getJobProgress("DFGFG"));
-        for (String job : jenkinsClient.getRunningJobs().getNames()){
+        for (String job : jenkinsClient.getRunningJobs().getNames()) {
             System.out.println(jenkinsClient.getJobProgress(job));
         }
 
