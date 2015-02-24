@@ -1,9 +1,8 @@
-package com.github.avarabyeu.jashing.core.eventsource;
+package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.Configuration;
+import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
-import com.github.avarabyeu.jashing.core.IncorrectConfigurationException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
@@ -22,7 +21,7 @@ import java.util.Set;
  *
  * @author avarabyeu
  */
-public class EventsModule extends AbstractModule {
+class EventsModule extends AbstractModule {
 
     private final List<Configuration.EventConfig> eventConfigs;
 

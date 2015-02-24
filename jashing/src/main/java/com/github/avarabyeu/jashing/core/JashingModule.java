@@ -1,6 +1,5 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.eventsource.EventsModule;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
@@ -12,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.inject.*;
 import com.google.inject.name.Names;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -23,16 +23,18 @@ import java.util.List;
  */
 class JashingModule extends AbstractModule {
 
-
     private static final String APPLICATION_CONFIG = "config.json";
 
-    /* Bootstrap properties */
-    private final BootstrapProperties bootstrapProperties;
+    private final Integer port;
 
     private final List<Module> extensions;
 
-    public JashingModule(BootstrapProperties bootstrapProperties, List<Module> extensions) {
-        this.bootstrapProperties = bootstrapProperties;
+    public JashingModule(List<Module> extensions) {
+        this(null, extensions);
+    }
+
+    public JashingModule(@Nullable Integer port, List<Module> extensions) {
+        this.port = port;
         this.extensions = extensions;
     }
 
@@ -50,7 +52,7 @@ class JashingModule extends AbstractModule {
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
 
-        /* binds properties. Replaces property files with json-based configuration. Just to have all properties in one file */
+        /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
         configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
@@ -59,13 +61,15 @@ class JashingModule extends AbstractModule {
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents()));
 
+        binder().bind(JashingController.class).in(Scopes.SINGLETON);
+
     }
 
 
     @Provides
     @Singleton
-    public JashingServer application(EventBus eventBus, Provider<ServerSentEventHandler> serverSentEventHandlerProvider) {
-        JashingServer jashing = new JashingServer(bootstrapProperties.getPort(), serverSentEventHandlerProvider);
+    public JashingServer application(EventBus eventBus, JashingController jashingController) {
+        JashingServer jashing = new JashingServer(port, jashingController);
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownServiceTask(jashing, eventBus)));
         return jashing;
     }

@@ -6,8 +6,6 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -22,8 +20,11 @@ public class Jashing {
 
     private List<Module> modules;
 
+    private Integer port;
+
     public Jashing() {
         modules = new LinkedList<>();
+        port = null;
     }
 
     public Jashing registerModule(Module module) {
@@ -32,9 +33,7 @@ public class Jashing {
     }
 
     public void start() {
-
-        BootstrapProperties bootstrapProperties = new BootstrapProperties();
-        Injector injector = Guice.createInjector(new JashingModule(bootstrapProperties, ImmutableList.<Module>builder()
+        Injector injector = Guice.createInjector(new JashingModule(port, ImmutableList.<Module>builder()
                 .addAll(modules).build()));
 
             /* bootstrap server */
@@ -45,22 +44,11 @@ public class Jashing {
         ServiceManager eventSources = injector.getInstance(ServiceManager.class);
         eventSources.startAsync();
 
-        /* holds current thread while server is alive */
-        application.awaitTerminated();
-
     }
 
     public static void main(String... args) throws InterruptedException, IOException {
-        BootstrapProperties bootstrapProperties = new BootstrapProperties();
-        CmdLineParser cmdLineParser = new CmdLineParser(bootstrapProperties);
         try {
-            /* Parse CLI arguments */
-            cmdLineParser.parseArgument(args);
             new Jashing().start();
-
-        } catch (CmdLineException e) {
-            e.printStackTrace();
-            e.getParser().printUsage(System.err);
         } catch (Exception e) {
             e.printStackTrace();
         }
