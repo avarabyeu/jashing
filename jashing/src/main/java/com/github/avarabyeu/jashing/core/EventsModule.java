@@ -1,19 +1,26 @@
 package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.EventSource;
+import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.google.common.base.Preconditions;
+import com.google.common.reflect.ClassPath;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Guice configuration {@link com.google.inject.Module} for event handlers. Create all defined in configuration event handlers,
@@ -22,6 +29,9 @@ import java.util.Set;
  * @author avarabyeu
  */
 class EventsModule extends AbstractModule {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventsModule.class);
+
 
     private final List<Configuration.EventConfig> eventConfigs;
 
@@ -33,7 +43,7 @@ class EventsModule extends AbstractModule {
     @Override
     protected void configure() {
         try {
-            Map<String, Class<?>> eventHandlers = EventUtils.mapEventHandlers();
+            Map<String, Class<?>> eventHandlers = mapEventHandlers();
 
             final Multibinder<EventSource> eventSourceMultibinder = Multibinder.newSetBinder(binder(), EventSource.class);
 
@@ -85,6 +95,32 @@ class EventsModule extends AbstractModule {
     @Singleton
     public ServiceManager serviceManager(Set<EventSource> eventSources) {
         return new ServiceManager(eventSources);
+    }
+
+
+    /**
+     * Scans whole application classpath and find events handlers
+     *
+     * @return 'event name' -> 'handler class' map
+     * @throws IOException
+     */
+    public static Map<String, Class<?>> mapEventHandlers() throws IOException {
+
+        /** Obtains all classpath's top level classes */
+        Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
+        LOGGER.info("Scanning classpath for EventHandlers....");
+
+        /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
+        Map<String, Class<?>> collected = classes.parallelStream().map(classInfo -> {
+            try {
+                return Optional.<Class<?>>of(classInfo.load());
+            } catch (Throwable e) {
+                return Optional.<Class<?>>empty();
+            }
+        }).filter(((Predicate<Optional<Class<?>>>) Optional::isPresent).and(classOptional -> classOptional.get().isAnnotationPresent(HandlesEvent.class))).map(Optional::get)
+                .collect(Collectors.toMap(clazz -> clazz.getAnnotation(HandlesEvent.class).value(), clazz -> clazz));
+        LOGGER.info("Found {} event handlers", collected.size());
+        return collected;
     }
 
 

@@ -39,6 +39,7 @@ class JashingController implements SparkApplication {
 
 
     public void init() {
+
         /**
          * Doesn't works correctly in container-mode for binary data due to https://github.com/perwendel/spark/pull/235
          */

@@ -3,7 +3,9 @@ package com.github.avarabyeu.jashing.core;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Service;
@@ -56,7 +58,10 @@ class JashingModule extends AbstractModule {
         Configuration configuration = provideConfiguration(gson);
         configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
-        extensions.stream().forEach(this::install);
+        if (null != extensions) {
+            extensions.stream().forEach(this::install);
+        }
+
 
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents()));
@@ -68,14 +73,14 @@ class JashingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public JashingServer application(EventBus eventBus, JashingController jashingController) {
+    public JashingServer jashingServer(EventBus eventBus, JashingController jashingController) {
         JashingServer jashing = new JashingServer(port, jashingController);
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownServiceTask(jashing, eventBus)));
         return jashing;
     }
 
 
-    public static class ShutdownServiceTask implements Runnable {
+    private static class ShutdownServiceTask implements Runnable {
         private final Service service;
         private final EventBus eventBus;
 
@@ -94,8 +99,8 @@ class JashingModule extends AbstractModule {
 
     private Configuration provideConfiguration(Gson gson) {
         try {
-            URL config = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_CONFIG);
-            assert config != null;
+            URL config = ResourceUtils.getResourceAsURL(APPLICATION_CONFIG);
+            Preconditions.checkState(config != null, "Main application config [%s] not found", APPLICATION_CONFIG);
             return gson.fromJson(Resources.asCharSource(config, Charsets.UTF_8).openBufferedStream(), Configuration.class);
         } catch (IOException e) {
             throw new IncorrectConfigurationException("Unable to read configuration");

@@ -23,7 +23,6 @@ public class ResourceUtils {
 
     public static Properties getResourceAsProperties(final String resource) {
         return getResourceAs(resource, new IOConverter<Properties>() {
-
             @Override
             public Properties convert(ByteSource source) throws IOException {
                 try (InputStream is = source.openStream()) {
@@ -36,45 +35,25 @@ public class ResourceUtils {
     }
 
     public static File getResourceAsTempFile(final String resource) {
-        return getResourceAs(resource, new IOConverter<File>() {
-
-            @Override
-            public File convert(ByteSource source) throws IOException {
-                String fileName = Files.getNameWithoutExtension(resource);
-                String extension = Files.getFileExtension(resource);
-                File tempFile = File.createTempFile(fileName, "." + extension);
-                source.copyTo(Files.asByteSink(tempFile));
-                return tempFile;
-            }
+        return getResourceAs(resource, source -> {
+            String fileName = Files.getNameWithoutExtension(resource);
+            String extension = Files.getFileExtension(resource);
+            File tempFile = File.createTempFile(fileName, "." + extension);
+            source.copyTo(Files.asByteSink(tempFile));
+            return tempFile;
         });
     }
 
     public static Source getResourceAsSource(String resource) {
-        return getResourceAs(resource, new IOConverter<Source>() {
-
-            @Override
-            public Source convert(ByteSource source) throws IOException {
-                return new StreamSource(source.openBufferedStream());
-            }
-        });
+        return getResourceAs(resource, source -> new StreamSource(source.openBufferedStream()));
     }
 
     public static String getResourceAsString(String resource) {
-        return getResourceAs(resource, new IOConverter<String>() {
-            @Override
-            public String convert(ByteSource source) throws IOException {
-                return source.asCharSource(Charset.defaultCharset()).read();
-            }
-        });
+        return getResourceAs(resource, source -> source.asCharSource(Charset.defaultCharset()).read());
     }
 
     public static byte[] getResourceAsByteArray(String resource) {
-        return getResourceAs(resource, new IOConverter<byte[]>() {
-            @Override
-            public byte[] convert(ByteSource source) throws IOException {
-                return source.read();
-            }
-        });
+        return getResourceAs(resource, source -> source.read());
     }
 
     public static URL getResourceAsURL(String resource) {
