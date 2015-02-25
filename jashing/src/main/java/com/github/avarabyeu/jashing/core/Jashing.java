@@ -9,6 +9,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,53 +26,54 @@ public class Jashing {
 
     private AtomicBoolean bootstrapped;
     private Injector injector;
+    private Mode mode;
 
 
-    private Jashing(Injector injector) {
+    private Jashing(Injector injector, Mode mode) {
         this.injector = injector;
+        this.mode = mode;
         this.bootstrapped = new AtomicBoolean(false);
     }
 
-    Jashing bootstrap() {
+    /**
+     * Bootstaps Jashing. This operation is allowed only once. Bootstrapping already started Jashing is not permitted
+     *
+     * @return yourself
+     */
+    public Jashing bootstrap() {
         if (bootstrapped.compareAndSet(false, true)) {
-            bootstrapEventSources();
+            mode.bootstrap(injector);
         } else {
             throw new IllegalStateException("Jashing already bootstrapped");
         }
         return this;
     }
 
-    public void bootstrapEmbedded() {
-        if (bootstrapped.compareAndSet(false, true)) {
-            bootstrapEventSources();
-
-            /* bootstrap server */
-            Service application = injector.getInstance(JashingServer.class);
-            application.startAsync();
-        } else {
-            throw new IllegalStateException("Jashing already bootstrapped");
-        }
-    }
-
+    /**
+     * Shutdowns Jashing. Permitted only for bootstrapped instance
+     */
     public void shutdown() {
         if (bootstrapped.compareAndSet(true, false)) {
-            injector.getInstance(EventBus.class).post(new ShutdownEvent());
-            injector.getInstance(ServiceManager.class).stopAsync().awaitStopped();
+            mode.shutdown(injector);
         } else {
             throw new IllegalStateException("Jashing is not bootstrapped");
         }
     }
 
+    /**
+     * Obtains application controller. Used in {@link com.github.avarabyeu.jashing.core.JashingFilter} for bootstrapping {@link javax.servlet.Filter}
+     *
+     * @return Jashing controller
+     */
     JashingController getController() {
         return injector.getInstance(JashingController.class);
     }
 
-    private void bootstrapEventSources() {
-        /* bootstrap event sources* */
-        ServiceManager eventSources = injector.getInstance(ServiceManager.class);
-        eventSources.startAsync();
-    }
-
+    /**
+     * Creates new Jashing builder
+     *
+     * @return Builder of Jashing instance
+     */
     public static Builder newOne() {
         return new Builder();
     }
@@ -78,52 +81,124 @@ public class Jashing {
 
     public static void main(String... args) throws InterruptedException, IOException {
         try {
-            Jashing.newOne().build().bootstrapEmbedded();
+            Jashing.newOne().build(Mode.EMBEDDED).bootstrap();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
+    /**
+     * Jashing builder
+     */
     public static class Builder {
 
+        /* List of extension-modules */
         private List<Module> modules = new LinkedList<>();
 
         private Integer port;
 
 
+        /**
+         * Port for embedded mode.
+         *
+         * @param port port Jashing should start on
+         * @return this builder
+         */
         public Builder withPort(int port) {
             Preconditions.checkArgument(0 < port, "Port incorrect port number %s", port);
             this.port = port;
             return this;
         }
 
-        public Builder registerModule(Module module) {
-            modules.add(module);
-            return this;
-        }
-
-        public Builder registerModule(Module... modules) {
+        /**
+         * Registeres extension modules
+         *
+         * @param modules Array of extension modules
+         * @return this builder
+         */
+        public Builder registerModule(@Nullable Module... modules) {
             if (null != modules) {
                 Collections.addAll(this.modules, modules);
             }
             return this;
         }
 
-        public Builder registerModule(List<Module> modules) {
-            if (null != modules) {
-                this.modules.addAll(modules);
-            }
-            return this;
+        /**
+         * Builds jashing in Embedded mode
+         *
+         * @return Jashing instance
+         */
+        public Jashing build() {
+            return build(Mode.EMBEDDED);
         }
 
-        public Jashing build() {
+        /**
+         * Builds Jashing instance for specified {@link com.github.avarabyeu.jashing.core.Jashing.Mode}
+         * Package-private to hide {@link com.github.avarabyeu.jashing.core.Jashing.Mode#CONTAINER} to internal implementation
+         *
+         * @param mode Jashing mode
+         * @return Jashing
+         */
+        Jashing build(@Nonnull Mode mode) {
             Injector injector =
                     Guice.createInjector(new JashingModule(port, ImmutableList.<Module>builder()
                             .addAll(modules).build()));
 
 
-            return new Jashing(injector);
+            return new Jashing(injector, mode);
         }
+    }
+
+    /**
+     * Specifies mode Jashing running in
+     * May be container (when Jashing is deployed into Servlet Container) or embedded (Jashing starts embedded container)
+     */
+    static enum Mode {
+        EMBEDDED {
+            /**
+             * In embedded mode we need to start separate embedded server
+             */
+            @Override
+            void bootstrap(Injector injector) {
+                CONTAINER.bootstrap(injector);
+
+                /* bootstrap server */
+                Service application = injector.getInstance(JashingServer.class);
+                application.startAsync();
+
+            }
+
+            @Override
+            void shutdown(Injector injector) {
+                CONTAINER.shutdown(injector);
+                injector.getInstance(JashingServer.class).stopAsync().awaitTerminated();
+            }
+        },
+        CONTAINER {
+            /**
+             * In container Mode we need to bootstrap event sources only. Servlet container takes care about server-related stuff
+             */
+            @Override
+            void bootstrap(Injector injector) {
+                /* bootstrap event sources* */
+                ServiceManager eventSources = injector.getInstance(ServiceManager.class);
+                eventSources.startAsync();
+            }
+
+            /**
+             * In container mode we need to notify all event sources about shutting down (to release all active connections and unsubscribe from event sources)
+             * and stop all event sources
+             */
+            @Override
+            void shutdown(Injector injector) {
+                injector.getInstance(EventBus.class).post(new ShutdownEvent());
+                injector.getInstance(ServiceManager.class).stopAsync().awaitStopped();
+            }
+        };
+
+        abstract void bootstrap(Injector injector);
+
+        abstract void shutdown(Injector injector);
     }
 }
