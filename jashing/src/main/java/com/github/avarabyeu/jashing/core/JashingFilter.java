@@ -1,14 +1,12 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.ServiceManager;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import spark.servlet.SparkApplication;
 import spark.servlet.SparkFilter;
 
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import java.util.List;
 
@@ -17,31 +15,30 @@ import java.util.List;
  *
  * @author Andrei Varabyeu
  */
-abstract public class JashingFilter extends SparkFilter {
+abstract public class JashingFilter extends SparkFilter implements ServletContextListener {
 
-    private JashingController jashingController;
+    private Jashing jashing;
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Injector injector = Guice.createInjector(new JashingModule(ImmutableList.<Module>builder()
-                .addAll(getModules(filterConfig)).build()));
-        jashingController = injector.getInstance(JashingController.class);
+        Jashing jashing = Jashing.newOne().registerModule(getModules(filterConfig)).build();
+        jashing.bootstrap();
+        this.jashing = jashing;
 
         super.init(filterConfig);
-
-        /* bootstrap event sources* */
-        ServiceManager eventSources = injector.getInstance(ServiceManager.class);
-        eventSources.startAsync();
-
     }
 
     @Override
     protected SparkApplication getApplication(FilterConfig filterConfig) throws ServletException {
-        return jashingController;
+        return jashing.getController();
     }
 
 
     abstract public List<Module> getModules(FilterConfig filterConfig);
 
-
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        jashing.shutdown();
+    }
 }

@@ -35,5 +35,6 @@ class JashingServer extends AbstractIdleService {
     @Override
     protected void shutDown() throws Exception {
         /* do nothing */
+        Spark.stop();
     }
 }

@@ -7,7 +7,7 @@ import com.google.common.eventbus.EventBus;
 /**
  * Abstract implementation of {@link EventSubscriber}
  * with possibility to subscribe and unsubscribe yourself from {@link com.google.common.eventbus.EventBus}
- * Automatically unsubsribes yourself from {@link com.google.common.eventbus.EventBus} on system shutdown
+ * Automatically unsubscribes yourself from {@link com.google.common.eventbus.EventBus} on system shutdown
  *
  * @author avarabyeu
  */
@@ -37,7 +37,7 @@ public abstract class IndependentSubscriber<T> implements EventSubscriber<T> {
     }
 
     /**
-     * Automativally unsubscribes yourself in case of system shutdown
+     * Automatically unsubscribes yourself in case of system shutdown
      *
      * @param shutdownEvent ShutdownEvent
      */

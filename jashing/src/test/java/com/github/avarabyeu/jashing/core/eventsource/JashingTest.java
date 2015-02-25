@@ -13,7 +13,7 @@ public class JashingTest {
     @Test
     public void testJashing() {
         //new Jashing().registerModule(new VcsModule()).start();
-        new Jashing().start();
+        new Jashing().bootstrapEmbedded();
 
     }
 }
