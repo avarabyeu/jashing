@@ -24,6 +24,7 @@
         <module>extensions/jashing-cvs</module>
         <module>extensions/jashing-svn</module>
         <module>extensions/jashing-git</module>
+        <module>extensions/jashing-jenkins</module>
     </modules>
 
     <properties>
@@ -34,6 +35,7 @@
 
         <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
         <guice.version>4.0-beta5</guice.version>
+        <restendpoint.version>0.0.8</restendpoint.version>
     </properties>
 
     <scm>

@@ -1,6 +1,8 @@
 package com.github.avarabyeu.jashing.integration.jenkins;
 
+import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
+import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;
 import com.github.avarabyeu.restendpoint.http.exception.RestEndpointClientException;
 import com.google.common.util.concurrent.AbstractScheduledService;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Andrei Varabyeu
  */
+@HandlesEvent(Events.METER)
 public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEvent> {
 
     @Inject

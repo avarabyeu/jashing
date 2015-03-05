@@ -1,7 +1,5 @@
-package com.github.avarabyeu.jashing.core.eventsource;
+package com.github.avarabyeu.jashing.integration.jenkins;
 
-import com.github.avarabyeu.jashing.integration.jenkins.JenkinsClient;
-import com.github.avarabyeu.jashing.integration.jenkins.Jobs;
 import com.github.avarabyeu.restendpoint.http.RestEndpoints;
 import com.github.avarabyeu.restendpoint.http.exception.SerializerException;
 import com.github.avarabyeu.restendpoint.serializer.StringSerializer;

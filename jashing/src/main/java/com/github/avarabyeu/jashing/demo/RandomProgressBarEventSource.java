@@ -12,7 +12,7 @@ import java.util.Random;
  * @author Andrei Varabyeu
  */
 @HandlesEvent(Events.PROGRESS_BAR)
-public class ProgressBarEventSource extends ScheduledEventSource<ProgressBarEvent> {
+public class RandomProgressBarEventSource extends ScheduledEventSource<ProgressBarEvent> {
 
     private static final Random RANDOM = new Random();
 

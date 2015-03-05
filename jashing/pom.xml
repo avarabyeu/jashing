@@ -185,12 +185,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.github.avarabyeu</groupId>
-            <artifactId>restendpoint</artifactId>
-            <version>0.0.8</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
             <version>2.2-SNAPSHOT</version>

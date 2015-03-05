@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Main application configuration module. Starts HTTP server and all necessary stuff
+ * Main application configuration module. Configures server and all necessary stuff
  *
  * @author avarabyeu
  */
@@ -103,7 +103,7 @@ class JashingModule extends AbstractModule {
             Preconditions.checkState(config != null, "Main application config [%s] not found", APPLICATION_CONFIG);
             return gson.fromJson(Resources.asCharSource(config, Charsets.UTF_8).openBufferedStream(), Configuration.class);
         } catch (IOException e) {
-            throw new IncorrectConfigurationException("Unable to read configuration");
+            throw new IllegalStateException("Unable to read configuration", e);
 
         }
     }

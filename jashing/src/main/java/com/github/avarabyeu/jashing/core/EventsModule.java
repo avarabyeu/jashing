@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
+import com.google.inject.spi.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +33,12 @@ class EventsModule extends AbstractModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventsModule.class);
 
+    private static final TypeLiteral<EventSource<?>> EVENT_SOURCE_TYPE = new TypeLiteral<EventSource<?>>() {
+    };
+
 
     private final List<Configuration.EventConfig> eventConfigs;
 
-    @Inject
     public EventsModule(List<Configuration.EventConfig> eventConfigs) {
         this.eventConfigs = Preconditions.checkNotNull(eventConfigs, "Event configs shouldn't be null");
     }
@@ -43,84 +46,128 @@ class EventsModule extends AbstractModule {
     @Override
     protected void configure() {
         try {
-            Map<String, Class<?>> eventHandlers = mapEventHandlers();
+            Map<String, List<Class<? extends EventSource<?>>>> eventHandlers = mapEventHandlers();
 
-            final Multibinder<EventSource> eventSourceMultibinder = Multibinder.newSetBinder(binder(), EventSource.class);
+            final Multibinder<EventSource<?>> eventSourceMultibinder = Multibinder.newSetBinder(binder(), EVENT_SOURCE_TYPE);
 
-            eventConfigs.stream().forEach(event -> {
-
+            for (Configuration.EventConfig event : eventConfigs) {
                 if (!eventHandlers.containsKey(event.getType())) {
-                    throw new IncorrectConfigurationException("Unable to find handler for event with type '" + event.getType() + "'");
-                }
-
-                install(new PrivateModule() {
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    protected void configure() {
-                        Class<? extends EventSource> handlerClass = (Class<? extends EventSource>) eventHandlers.get(event.getType());
-
-                        binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
-                        binder().bind(String.class).annotatedWith(EventId.class).toInstance(event.getId());
-
-                        Key<EventSource> eventSourceKey = Key.get(EventSource.class, Names.named(event.getId()));
-                        binder().bind(eventSourceKey).to(handlerClass);
-
-                        expose(eventSourceKey);
-
-                        eventSourceMultibinder.addBinding().to(eventSourceKey);
-
-                        if (null != event.getProperties()) {
-                            event.getProperties().entrySet().forEach(entry ->
-                                    bindProperty(entry.getKey(), entry.getValue()));
+                    binder().addError("Unable to find handler for event with type '%s'", event.getType());
+                } else {
+                    List<Class<? extends EventSource<?>>> handlerClasses = eventHandlers.get(event.getType());
+                    if (handlerClasses.isEmpty()) {
+                        addError("Event Handler for event with type '%s' not found", event.getType());
+                    } else {
+                        if (handlerClasses.size() > 1) {
+                            LOGGER.warn("Event with type '%' bound more than to one event handler. Using first one...", event.getType());
                         }
-
+                        install(new EventSourcePrivateModule(event, eventSourceMultibinder, handlerClasses.get(0)));
                     }
-
-                    private <T> void bindProperty(String key, T value) {
-                        TypeLiteral<T> type = TypeLiteral.get((Class<T>) value.getClass());
-                        bind(type).annotatedWith(Names.named(key)).toInstance(value);
-                    }
-                });
-
-
-            });
+                }
+            }
 
         } catch (IOException e) {
-            throw new IncorrectConfigurationException("Unable to load event handlers...", e);
+            addError(new Message("Unable to load event handlers...", e));
         }
     }
 
     @Provides
     @Singleton
-    public ServiceManager serviceManager(Set<EventSource> eventSources) {
+    public ServiceManager serviceManager(Set<EventSource<?>> eventSources) {
         return new ServiceManager(eventSources);
     }
 
 
     /**
-     * Scans whole application classpath and find events handlers
+     * Scans whole application classpath and finds events handlers
      *
-     * @return 'event name' -> 'handler class' map
+     * @return 'event name' -> 'list of handlers classes' map
      * @throws IOException
      */
-    public static Map<String, Class<?>> mapEventHandlers() throws IOException {
+    @SuppressWarnings("unchecked")
+    public static Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
         LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
-        Map<String, Class<?>> collected = classes.parallelStream().map(classInfo -> {
-            try {
-                return Optional.<Class<?>>of(classInfo.load());
-            } catch (Throwable e) {
-                return Optional.<Class<?>>empty();
-            }
-        }).filter(((Predicate<Optional<Class<?>>>) Optional::isPresent).and(classOptional -> classOptional.get().isAnnotationPresent(HandlesEvent.class))).map(Optional::get)
-                .collect(Collectors.toMap(clazz -> clazz.getAnnotation(HandlesEvent.class).value(), clazz -> clazz));
+        Map<String, List<Class<? extends EventSource<?>>>> collected = classes.parallelStream()
+                /* loads class infos */
+                .map(classInfo -> {
+                    try {
+                        /* sometimes exception occurs during class loading. Return empty/absent in this case */
+                        return Optional.<Class<?>>of(classInfo.load());
+                    } catch (Throwable e) {
+                        return Optional.<Class<?>>empty();
+                    }
+                })
+                /* filters classes which is present and marked with HandlesEvent annotation */
+                .filter(((Predicate<Optional<Class<?>>>) Optional::isPresent)
+                        .and(classOptional -> classOptional.get().isAnnotationPresent(HandlesEvent.class))
+                        .and(classOptional -> EventSource.class.isAssignableFrom(classOptional.get())))
+                /* transforms from Optional<Class> to Class (obtaining values from Optionals) */
+                .map(optional -> (Class<? extends EventSource<?>>) optional.get())
+                .collect(Collectors.groupingBy(clazz -> clazz.getAnnotation(HandlesEvent.class).value(), Collectors.toList()));
+
         LOGGER.info("Found {} event handlers", collected.size());
         return collected;
+    }
+
+
+    /**
+     * {@link com.google.inject.PrivateModule} binds event source type to some particular event and exposes it to parent module
+     */
+    private static class EventSourcePrivateModule extends PrivateModule {
+
+        private Configuration.EventConfig event;
+
+        private Multibinder<EventSource<?>> multibinder;
+
+        private Class<? extends EventSource<?>> handlerClass;
+
+        public EventSourcePrivateModule(Configuration.EventConfig event, Multibinder<EventSource<?>> multibinder, Class<? extends EventSource<?>> handlerClass) {
+            this.event = event;
+            this.multibinder = multibinder;
+            this.handlerClass = handlerClass;
+        }
+
+        @Override
+        protected void configure() {
+            validateEvent();
+
+            binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
+            binder().bind(String.class).annotatedWith(EventId.class).toInstance(event.getId());
+
+            Key<EventSource<?>> eventSourceKey = Key.get(EVENT_SOURCE_TYPE, Names.named(event.getId()));
+            binder().bind(eventSourceKey).to(handlerClass);
+
+            expose(eventSourceKey);
+
+            multibinder.addBinding().to(eventSourceKey);
+
+            if (null != event.getProperties()) {
+                event.getProperties().entrySet().forEach(entry ->
+                        bindProperty(entry.getKey(), entry.getValue()));
+            }
+
+        }
+
+        @SuppressWarnings("unchecked")
+        private <T> void bindProperty(String key, T value) {
+            TypeLiteral<T> type = TypeLiteral.get((Class<T>) value.getClass());
+            bind(type).annotatedWith(Names.named(key)).toInstance(value);
+        }
+
+        private void validateEvent() {
+            if (event.getFrequency() <= 0) {
+                binder().addError("Frequency of event with type '%s' is not specified", event.getType());
+            }
+
+            if (null == event.getId()) {
+                binder().addError("ID of event with type '%s' is not specified", event.getType());
+            }
+        }
     }
 
 

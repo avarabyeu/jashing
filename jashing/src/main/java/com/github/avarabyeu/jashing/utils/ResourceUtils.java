@@ -53,7 +53,7 @@ public class ResourceUtils {
     }
 
     public static byte[] getResourceAsByteArray(String resource) {
-        return getResourceAs(resource, source -> source.read());
+        return getResourceAs(resource, ByteSource::read);
     }
 
     public static URL getResourceAsURL(String resource) {
