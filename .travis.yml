@@ -1,0 +1,16 @@
+language: java
+
+script: mvn test
+
+jdk:
+  - oraclejdk8
+
+notifications:
+  email:
+    recipients:
+      - andrei.varabyeu@gmail.com
+  flowdock: 01f9aad1fc42e06572aa09d1b49acccb
+
+branches:
+  only:
+    - master
