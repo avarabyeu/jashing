@@ -1,6 +1,7 @@
 package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.github.avarabyeu.jashing.core.JashingEvent;
+import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 
@@ -12,11 +13,25 @@ import javax.inject.Inject;
 abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleService implements EventSource<T> {
 
 
+    /**
+     * EventBus to send events
+     */
     @Inject
     private EventBus eventBus;
 
-    public void sendEvent(T event) {
-        this.eventBus.post(event);
+    /**
+     * ID of event this event source bound to
+     */
+    @EventId
+    @Inject
+    private String eventId;
+
+    @Override
+    public final void sendEvent(T t) {
+        if (null != t) {
+            t.setId(eventId);
+            this.eventBus.post(t);
+        }
     }
 
     @Override
@@ -27,5 +42,11 @@ abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleSer
     @Override
     protected void shutDown() throws Exception {
         /* no any lifecycle-related logic */
+    }
+    protected abstract T produceEvent();
+
+    @Override
+    protected String serviceName() {
+        return "SimpleEventSource[eventID=" + eventId + "]";
     }
 }

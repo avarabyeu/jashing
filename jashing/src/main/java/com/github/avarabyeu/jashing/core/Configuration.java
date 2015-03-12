@@ -8,7 +8,7 @@ import java.util.Map;
  *
  * @author avarabyeu
  */
-class Configuration {
+public class Configuration {
 
     /**
      * application-scope properties, might be injected into event source beans

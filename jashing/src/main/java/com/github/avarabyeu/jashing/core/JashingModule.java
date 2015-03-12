@@ -8,15 +8,18 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
+import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 import com.google.inject.*;
 import com.google.inject.name.Names;
+import com.google.inject.util.Modules;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main application configuration module. Configures server and all necessary stuff
@@ -56,15 +59,13 @@ class JashingModule extends AbstractModule {
 
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
-        configuration.getProperties().entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
-
-        if (null != extensions) {
-            extensions.stream().forEach(this::install);
-        }
-
+        Map<String, String> globalProperties = configuration.getProperties();
+        bind(new TypeLiteral<Map<String, String>>(){}).annotatedWith(GlobalProperties.class).toInstance(globalProperties);
+        globalProperties.entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
+        
 
         /* install module with events configuration */
-        binder().install(new EventsModule(configuration.getEvents()));
+        binder().install(new EventsModule(configuration.getEvents(), extensions));
 
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
 

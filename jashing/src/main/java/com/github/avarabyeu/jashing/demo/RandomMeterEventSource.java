@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.demo;
 
-import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
+import com.github.avarabyeu.jashing.core.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;

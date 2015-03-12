@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.core.eventsource;
 
+import com.github.avarabyeu.jashing.core.HandlesEvent;
 import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.inject.Inject;
 

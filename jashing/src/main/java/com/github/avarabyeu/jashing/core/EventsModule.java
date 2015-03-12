@@ -1,7 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.EventSource;
-import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.google.common.base.Preconditions;
@@ -14,12 +13,12 @@ import com.google.inject.spi.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @author avarabyeu
  */
-class EventsModule extends AbstractModule {
+class EventsModule extends PrivateModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventsModule.class);
 
@@ -39,8 +38,19 @@ class EventsModule extends AbstractModule {
 
     private final List<Configuration.EventConfig> eventConfigs;
 
-    public EventsModule(List<Configuration.EventConfig> eventConfigs) {
+    private final Map<Class<? extends Module>, Module> extensionsMap;
+
+    public EventsModule(@Nonnull List<Configuration.EventConfig> eventConfigs) {
+        this(eventConfigs, null);
+    }
+
+    public EventsModule(@Nonnull List<Configuration.EventConfig> eventConfigs, @Nullable List<Module> extensions) {
         this.eventConfigs = Preconditions.checkNotNull(eventConfigs, "Event configs shouldn't be null");
+
+        this.extensionsMap = new HashMap<>();
+        if (null != extensions) {
+            extensions.stream().forEach(extension -> extensionsMap.put(extension.getClass(), extension));
+        }
     }
 
     @Override
@@ -73,6 +83,7 @@ class EventsModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @Exposed
     public ServiceManager serviceManager(Set<EventSource<?>> eventSources) {
         return new ServiceManager(eventSources);
     }
@@ -85,7 +96,7 @@ class EventsModule extends AbstractModule {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
+    private Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
@@ -118,7 +129,7 @@ class EventsModule extends AbstractModule {
     /**
      * {@link com.google.inject.PrivateModule} binds event source type to some particular event and exposes it to parent module
      */
-    private static class EventSourcePrivateModule extends PrivateModule {
+    private class EventSourcePrivateModule extends PrivateModule {
 
         private Configuration.EventConfig event;
 
@@ -149,6 +160,24 @@ class EventsModule extends AbstractModule {
             if (null != event.getProperties()) {
                 event.getProperties().entrySet().forEach(entry ->
                         bindProperty(entry.getKey(), entry.getValue()));
+            }
+
+            /* each event handler may have own explicit guice configuration. Install it if so */
+            if (!HandlesEvent.NOP.class.equals(handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration())) {
+                Class<? extends Module> extensionModuleClass = handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration();
+                if (extensionsMap.containsKey(extensionModuleClass)) {
+                    install(extensionsMap.get(extensionModuleClass));
+                } else {
+                    try {
+                        extensionModuleClass.getConstructor().newInstance();
+                    } catch (InvocationTargetException | InstantiationException e) {
+                        addError("Unable to create instance of extension module '%s' for event with ID '%s'. Exception '%s'", extensionModuleClass, event.getId(), e.getMessage());
+                    } catch (NoSuchMethodException | IllegalAccessException e) {
+                        addError("Unable to create instance of extension module '%s' for event with ID '%s'. " +
+                                "Look like it doesn't have default constructor. Please, register it explicitly", extensionModuleClass, event.getId());
+                    }
+                }
+
             }
 
         }

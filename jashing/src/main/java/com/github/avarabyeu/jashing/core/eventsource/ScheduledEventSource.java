@@ -65,5 +65,10 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
         return AbstractScheduledService.Scheduler.newFixedDelaySchedule(3, period.toMillis(), TimeUnit.MILLISECONDS);
     }
 
+    @Override
+    final protected String serviceName() {
+        return "ScheduledEventSource[eventID=" + eventId + "]";
+    }
+
     protected abstract T produceEvent();
 }
