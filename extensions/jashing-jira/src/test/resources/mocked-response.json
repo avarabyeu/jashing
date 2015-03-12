@@ -1,0 +1,14 @@
+{
+  "expand": "names,schema",
+  "issues": [
+    {
+      "expand": "operations,editmeta,changelog,transitions,renderedFields",
+      "id": "1",
+      "key": "DEMO",
+      "self": "http://localhost/rest/api/2/issue/1"
+    }
+  ],
+  "maxResults": 50,
+  "startAt": 0,
+  "total": 1
+}

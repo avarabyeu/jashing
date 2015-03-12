@@ -1,11 +1,11 @@
 package com.github.avarabyeu.jashing.integration.jenkins;
 
-import com.github.avarabyeu.jashing.core.eventsource.HandlesEvent;
+import com.github.avarabyeu.jashing.core.HandlesEvent;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;
-import com.github.avarabyeu.restendpoint.http.exception.RestEndpointClientException;
-import com.google.common.util.concurrent.AbstractScheduledService;
+import com.github.avarabyeu.wills.Wills;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent(Events.METER)
+@HandlesEvent(value = Events.METER, explicitConfiguration = JenkinsModule.class)
 public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEvent> {
 
     @Inject
@@ -23,7 +23,7 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
     protected MeterEvent produceEvent() {
         Jobs runningJobs = jenkinsClient.getRunningJobs();
         if (!runningJobs.getNames().isEmpty()) {
-            new JobTracker(runningJobs.getNames().get(0)).startAsync().awaitTerminated();
+            new JobTracker(runningJobs.getNames().get(0)).track();
             return null;
         }
 
@@ -32,7 +32,7 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
     }
 
 
-    public class JobTracker extends AbstractScheduledService {
+    public class JobTracker {
 
         private final String job;
 
@@ -40,20 +40,14 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
             this.job = job;
         }
 
-        @Override
-        protected void runOneIteration() throws Exception {
-            try {
-                sendEvent(new MeterEvent(job, Byte.valueOf(jenkinsClient.getJobProgress(job))));
-            } catch (RestEndpointClientException e) {
-                shutDown();
-            }
+        protected void track() {
+            Byte progress;
+            do {
+                progress = jenkinsClient.getJobProgress(job).replaceFailed(Wills.of((byte) 100)).obtain();
+                sendEvent(new MeterEvent(job, progress));
+                Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+            } while (progress < 100);
 
-
-        }
-
-        @Override
-        protected Scheduler scheduler() {
-            return AbstractScheduledService.Scheduler.newFixedDelaySchedule(1, 1, TimeUnit.SECONDS);
         }
     }
 

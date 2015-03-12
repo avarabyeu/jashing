@@ -17,7 +17,7 @@ public interface VCSClient {
      *
      * @param from start time
      * @param to   end time
-     * @return Map<User name, Commits count></User>
+     * @return {@code {Map<User name, Commits count></User>}}
      */
     Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to);
 
@@ -25,7 +25,7 @@ public interface VCSClient {
      * Returns commits count per user from specified time till now
      *
      * @param from start time
-     * @return Map<User name, Commits count></User>
+     * @return {@code {Map<User name, Commits count></User>}}
      */
     Map<String, Integer> getCommitsPerUser(@Nonnull Instant from);
 

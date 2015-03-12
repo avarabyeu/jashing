@@ -3,6 +3,7 @@ package com.github.avarabyeu.jashing.core;
 import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import com.google.common.util.concurrent.ServiceManager;
@@ -18,7 +19,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -38,7 +42,7 @@ class EventsModule extends PrivateModule {
 
     private final List<Configuration.EventConfig> eventConfigs;
 
-    private final Map<Class<? extends Module>, Module> extensionsMap;
+    private final InstanceOfMap<Module> extensionsMap;
 
     public EventsModule(@Nonnull List<Configuration.EventConfig> eventConfigs) {
         this(eventConfigs, null);
@@ -46,11 +50,7 @@ class EventsModule extends PrivateModule {
 
     public EventsModule(@Nonnull List<Configuration.EventConfig> eventConfigs, @Nullable List<Module> extensions) {
         this.eventConfigs = Preconditions.checkNotNull(eventConfigs, "Event configs shouldn't be null");
-
-        this.extensionsMap = new HashMap<>();
-        if (null != extensions) {
-            extensions.stream().forEach(extension -> extensionsMap.put(extension.getClass(), extension));
-        }
+        this.extensionsMap = InstanceOfMap.<Module>builder().fromList(extensions);
     }
 
     @Override
@@ -165,8 +165,9 @@ class EventsModule extends PrivateModule {
             /* each event handler may have own explicit guice configuration. Install it if so */
             if (!HandlesEvent.NOP.class.equals(handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration())) {
                 Class<? extends Module> extensionModuleClass = handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration();
-                if (extensionsMap.containsKey(extensionModuleClass)) {
-                    install(extensionsMap.get(extensionModuleClass));
+                Module extensionModule = extensionsMap.get(extensionModuleClass);
+                if (null != extensionModule) {
+                    install(extensionModule);
                 } else {
                     try {
                         extensionModuleClass.getConstructor().newInstance();

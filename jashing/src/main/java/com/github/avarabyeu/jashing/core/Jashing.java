@@ -112,7 +112,7 @@ public class Jashing {
         }
 
         /**
-         * Registeres extension modules
+         * Registers extension modules
          *
          * @param modules Array of extension modules
          * @return this builder

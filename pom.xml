@@ -16,8 +16,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>jashing-parent</name>
-    <description>Port of Dashing on Java</description>
-    <url>https://github.com/avarabyeu</url>
+    <description>Java Port of Dashing. Parent Module</description>
+    <url>https://github.com/avarabyeu/jashing</url>
 
     <modules>
         <module>jashing</module>
@@ -25,6 +25,7 @@
         <module>extensions/jashing-svn</module>
         <module>extensions/jashing-git</module>
         <module>extensions/jashing-jenkins</module>
+        <module>extensions/jashing-jira</module>
     </modules>
 
     <properties>
@@ -35,7 +36,7 @@
 
         <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
         <guice.version>4.0-beta5</guice.version>
-        <restendpoint.version>0.0.8</restendpoint.version>
+        <restendpoint.version>0.0.10</restendpoint.version>
     </properties>
 
     <scm>
