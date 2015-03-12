@@ -12,12 +12,12 @@ import javax.inject.Inject;
 @HandlesEvent(value = "jira", explicitConfiguration = JiraModule.class)
 public class QueryResultEventSource extends ScheduledEventSource<ListEvent<String>> {
 
-    @Inject
-    private JiraClient jiraClient;
+    //@Inject
+    //private JiraClient jiraClient;
 
 //    @Inject
 //    @Named("jql")
-    private String jql;
+    //private String jql;
 
     @Override
     protected ListEvent<String> produceEvent() {

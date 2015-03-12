@@ -1,6 +1,7 @@
 package com.github.avarabyeu.jashing.integration.jira;
 
-import com.atlassian.jira.rest.client.domain.BasicIssue;
+
+import com.github.avarabyeu.jashing.integration.jira.model.BasicIssue;
 import com.github.avarabyeu.jashing.integration.jira.model.SearchResult;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.inject.AbstractModule;
@@ -44,7 +45,7 @@ public class JiraClientTest {
             protected void configure() {
                 Map<String, String> properties = new HashMap<>();
                 properties.put("jira.url", "http://localhost:" + server.getPort());
-                //properties.put("jira.user.login", "");
+                properties.put("jira.user.login", "");
                 properties.put("jira.user.password", "");
                 Names.bindProperties(binder(), properties);
             }

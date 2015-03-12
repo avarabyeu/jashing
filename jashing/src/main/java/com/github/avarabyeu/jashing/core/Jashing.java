@@ -8,6 +8,8 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,15 +26,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Jashing {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Jashing.class);
+
     private AtomicBoolean bootstrapped;
     private Injector injector;
     private Mode mode;
+    private Thread shutdownHook;
 
 
     private Jashing(Injector injector, Mode mode) {
         this.injector = injector;
         this.mode = mode;
         this.bootstrapped = new AtomicBoolean(false);
+        this.shutdownHook = new Thread(this::shutdown);
     }
 
     /**
@@ -43,6 +49,8 @@ public class Jashing {
     public Jashing bootstrap() {
         if (bootstrapped.compareAndSet(false, true)) {
             mode.bootstrap(injector);
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+            LOGGER.info("Jashing has started!");
         } else {
             throw new IllegalStateException("Jashing already bootstrapped");
         }
@@ -54,7 +62,16 @@ public class Jashing {
      */
     public void shutdown() {
         if (bootstrapped.compareAndSet(true, false)) {
+            LOGGER.info("Shutting down Jashing...");
             mode.shutdown(injector);
+
+            /* shutdown method might be called by this hook. So, trying to remove
+             * hook which is currently is progress causes error
+             */
+            if (!shutdownHook.isAlive()) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
+            LOGGER.info("Jashing has stopped.");
         } else {
             throw new IllegalStateException("Jashing is not bootstrapped");
         }
@@ -83,7 +100,7 @@ public class Jashing {
         try {
             Jashing.newOne().build(Mode.EMBEDDED).bootstrap();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Jashing can't started", e);
         }
 
     }

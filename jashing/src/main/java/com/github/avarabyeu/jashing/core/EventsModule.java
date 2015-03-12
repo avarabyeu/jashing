@@ -4,6 +4,7 @@ import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import com.google.common.util.concurrent.ServiceManager;
@@ -85,7 +86,19 @@ class EventsModule extends PrivateModule {
     @Singleton
     @Exposed
     public ServiceManager serviceManager(Set<EventSource<?>> eventSources) {
-        return new ServiceManager(eventSources);
+        ServiceManager serviceManager = new ServiceManager(eventSources);
+        serviceManager.addListener(new ServiceManager.Listener() {
+            @Override
+            public void healthy() {
+                LOGGER.info("Event sources have bootstrapped!");
+            }
+
+            @Override
+            public void stopped() {
+                LOGGER.info("Event sources have stopped");
+            }
+        });
+        return serviceManager;
     }
 
 
@@ -96,7 +109,8 @@ class EventsModule extends PrivateModule {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    private Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
+    @VisibleForTesting
+    Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
@@ -135,23 +149,24 @@ class EventsModule extends PrivateModule {
 
         private Multibinder<EventSource<?>> multibinder;
 
-        private Class<? extends EventSource<?>> handlerClass;
+        private Class<? extends EventSource<?>> eventSourceClass;
 
-        public EventSourcePrivateModule(Configuration.EventConfig event, Multibinder<EventSource<?>> multibinder, Class<? extends EventSource<?>> handlerClass) {
+        public EventSourcePrivateModule(Configuration.EventConfig event, Multibinder<EventSource<?>> multibinder, Class<? extends EventSource<?>> eventSourceClass) {
             this.event = event;
             this.multibinder = multibinder;
-            this.handlerClass = handlerClass;
+            this.eventSourceClass = eventSourceClass;
         }
 
         @Override
         protected void configure() {
+            LOGGER.info("Registering event source [{}] for event [{}]", eventSourceClass.getSimpleName(), event.getId());
             validateEvent();
 
             binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
             binder().bind(String.class).annotatedWith(EventId.class).toInstance(event.getId());
 
             Key<EventSource<?>> eventSourceKey = Key.get(EVENT_SOURCE_TYPE, Names.named(event.getId()));
-            binder().bind(eventSourceKey).to(handlerClass);
+            binder().bind(eventSourceKey).to(eventSourceClass);
 
             expose(eventSourceKey);
 
@@ -163,14 +178,15 @@ class EventsModule extends PrivateModule {
             }
 
             /* each event handler may have own explicit guice configuration. Install it if so */
-            if (!HandlesEvent.NOP.class.equals(handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration())) {
-                Class<? extends Module> extensionModuleClass = handlerClass.getAnnotation(HandlesEvent.class).explicitConfiguration();
-                Module extensionModule = extensionsMap.get(extensionModuleClass);
+            if (!HandlesEvent.NOP.class.equals(eventSourceClass.getAnnotation(HandlesEvent.class).explicitConfiguration())) {
+                LOGGER.info("       Registering extension module for event source [{}]", eventSourceClass.getSimpleName());
+                Class<? extends Module> extensionModuleClass = eventSourceClass.getAnnotation(HandlesEvent.class).explicitConfiguration();
+                Module extensionModule = extensionsMap.getInstanceOf(extensionModuleClass);
                 if (null != extensionModule) {
                     install(extensionModule);
                 } else {
                     try {
-                        extensionModuleClass.getConstructor().newInstance();
+                        install(extensionModuleClass.getConstructor().newInstance());
                     } catch (InvocationTargetException | InstantiationException e) {
                         addError("Unable to create instance of extension module '%s' for event with ID '%s'. Exception '%s'", extensionModuleClass, event.getId(), e.getMessage());
                     } catch (NoSuchMethodException | IllegalAccessException e) {

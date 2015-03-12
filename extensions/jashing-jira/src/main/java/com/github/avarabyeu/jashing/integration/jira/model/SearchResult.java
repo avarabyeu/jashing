@@ -1,6 +1,5 @@
 package com.github.avarabyeu.jashing.integration.jira.model;
 
-import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.google.common.base.MoreObjects;
 
 import java.util.List;

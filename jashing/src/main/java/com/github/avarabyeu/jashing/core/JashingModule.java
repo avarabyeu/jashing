@@ -8,12 +8,13 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
-import com.google.common.reflect.TypeToken;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 import com.google.inject.*;
 import com.google.inject.name.Names;
-import com.google.inject.util.Modules;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -27,6 +28,8 @@ import java.util.Map;
  * @author avarabyeu
  */
 class JashingModule extends AbstractModule {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JashingModule.class);
 
     private static final String APPLICATION_CONFIG = "config.json";
 
@@ -60,7 +63,8 @@ class JashingModule extends AbstractModule {
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
         Map<String, String> globalProperties = configuration.getProperties();
-        bind(new TypeLiteral<Map<String, String>>(){}).annotatedWith(GlobalProperties.class).toInstance(globalProperties);
+        bind(new TypeLiteral<Map<String, String>>() {
+        }).annotatedWith(GlobalProperties.class).toInstance(globalProperties);
         globalProperties.entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
         
 
@@ -76,26 +80,22 @@ class JashingModule extends AbstractModule {
     @Singleton
     public JashingServer jashingServer(EventBus eventBus, JashingController jashingController) {
         JashingServer jashing = new JashingServer(port, jashingController);
-        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownServiceTask(jashing, eventBus)));
+        jashing.addListener(new Service.Listener() {
+            @Override
+            public void running() {
+                LOGGER.info("Embedded Jashing server has started on port [{}]", port);
+            }
+
+            @Override
+            public void stopping(Service.State from) {
+                LOGGER.info("Stopping embedded Jashing server");
+            }
+        }, MoreExecutors.directExecutor());
         return jashing;
     }
 
 
-    private static class ShutdownServiceTask implements Runnable {
-        private final Service service;
-        private final EventBus eventBus;
 
-        ShutdownServiceTask(Service service, EventBus eventBus) {
-            this.service = service;
-            this.eventBus = eventBus;
-        }
-
-        @Override
-        public void run() {
-            this.eventBus.post(new ShutdownEvent());
-            this.service.stopAsync().awaitTerminated();
-        }
-    }
 
 
     private Configuration provideConfiguration(Gson gson) {

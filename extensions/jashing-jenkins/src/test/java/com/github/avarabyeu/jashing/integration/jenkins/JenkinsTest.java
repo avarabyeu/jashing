@@ -12,6 +12,7 @@ import com.google.common.net.MediaType;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 public class JenkinsTest {
 
     @Test
+    @Ignore
     public void testClient() throws SerializerException {
         JenkinsClient jenkinsClient = RestEndpoints.create().withBaseUrl("http://jenkins.cte-minsk.local:8080/")
                 .withSerializer(new JaxbSerializer(Jobs.class)).withSerializer(new GsonSerializer()).withSerializer(new TextSerializer())
