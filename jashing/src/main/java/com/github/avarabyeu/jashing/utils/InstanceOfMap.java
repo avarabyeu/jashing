@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.primitives.Primitives;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Contains object as values and it's classes as keys
@@ -47,6 +44,10 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
 
     public static <T> Builder<T> builder() {
         return new Builder<>();
+    }
+
+    public static <T> InstanceOfMap<T> empty(){
+      return new InstanceOfMap<>(Collections.emptyMap());
     }
 
 

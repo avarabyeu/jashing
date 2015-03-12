@@ -50,7 +50,7 @@ class EventsModule extends PrivateModule {
 
     public EventsModule(@Nonnull List<Configuration.EventConfig> eventConfigs, @Nullable List<Module> extensions) {
         this.eventConfigs = Preconditions.checkNotNull(eventConfigs, "Event configs shouldn't be null");
-        this.extensionsMap = InstanceOfMap.<Module>builder().fromList(extensions);
+        this.extensionsMap = (null == extensions) ? InstanceOfMap.<Module>empty() : InstanceOfMap.<Module>builder().fromList(extensions);
     }
 
     @Override
