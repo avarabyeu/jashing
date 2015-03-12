@@ -3,6 +3,7 @@ package com.github.avarabyeu.jashing.core.eventsource;
 import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.AbstractIdleService;
 
 import javax.inject.Inject;
@@ -10,7 +11,7 @@ import javax.inject.Inject;
 /**
  * @author Andrei Varabyeu
  */
-abstract class SimpleEventSource<T extends JashingEvent> extends AbstractIdleService implements EventSource<T> {
+abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService implements EventSource<T> {
 
 
     /**
