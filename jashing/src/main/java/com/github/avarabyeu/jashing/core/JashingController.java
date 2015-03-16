@@ -41,7 +41,8 @@ class JashingController implements SparkApplication {
     public void init() {
 
         /**
-         * Doesn't works correctly in container-mode for binary data due to https://github.com/perwendel/spark/pull/235
+         * Doesn't works correctly in {@link com.github.avarabyeu.jashing.core.Jashing.Mode#CONTAINER} mode
+         * for binary data due to <a href="https://github.com/perwendel/spark/pull/235">spark issue</>
          */
         staticFileLocation("/statics");
 

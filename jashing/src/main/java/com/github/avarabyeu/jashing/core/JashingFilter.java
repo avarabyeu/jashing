@@ -23,7 +23,7 @@ abstract public class JashingFilter extends SparkFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Jashing jashing = Jashing.newOne().registerModule(getModules()).build(Jashing.Mode.CONTAINER);
+        Jashing jashing = Jashing.builder().registerModule(getModules()).build(Jashing.Mode.CONTAINER);
         jashing.bootstrap();
         this.jashing = jashing;
 

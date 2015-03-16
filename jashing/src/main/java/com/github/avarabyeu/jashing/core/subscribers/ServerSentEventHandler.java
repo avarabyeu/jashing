@@ -42,7 +42,7 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
         this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
     }
 
-    public synchronized void handle(Request request, Response response) throws IOException {
+    public void handle(Request request, Response response) throws IOException {
         response.header("Cache-Control", "no-cache");
         response.header("Connection", "keep-alive");
         response.type("text/event-stream;charset=UTF-8");

@@ -91,14 +91,14 @@ public class Jashing {
      *
      * @return Builder of Jashing instance
      */
-    public static Builder newOne() {
+    public static Builder builder() {
         return new Builder();
     }
 
 
     public static void main(String... args) throws InterruptedException, IOException {
         try {
-            Jashing.newOne().build(Mode.EMBEDDED).bootstrap();
+            Jashing.builder().build(Mode.EMBEDDED).bootstrap();
         } catch (Exception e) {
             LOGGER.error("Jashing can't started", e);
         }
