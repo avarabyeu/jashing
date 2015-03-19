@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.integration.vcs;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.ListEvent;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *
  * @author Andrey Vorobyov
  */
-@HandlesEvent(value = Events.LIST, explicitConfiguration = AbstractVcsModule.class)
+@EventSource(value = Events.LIST, explicitConfiguration = AbstractVcsModule.class)
 public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<Integer>> {
 
     private static final Comparator<ListEvent.Item<Integer>> ITEM_COMPARATOR = ((item1, item2) -> item1.getValue().compareTo(item2.getValue()));

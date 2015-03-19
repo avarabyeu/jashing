@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.integration.jenkins;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent(value = Events.METER, explicitConfiguration = JenkinsModule.class)
+@EventSource(value = Events.METER, explicitConfiguration = JenkinsModule.class)
 public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEvent> {
 
     @Inject

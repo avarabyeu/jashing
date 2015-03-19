@@ -1,12 +1,12 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
+import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
@@ -37,9 +37,6 @@ class EventsModule extends PrivateModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventsModule.class);
 
-    private static final TypeLiteral<EventSource<?>> EVENT_SOURCE_TYPE = new TypeLiteral<EventSource<?>>() {
-    };
-
 
     private final List<Configuration.EventConfig> eventConfigs;
 
@@ -57,15 +54,15 @@ class EventsModule extends PrivateModule {
     @Override
     protected void configure() {
         try {
-            Map<String, List<Class<? extends EventSource<?>>>> eventHandlers = mapEventHandlers();
+            Map<String, List<Class<? extends Service>>> eventHandlers = mapEventHandlers();
 
-            final Multibinder<EventSource<?>> eventSourceMultibinder = Multibinder.newSetBinder(binder(), EVENT_SOURCE_TYPE);
+            final Multibinder<Service> eventSourceMultibinder = Multibinder.newSetBinder(binder(), Service.class);
 
             for (Configuration.EventConfig event : eventConfigs) {
                 if (!eventHandlers.containsKey(event.getType())) {
                     binder().addError("Unable to find handler for event with type '%s'", event.getType());
                 } else {
-                    List<Class<? extends EventSource<?>>> handlerClasses = eventHandlers.get(event.getType());
+                    List<Class<? extends Service>> handlerClasses = eventHandlers.get(event.getType());
                     if (handlerClasses.isEmpty()) {
                         addError("Event Handler for event with type '%s' not found", event.getType());
                     } else {
@@ -85,7 +82,7 @@ class EventsModule extends PrivateModule {
     @Provides
     @Singleton
     @Exposed
-    public ServiceManager serviceManager(Set<EventSource<?>> eventSources) {
+    public ServiceManager serviceManager(Set<Service> eventSources) {
         ServiceManager serviceManager = new ServiceManager(eventSources);
         serviceManager.addListener(new ServiceManager.Listener() {
             @Override
@@ -110,14 +107,14 @@ class EventsModule extends PrivateModule {
      */
     @SuppressWarnings("unchecked")
     @VisibleForTesting
-    Map<String, List<Class<? extends EventSource<?>>>> mapEventHandlers() throws IOException {
+    Map<String, List<Class<? extends Service>>> mapEventHandlers() throws IOException {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
         LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
-        Map<String, List<Class<? extends EventSource<?>>>> collected = classes.parallelStream()
+        Map<String, List<Class<? extends Service>>> collected = classes.parallelStream()
                 /* loads class infos */
                 .map(classInfo -> {
                     try {
@@ -129,11 +126,11 @@ class EventsModule extends PrivateModule {
                 })
                 /* filters classes which is present and marked with HandlesEvent annotation */
                 .filter(((Predicate<Optional<Class<?>>>) Optional::isPresent)
-                        .and(classOptional -> classOptional.get().isAnnotationPresent(HandlesEvent.class))
-                        .and(classOptional -> EventSource.class.isAssignableFrom(classOptional.get())))
+                        .and(classOptional -> classOptional.get().isAnnotationPresent(EventSource.class))
+                        .and(classOptional -> Service.class.isAssignableFrom(classOptional.get())))
                 /* transforms from Optional<Class> to Class (obtaining values from Optionals) */
-                .map(optional -> (Class<? extends EventSource<?>>) optional.get())
-                .collect(Collectors.groupingBy(clazz -> clazz.getAnnotation(HandlesEvent.class).value(), Collectors.toList()));
+                .map(optional -> (Class<? extends Service>) optional.get())
+                .collect(Collectors.groupingBy(clazz -> clazz.getAnnotation(EventSource.class).value(), Collectors.toList()));
 
         LOGGER.info("Found {} event handlers", collected.size());
         return collected;
@@ -147,11 +144,11 @@ class EventsModule extends PrivateModule {
 
         private Configuration.EventConfig event;
 
-        private Multibinder<EventSource<?>> multibinder;
+        private Multibinder<Service> multibinder;
 
-        private Class<? extends EventSource<?>> eventSourceClass;
+        private Class<? extends Service> eventSourceClass;
 
-        public EventSourcePrivateModule(Configuration.EventConfig event, Multibinder<EventSource<?>> multibinder, Class<? extends EventSource<?>> eventSourceClass) {
+        public EventSourcePrivateModule(Configuration.EventConfig event, Multibinder<Service> multibinder, Class<? extends Service> eventSourceClass) {
             this.event = event;
             this.multibinder = multibinder;
             this.eventSourceClass = eventSourceClass;
@@ -165,7 +162,7 @@ class EventsModule extends PrivateModule {
             binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
             binder().bind(String.class).annotatedWith(EventId.class).toInstance(event.getId());
 
-            Key<EventSource<?>> eventSourceKey = Key.get(EVENT_SOURCE_TYPE, Names.named(event.getId()));
+            Key<Service> eventSourceKey = Key.get(Service.class, Names.named(event.getId()));
             binder().bind(eventSourceKey).to(eventSourceClass);
 
             expose(eventSourceKey);
@@ -178,9 +175,9 @@ class EventsModule extends PrivateModule {
             }
 
             /* each event handler may have own explicit guice configuration. Install it if so */
-            if (!HandlesEvent.NOP.class.equals(eventSourceClass.getAnnotation(HandlesEvent.class).explicitConfiguration())) {
+            if (!EventSource.NOP.class.equals(eventSourceClass.getAnnotation(EventSource.class).explicitConfiguration())) {
                 LOGGER.info("       Registering extension module for event source [{}]", eventSourceClass.getSimpleName());
-                Class<? extends Module> extensionModuleClass = eventSourceClass.getAnnotation(HandlesEvent.class).explicitConfiguration();
+                Class<? extends Module> extensionModuleClass = eventSourceClass.getAnnotation(EventSource.class).explicitConfiguration();
                 Module extensionModule = extensionsMap.getInstanceOf(extensionModuleClass);
                 if (null != extensionModule) {
                     install(extensionModule);

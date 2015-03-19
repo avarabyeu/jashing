@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author avarabyeu
  */
-public abstract class ScheduledEventSource<T extends JashingEvent> extends AbstractScheduledService implements EventSource<T> {
+public abstract class ScheduledEventSource<T extends JashingEvent> extends AbstractScheduledService {
 
 
     /**
@@ -52,8 +52,7 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     }
 
 
-    @Override
-    public final void sendEvent(T t) {
+    protected final void sendEvent(T t) {
         if (null != t) {
             t.setId(eventId);
             this.eventBus.post(t);

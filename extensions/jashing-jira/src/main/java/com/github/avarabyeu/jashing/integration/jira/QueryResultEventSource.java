@@ -1,15 +1,13 @@
 package com.github.avarabyeu.jashing.integration.jira;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.ListEvent;
-
-import javax.inject.Inject;
 
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent(value = "jira", explicitConfiguration = JiraModule.class)
+@EventSource(value = "jira", explicitConfiguration = JiraModule.class)
 public class QueryResultEventSource extends ScheduledEventSource<ListEvent<String>> {
 
     //@Inject

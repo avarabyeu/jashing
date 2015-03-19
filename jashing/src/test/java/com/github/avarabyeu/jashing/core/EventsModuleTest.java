@@ -1,6 +1,5 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.eventsource.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.TestEventSource;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
@@ -11,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,9 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Andrei Varabyeu
@@ -50,8 +46,8 @@ public class EventsModuleTest {
 
     @Test
     public void testMapEventHandlers() throws IOException {
-        Map<String, List<Class<? extends EventSource<?>>>> eventHandlersMap = eventsModule.mapEventHandlers();
-        List<Class<? extends EventSource<?>>> testEventHandlers = eventHandlersMap.get("test");
+        Map<String, List<Class<? extends Service>>> eventHandlersMap = eventsModule.mapEventHandlers();
+        List<Class<? extends Service>> testEventHandlers = eventHandlersMap.get("test");
         Assert.assertThat(testEventHandlers, not(empty()));
         System.out.println(testEventHandlers);
     }

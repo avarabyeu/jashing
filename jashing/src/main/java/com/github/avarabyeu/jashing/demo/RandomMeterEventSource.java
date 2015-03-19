@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.demo;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.MeterEvent;
@@ -10,7 +10,7 @@ import java.util.Random;
 /**
  * @author avarabyeu
  */
-@HandlesEvent(Events.METER)
+@EventSource(Events.METER)
 public class RandomMeterEventSource extends ScheduledEventSource<MeterEvent> {
 
     private final Random r = new Random();

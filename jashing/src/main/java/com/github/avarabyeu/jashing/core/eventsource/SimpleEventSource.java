@@ -4,14 +4,13 @@ import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.google.common.util.concurrent.AbstractIdleService;
 
 import javax.inject.Inject;
 
 /**
  * @author Andrei Varabyeu
  */
-abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService implements EventSource<T> {
+abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService {
 
 
     /**
@@ -27,8 +26,7 @@ abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecuti
     @Inject
     private String eventId;
 
-    @Override
-    public final void sendEvent(T t) {
+    protected final void sendEvent(T t) {
         if (null != t) {
             t.setId(eventId);
             this.eventBus.post(t);
@@ -44,6 +42,7 @@ abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecuti
     protected void shutDown() throws Exception {
         /* no any lifecycle-related logic */
     }
+
     protected abstract T produceEvent();
 
     @Override

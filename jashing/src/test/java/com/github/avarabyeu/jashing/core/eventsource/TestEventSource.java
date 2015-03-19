@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.core.eventsource;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.JashingEvent;
 import com.google.inject.Inject;
 
@@ -9,7 +9,7 @@ import javax.inject.Named;
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent("test")
+@EventSource("test")
 public class TestEventSource extends ScheduledEventSource<JashingEvent> {
 
     @Inject

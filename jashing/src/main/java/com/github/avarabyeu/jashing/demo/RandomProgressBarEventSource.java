@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.demo;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.ProgressBarEvent;
@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent(Events.PROGRESS_BAR)
+@EventSource(Events.PROGRESS_BAR)
 public class RandomProgressBarEventSource extends ScheduledEventSource<ProgressBarEvent> {
 
     private static final Random RANDOM = new Random();

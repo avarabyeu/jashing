@@ -1,6 +1,6 @@
 package com.github.avarabyeu.jashing.demo;
 
-import com.github.avarabyeu.jashing.core.HandlesEvent;
+import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.GraphEvent;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Andrei Varabyeu
  */
-@HandlesEvent(Events.GRAPH)
+@EventSource(Events.GRAPH)
 public class RandomGraphEventSource extends ScheduledEventSource<GraphEvent> {
 
     private Random random = new Random();
