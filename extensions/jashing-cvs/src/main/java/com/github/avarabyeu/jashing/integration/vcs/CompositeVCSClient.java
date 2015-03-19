@@ -44,11 +44,7 @@ public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
-        int count = 0;
-        for (VCSClient delegate : delegates) {
-            count += delegate.getCommitsForPeriod(from, to);
-        }
-        return count;
+        return delegates.parallelStream().mapToLong(delegate -> delegate.getCommitsForPeriod(from, to)).sum();
     }
 
 }

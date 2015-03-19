@@ -22,6 +22,8 @@ import java.util.Set;
  */
 public abstract class AbstractVcsModule extends AbstractModule {
 
+    public static final String VCS_CONFIG_JSON = "vcs-config.json";
+
     @Override
     protected void configure() {
         Multibinder<VCSClient> multibinder = Multibinder.newSetBinder(binder(), VCSClient.class);
