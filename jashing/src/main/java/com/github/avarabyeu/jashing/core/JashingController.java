@@ -61,7 +61,7 @@ class JashingController implements SparkApplication {
         get("/events", (request, response) ->
                 {
                     try {
-                        serverSentEventHandler.get().handle(request, response);
+                        serverSentEventHandler.get().handle(request.raw().startAsync());
                     } catch (IOException e) {
                         return null;
                     }
