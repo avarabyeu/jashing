@@ -2,6 +2,7 @@ package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.google.common.base.Joiner;
 import com.google.common.reflect.ClassPath;
+import com.google.common.util.concurrent.Service;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class ClasspathScannerTest {
         for (ClassPath.ClassInfo classInfo : classes) {
 
             Class<?> clazz = classInfo.load();
-            if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()) && EventSource.class.isAssignableFrom(clazz)) {
+            if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()) && Service.class.isAssignableFrom(clazz)) {
                 eventSourceCandidates.add(clazz);
             }
 
