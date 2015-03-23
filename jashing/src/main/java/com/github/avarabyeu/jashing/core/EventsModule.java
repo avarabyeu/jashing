@@ -2,6 +2,7 @@ package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
+import com.github.avarabyeu.jashing.utils.GuiceUtils;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -10,6 +11,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 import org.slf4j.Logger;
@@ -199,7 +201,8 @@ class EventsModule extends PrivateModule {
         @SuppressWarnings("unchecked")
         private <T> void bindProperty(String key, T value) {
             TypeLiteral<T> type = TypeLiteral.get((Class<T>) value.getClass());
-            bind(type).annotatedWith(Names.named(key)).toInstance(value);
+            /* make possible to use Optional<T> injections */
+            OptionalBinder.newOptionalBinder(binder(), Key.get(type, Names.named(key))).setBinding().toInstance(value);
         }
 
         private void validateEvent() {
