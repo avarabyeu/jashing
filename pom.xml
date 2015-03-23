@@ -26,6 +26,7 @@
         <module>extensions/jashing-git</module>
         <module>extensions/jashing-jenkins</module>
         <module>extensions/jashing-jira</module>
+        <module>extensions/jashing-github</module>
     </modules>
 
     <properties>
