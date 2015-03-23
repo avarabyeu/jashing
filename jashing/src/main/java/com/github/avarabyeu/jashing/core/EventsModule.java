@@ -2,7 +2,6 @@ package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
-import com.github.avarabyeu.jashing.utils.GuiceUtils;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
