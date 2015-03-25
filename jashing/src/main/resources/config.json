@@ -5,36 +5,23 @@
   "events": [
     {
       "id": "synergy",
-      "type": "meter",
+      "source": "random-meter-source",
       "frequency": 3
     },
     {
       "id": "valuation",
-      "type": "number",
+      "source": "random-number-event-source",
       "frequency": 3
     },
     {
       "id": "convergence",
-      "type": "graph",
+      "source": "random-graph-event-source",
       "frequency": 5
     },
     {
       "id": "progress_bars",
-      "type": "progress-bars",
+      "source": "random-progress-bar-source",
       "frequency": 5
-    },
-    {
-      "id": "vcsTopCommiters",
-      "type": "list",
-      "frequency": 5,
-      "properties": {
-        "forPeriod": 7
-      }
-    },
-    {
-      "id": "vcsCommitsProgress",
-      "type": "vcsCommitsProgress",
-      "frequency": 7
     }
   ]
 }

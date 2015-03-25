@@ -15,10 +15,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author Andrei Varabyeu
@@ -46,9 +46,9 @@ public class EventsModuleTest {
 
     @Test
     public void testMapEventHandlers() throws IOException {
-        Map<String, List<Class<? extends Service>>> eventHandlersMap = eventsModule.mapEventHandlers();
-        List<Class<? extends Service>> testEventHandlers = eventHandlersMap.get("test");
-        Assert.assertThat(testEventHandlers, not(empty()));
+        Map<String, Class<? extends Service>> eventHandlersMap = eventsModule.mapEventSources();
+        Class<? extends Service> testEventHandlers = eventHandlersMap.get("test");
+        Assert.assertThat(testEventHandlers, notNullValue());
         System.out.println(testEventHandlers);
     }
 

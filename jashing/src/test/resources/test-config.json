@@ -2,7 +2,7 @@
     "events": [
         {
             "id": "test",
-            "type": "test",
+            "source": "test",
             "frequency": 100,
             "properties": {
                 "propertyString": "first",
@@ -11,7 +11,7 @@
         },
         {
             "id": "test2",
-            "type": "test",
+            "source": "test",
             "frequency": 200,
             "properties": {
                 "propertyString": "second",

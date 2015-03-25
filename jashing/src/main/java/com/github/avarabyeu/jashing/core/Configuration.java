@@ -39,7 +39,7 @@ public class Configuration {
 
     public static class EventConfig {
         private String id;
-        private String type;
+        private String source;
         private long frequency;
 
         /**
@@ -56,12 +56,13 @@ public class Configuration {
             this.id = id;
         }
 
-        public String getType() {
-            return type;
+
+        public String getSource() {
+            return source;
         }
 
-        public void setType(String type) {
-            this.type = type;
+        public void setSource(String source) {
+            this.source = source;
         }
 
         public long getFrequency() {

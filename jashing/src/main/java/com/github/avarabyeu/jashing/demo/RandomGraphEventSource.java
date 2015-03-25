@@ -2,7 +2,6 @@ package com.github.avarabyeu.jashing.demo;
 
 import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.GraphEvent;
 import com.google.common.collect.EvictingQueue;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Andrei Varabyeu
  */
-@EventSource(Events.GRAPH)
+@EventSource("random-graph-event-source")
 public class RandomGraphEventSource extends ScheduledEventSource<GraphEvent> {
 
     private Random random = new Random();

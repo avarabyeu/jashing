@@ -2,7 +2,6 @@ package com.github.avarabyeu.jashing.integration.vcs;
 
 import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.NumberEvent;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -16,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Andrey Vorobyov
  */
-@EventSource(value = Events.VCS_COMMITS_PROGRESS, explicitConfiguration = AbstractVcsModule.class)
+@EventSource(value = "vcs-commits-progress-source", explicitConfiguration = AbstractVcsModule.class)
 public class VCSCommitsProgressEventSource extends ScheduledEventSource<NumberEvent> {
 
     @Inject

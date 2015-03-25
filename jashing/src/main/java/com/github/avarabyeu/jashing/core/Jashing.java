@@ -201,6 +201,8 @@ public class Jashing {
                 /* bootstrap event sources* */
                 ServiceManager eventSources = injector.getInstance(ServiceManager.class);
                 eventSources.startAsync();
+
+                injector.getInstance(JashingWebbitController.class).startAsync();
             }
 
             /**

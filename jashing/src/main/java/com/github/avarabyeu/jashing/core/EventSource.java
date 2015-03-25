@@ -19,7 +19,7 @@ public @interface EventSource {
     interface NOP extends Module {}
 
     /**
-     * Event type name
+     * Event source name
      */
     String value();
 

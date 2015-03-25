@@ -28,7 +28,6 @@ class JashingServer extends AbstractIdleService {
         }
         controller.init();
 
-
     }
 
 

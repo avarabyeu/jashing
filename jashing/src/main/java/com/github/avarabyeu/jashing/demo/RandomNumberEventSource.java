@@ -2,7 +2,6 @@ package com.github.avarabyeu.jashing.demo;
 
 import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
-import com.github.avarabyeu.jashing.events.Events;
 import com.github.avarabyeu.jashing.events.NumberEvent;
 
 import java.util.Random;
@@ -10,7 +9,7 @@ import java.util.Random;
 /**
  * @author Andrei Varabyeu
  */
-@EventSource(Events.NUMBER)
+@EventSource("random-number-event-source")
 public class RandomNumberEventSource extends ScheduledEventSource<NumberEvent> {
 
     private final Random r = new Random();

@@ -52,8 +52,6 @@ public class GithubModule extends AbstractModule {
 
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
-
-        //@Named("github.api.url") String githubApiUrl, @Named("github.oauth.token") String oauthToken
         return RestEndpoints.create()
                 .withHttpClient(httpClient)
                 .withBaseUrl(githubApiUrl.or(GITHUB_API_URL_DEFAULT))

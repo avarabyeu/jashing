@@ -72,9 +72,6 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
             return new InstanceOfMap<>(map);
         }
 
-        private static <B, X extends B> X cast(Class<X> type, B value) {
-            return Primitives.wrap(type).cast(value);
-        }
     }
 
 }

@@ -4,6 +4,7 @@ import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import com.google.common.util.concurrent.Service;
@@ -55,23 +56,16 @@ class EventsModule extends PrivateModule {
     @Override
     protected void configure() {
         try {
-            Map<String, List<Class<? extends Service>>> eventHandlers = mapEventHandlers();
+            Map<String, Class<? extends Service>> eventSources = mapEventSources();
 
             final Multibinder<Service> eventSourceMultibinder = Multibinder.newSetBinder(binder(), Service.class);
 
             for (Configuration.EventConfig event : eventConfigs) {
-                if (!eventHandlers.containsKey(event.getType())) {
-                    binder().addError("Unable to find handler for event with type '%s'", event.getType());
+                if (!eventSources.containsKey(event.getSource())) {
+                    binder().addError("Unable to find event source with name '%s'. Available sources: \n%s", event.getSource(), Joiner.on('\n').join(eventSources.keySet()));
                 } else {
-                    List<Class<? extends Service>> handlerClasses = eventHandlers.get(event.getType());
-                    if (handlerClasses.isEmpty()) {
-                        addError("Event Handler for event with type '%s' not found", event.getType());
-                    } else {
-                        if (handlerClasses.size() > 1) {
-                            LOGGER.warn("Event with type '%' bound more than to one event handler. Using first one...", event.getType());
-                        }
-                        install(new EventSourcePrivateModule(event, eventSourceMultibinder, handlerClasses.get(0)));
-                    }
+                    install(new EventSourcePrivateModule(event, eventSourceMultibinder, eventSources.get(event.getSource())));
+
                 }
             }
 
@@ -101,21 +95,21 @@ class EventsModule extends PrivateModule {
 
 
     /**
-     * Scans whole application classpath and finds events handlers
+     * Scans whole application classpath and finds events sources
      *
-     * @return 'event name' -> 'list of handlers classes' map
+     * @return 'event source name' -> 'event handler class' map
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
     @VisibleForTesting
-    Map<String, List<Class<? extends Service>>> mapEventHandlers() throws IOException {
+    Map<String, Class<? extends Service>> mapEventSources() throws IOException {
 
         /** Obtains all classpath's top level classes */
         Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
         LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
-        Map<String, List<Class<? extends Service>>> collected = classes.parallelStream()
+        Map<String, Class<? extends Service>> collected = classes.parallelStream()
                 /* loads class infos */
                 .map(classInfo -> {
                     try {
@@ -131,7 +125,7 @@ class EventsModule extends PrivateModule {
                         .and(classOptional -> Service.class.isAssignableFrom(classOptional.get())))
                 /* transforms from Optional<Class> to Class (obtaining values from Optionals) */
                 .map(optional -> (Class<? extends Service>) optional.get())
-                .collect(Collectors.groupingBy(clazz -> clazz.getAnnotation(EventSource.class).value(), Collectors.toList()));
+                .collect(Collectors.toMap(clazz -> clazz.getAnnotation(EventSource.class).value(), clazz -> clazz));
 
         LOGGER.info("Found {} event handlers", collected.size());
         return collected;
@@ -206,11 +200,11 @@ class EventsModule extends PrivateModule {
 
         private void validateEvent() {
             if (event.getFrequency() <= 0) {
-                binder().addError("Frequency of event with type '%s' is not specified", event.getType());
+                binder().addError("Frequency of event with ID '%s' is not specified", event.getId());
             }
 
             if (null == event.getId()) {
-                binder().addError("ID of event with type '%s' is not specified", event.getType());
+                binder().addError("ID of event with ID '%s' is not specified", event.getId());
             }
         }
     }

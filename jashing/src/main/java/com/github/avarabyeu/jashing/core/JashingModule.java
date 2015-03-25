@@ -63,8 +63,6 @@ class JashingModule extends AbstractModule {
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
         Map<String, String> globalProperties = configuration.getProperties();
-        bind(new TypeLiteral<Map<String, String>>() {
-        }).annotatedWith(GlobalProperties.class).toInstance(globalProperties);
         globalProperties.entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
         
 
@@ -73,12 +71,14 @@ class JashingModule extends AbstractModule {
 
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
 
+        binder().bind(JashingWebbitController.class).in(Scopes.SINGLETON);
+
     }
 
 
     @Provides
     @Singleton
-    public JashingServer jashingServer(EventBus eventBus, JashingController jashingController) {
+    public JashingServer jashingServer(JashingController jashingController) {
         JashingServer jashing = new JashingServer(port, jashingController);
         jashing.addListener(new Service.Listener() {
             @Override
