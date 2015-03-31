@@ -1,0 +1,17 @@
+{
+  "gits": [
+    {
+      "name": "restendpoint",
+      "repoName": "restendpoint",
+      "url": "git@github.com:avarabyeu/restendpoint.git"
+    }
+  ],
+  "svns": [
+    {
+      "name": "casino",
+      "url": "XXXXX",
+      "user": "XXXXX",
+      "password": "XXXX"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "logPeriod": 3
+  },
+  "events": [
+    {
+      "id": "synergy",
+      "type": "meter",
+      "frequency": 3
+    },
+    {
+      "id": "valuation",
+      "type": "number",
+      "frequency": 3
+    },
+    {
+      "id": "convergence",
+      "type": "graph",
+      "frequency": 5
+    },
+    {
+      "id": "progress_bars",
+      "type": "progress-bars",
+      "frequency": 5
+    },
+    {
+      "id": "testtest",
+      "type": "jira",
+      "frequency": 5,
+      "properties" : {
+        "jira.url" : "http://localhost:",
+        "jira.user.login": "",
+        "jira.user.password" : "",
+        "jql" : ""
+      }
+    }
+  ]
+}
