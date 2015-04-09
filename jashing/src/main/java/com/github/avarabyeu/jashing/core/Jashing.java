@@ -171,7 +171,7 @@ public class Jashing {
      * Specifies mode Jashing running in
      * May be container (when Jashing is deployed into Servlet Container) or embedded (Jashing starts embedded container)
      */
-    static enum Mode {
+    enum Mode {
         EMBEDDED {
             /**
              * In embedded mode we need to start separate embedded server
@@ -181,8 +181,9 @@ public class Jashing {
                 CONTAINER.bootstrap(injector);
 
                 /* bootstrap server */
-                Service application = injector.getInstance(JashingServer.class);
-                application.startAsync();
+//                Service application = injector.getInstance(JashingServer.class);
+//                application.startAsync();
+                injector.getInstance(JashingWebbitServer.class).startAsync();
 
             }
 
@@ -201,8 +202,6 @@ public class Jashing {
                 /* bootstrap event sources* */
                 ServiceManager eventSources = injector.getInstance(ServiceManager.class);
                 eventSources.startAsync();
-
-                injector.getInstance(JashingWebbitController.class).startAsync();
             }
 
             /**

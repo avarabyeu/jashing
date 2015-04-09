@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 import com.google.inject.*;
+import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.name.Names;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ import java.util.Map;
  * @author avarabyeu
  */
 class JashingModule extends AbstractModule {
+
+    private static final Integer DEFAULT_PORT = 8181;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JashingModule.class);
 
@@ -64,6 +67,12 @@ class JashingModule extends AbstractModule {
         Configuration configuration = provideConfiguration(gson);
         Map<String, String> globalProperties = configuration.getProperties();
         globalProperties.entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
+
+        OptionalBinder<Integer> serverPort = OptionalBinder.newOptionalBinder(binder(), Key.get(Integer.class, Names.named("serverPort")));
+        serverPort.setDefault().toInstance(DEFAULT_PORT);
+        if (null!= this.port){
+            serverPort.setBinding().toInstance(this.port);
+        }
         
 
         /* install module with events configuration */
@@ -71,7 +80,7 @@ class JashingModule extends AbstractModule {
 
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
 
-        binder().bind(JashingWebbitController.class).in(Scopes.SINGLETON);
+        binder().bind(JashingWebbitServer.class).in(Scopes.SINGLETON);
 
     }
 

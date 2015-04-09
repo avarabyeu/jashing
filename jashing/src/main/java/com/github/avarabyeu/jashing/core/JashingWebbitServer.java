@@ -1,51 +1,62 @@
 package com.github.avarabyeu.jashing.core;
 
 import com.github.avarabyeu.jashing.utils.StringUtils;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractIdleService;
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import freemarker.cache.ClassTemplateLoader;
 import org.webbitserver.*;
 import org.webbitserver.handler.EmbeddedResourceHandler;
 import org.webbitserver.rest.Rest;
+import org.webbitserver.wrapper.EventSourceConnectionWrapper;
 
-import javax.annotation.Nonnull;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
- * Created by andrey.vorobyov on 3/16/15.
+ * WS controller based on Webbit server
+ *
+ * @author Andrei Varabyeu
  */
-public class JashingWebbitController extends AbstractIdleService {
+public class JashingWebbitServer extends AbstractIdleService {
+
+    @Inject
+    private EventBus eventBus;
+
+    /* optional timeout for sending updates for each client */
+    @Named("timeout")
+    @Inject(optional = true)
+    private Long timeout;
+
+    @Named("serverPort")
+    @Inject
+    private Integer serverPort;
+
+    private freemarker.template.Configuration conf;
 
     private ServerSentEventHandler serverSentEventHandler;
 
-    private final freemarker.template.Configuration conf;
-
     private WebServer webServer;
-
-    private EventBus eventBus;
-
-
-    @Inject
-    public JashingWebbitController(@Nonnull EventBus eventBus) {
-        this.eventBus = eventBus;
-
-        conf = new freemarker.template.Configuration();
-        conf.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
-    }
 
 
     @Override
     protected void startUp() throws Exception {
-        serverSentEventHandler = new ServerSentEventHandler(new Gson());
+        conf = new freemarker.template.Configuration();
+        conf.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
 
-        WebServer webServer = WebServers.createWebServer(8383)
+        serverSentEventHandler = new ServerSentEventHandler(new Gson(), Optional.fromNullable(timeout));
+
+        WebServer webServer = WebServers.createWebServer(serverPort)
                 .add(new EmbeddedResourceHandler("statics")) // path to web content
                 .add("/events", serverSentEventHandler);
 
@@ -89,18 +100,22 @@ public class JashingWebbitController extends AbstractIdleService {
     public static class ServerSentEventHandler implements EventSourceHandler {
 
         private final Gson serializer;
+        private final Optional<Long> timeout;
         private List<EventSourceConnection> connections;
+        private Executor executor;
 
-        @Inject
-        public ServerSentEventHandler(Gson serializer) {
+
+        public ServerSentEventHandler(Gson serializer, Optional<Long> timeout) {
             this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
             this.connections = new ArrayList<>();
+            this.timeout = timeout;
+            this.executor = Executors.newCachedThreadPool();
         }
 
 
         @Override
         public void onOpen(EventSourceConnection connection) throws Exception {
-            this.connections.add(connection);
+            this.connections.add(timeout.isPresent() ? new LimitedConnection(connection, timeout.get()) : connection);
         }
 
         @Override
@@ -110,12 +125,26 @@ public class JashingWebbitController extends AbstractIdleService {
 
         @Subscribe
         public void onEvent(JashingEvent event) {
-            connections.forEach(connection -> connection.send(new EventSourceMessage().data(serializer.toJson(event))));
+            connections.forEach(connection -> executor.execute(() -> connection.send(new EventSourceMessage().data(serializer.toJson(event)))));
         }
 
         @Subscribe
         public void onShutdown(ShutdownEvent shutdownEvent) {
             connections.forEach(EventSourceConnection::close);
+        }
+    }
+
+    public static class LimitedConnection extends EventSourceConnectionWrapper {
+        private final RateLimiter limiter;
+
+        public LimitedConnection(EventSourceConnection connection, Long timeout) {
+            super(connection);
+            this.limiter = RateLimiter.create((double) 1 / timeout);
+        }
+
+        public EventSourceConnectionWrapper send(EventSourceMessage event) {
+            limiter.acquire();
+            return super.send(event);
         }
     }
 }
