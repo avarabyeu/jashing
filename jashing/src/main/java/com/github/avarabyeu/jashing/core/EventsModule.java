@@ -64,6 +64,7 @@ class EventsModule extends PrivateModule {
             for (Configuration.EventConfig event : eventConfigs) {
                 if (Strings.isNullOrEmpty(event.getSource())){
                     binder().addError("Event source is not specified for event with id '%s'", event.getId());
+                    continue;
                 }
 
                 if (!eventSources.containsKey(event.getSource())) {
