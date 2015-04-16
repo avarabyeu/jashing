@@ -6,6 +6,7 @@ import com.github.avarabyeu.jashing.utils.InstanceOfMap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.reflect.ClassPath;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
@@ -61,6 +62,10 @@ class EventsModule extends PrivateModule {
             final Multibinder<Service> eventSourceMultibinder = Multibinder.newSetBinder(binder(), Service.class);
 
             for (Configuration.EventConfig event : eventConfigs) {
+                if (Strings.isNullOrEmpty(event.getSource())){
+                    binder().addError("Event source is not specified for event with id '%s'", event.getId());
+                }
+
                 if (!eventSources.containsKey(event.getSource())) {
                     binder().addError("Unable to find event source with name '%s'. Available sources: \n%s", event.getSource(), Joiner.on('\n').join(eventSources.keySet()));
                 } else {
