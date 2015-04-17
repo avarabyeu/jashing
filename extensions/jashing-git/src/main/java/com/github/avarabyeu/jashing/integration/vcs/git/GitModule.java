@@ -14,10 +14,11 @@ import java.util.stream.Collectors;
  * @author Andrei Varabyeu
  */
 public class GitModule extends AbstractVcsModule {
-    
+
     @Override
     protected List<VCSClient> getClients() {
         VCSConfiguration vcsConfig = loadConfiguration(new Gson());
-        return vcsConfig.getGits().stream().map(config -> new GitClient(config.getUrl(), config.getRepoName())).collect(Collectors.toList());
+        return vcsConfig.getGits().stream().map(config -> new GitClient(config.getUrl(), config.getRepoName(), config.getBranches()))
+                .collect(Collectors.toList());
     }
 }

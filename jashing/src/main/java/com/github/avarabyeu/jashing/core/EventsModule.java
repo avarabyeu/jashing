@@ -57,6 +57,9 @@ class EventsModule extends PrivateModule {
     @Override
     protected void configure() {
         try {
+
+            this.extensionsMap.values().forEach(this::install);
+
             Map<String, Class<? extends Service>> eventSources = mapEventSources();
 
             final Multibinder<Service> eventSourceMultibinder = Multibinder.newSetBinder(binder(), Service.class);
@@ -180,9 +183,11 @@ class EventsModule extends PrivateModule {
                 LOGGER.info("       Registering extension module for event source [{}]", eventSourceClass.getSimpleName());
                 Class<? extends Module> extensionModuleClass = eventSourceClass.getAnnotation(EventSource.class).explicitConfiguration();
                 Module extensionModule = extensionsMap.getInstanceOf(extensionModuleClass);
-                if (null != extensionModule) {
-                    install(extensionModule);
-                } else {
+
+                /* if extension module is not provided explicitly, let's create it in private module scope
+                 *  otherwise it should be already installed in EventsModule
+                 */
+                if (null == extensionModule) {
                     try {
                         install(extensionModuleClass.getConstructor().newInstance());
                     } catch (InvocationTargetException | InstantiationException e) {

@@ -42,6 +42,10 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
         }
     }
 
+    public Collection<T> values(){
+        return delegate.values();
+    }
+
     public static <T> Builder<T> builder() {
         return new Builder<>();
     }

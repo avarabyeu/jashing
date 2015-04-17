@@ -2,7 +2,10 @@ package com.github.avarabyeu.jashing.integration.vcs.git;
 
 import com.github.avarabyeu.jashing.integration.vcs.AbstractVCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
-import com.google.common.io.Files;
+import com.google.common.base.StandardSystemProperty;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -22,6 +25,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,35 +42,46 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private static final String HEAD_REVISION = "HEAD";
 
+    private static final Supplier<File> JASHING_TEMP_DIR = Suppliers.memoize(new Supplier<File>() {
+        @Override
+        public File get() {
+
+            File jashingTempDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + File.separator + "jashing");
+            //noinspection ResultOfMethodCallIgnored
+            jashingTempDir.mkdir();
+            return jashingTempDir;
+        }});
+
     private Git git;
-    private Repository repository;
 
-
-    public GitClient(String repositoryUrl, String repoName) {
+    public GitClient(String repositoryUrl, String repoName, Collection<String> branches) {
         try {
-            File repositoryDir = new File(Files.createTempDir(), repoName);
+            File repositoryDir = new File(JASHING_TEMP_DIR.get(), repoName);
             if (!repositoryDir.exists()) {
 
                 LOGGER.info("Cloning git repository with name {}", repoName);
-                Git.cloneRepository()
+                CloneCommand cloneCommand = Git.cloneRepository()
                         .setURI(repositoryUrl)
-                        .setDirectory(repositoryDir)
-                        .setCloneAllBranches(true)
+                        .setDirectory(repositoryDir);
+                if (null != branches && !branches.isEmpty()) {
+                    cloneCommand.setBranchesToClone(branches);
+                }
+                this.git = cloneCommand
                         .call();
+            } else {
+                // now open the created repository
+                FileRepositoryBuilder builder = new FileRepositoryBuilder();
+                Repository repository = builder.setWorkTree(repositoryDir)
+                        .readEnvironment() // scan environment GIT_* variables
+                                //.findGitDir() // scan up the file system tree
+                        .setMustExist(true)
+                        .build();
+
+                this.git = new Git(repository);
             }
 
-            // now open the created repository
-            FileRepositoryBuilder builder = new FileRepositoryBuilder();
-            this.repository = builder.setWorkTree(repositoryDir)
-                    .readEnvironment() // scan environment GIT_* variables
-                            //.findGitDir() // scan up the file system tree
-                    .setMustExist(true)
-                    .build();
-
-            this.git = new Git(repository);
-
         } catch (GitAPIException | IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to init GIT repository", e);
         }
     }
 
@@ -110,12 +125,12 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
             revFilter = CommitTimeRevFilter.between(from.toEpochMilli(), to.toEpochMilli());
         }
 
-        RevWalk walk = new RevWalk(repository);
+        RevWalk walk = new RevWalk(git.getRepository());
 
         walk.setRevFilter(revFilter);
         walk.setRetainBody(true);
         try {
-            ObjectId head = repository.resolve(HEAD_REVISION);
+            ObjectId head = git.getRepository().resolve(HEAD_REVISION);
             walk.markStart(walk.lookupCommit(head));
             walk.sort(RevSort.COMMIT_TIME_DESC);
             walk.forEach(function::apply);
@@ -130,10 +145,10 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private synchronized void pull() {
         try {
-            LOGGER.info("Pulling updates of GIT repository [{}]", repository.getDirectory().getAbsolutePath());
+            LOGGER.info("Pulling updates of GIT repository [{}]", git.getRepository().getDirectory().getAbsolutePath());
             git.pull().call();
         } catch (GitAPIException e) {
-            LOGGER.error(MessageFormatter.format("Cannot PULL repository [{}]", repository.getDirectory().getAbsolutePath()).getMessage(), e);
+            LOGGER.error(MessageFormatter.format("Cannot PULL repository [{}]", git.getRepository().getDirectory().getAbsolutePath()).getMessage(), e);
         }
     }
 }

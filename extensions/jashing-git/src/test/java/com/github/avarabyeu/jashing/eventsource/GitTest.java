@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.empty;
@@ -27,7 +29,7 @@ public class GitTest {
     @Ignore
     public void testGit() {
         GitClient gitClient = new GitClient(
-                "git@github.com:avarabyeu/jashing.git", "jashing");
+                "git@github.com:avarabyeu/jashing.git", "jashing", Collections.singletonList("master"));
         LocalDate now = LocalDate.now();
         Instant before = now.minusMonths(12).atStartOfDay(ZoneId.systemDefault()).toInstant();
         Map<String, Integer> commitsPerUser = gitClient.

@@ -71,6 +71,7 @@ public class VCSConfiguration {
 
     public static class GitConfig extends VCSConfig {
         private String repoName;
+        private List<String> branches;
 
         public String getRepoName() {
             return repoName;
@@ -78,6 +79,14 @@ public class VCSConfiguration {
 
         public void setRepoName(String repoName) {
             this.repoName = repoName;
+        }
+
+        public List<String> getBranches() {
+            return branches;
+        }
+
+        public void setBranches(List<String> branches) {
+            this.branches = branches;
         }
     }
 }
