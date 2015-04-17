@@ -13,6 +13,9 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.CommitTimeRevFilter;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +34,8 @@ import java.util.function.Function;
  */
 public class GitClient extends AbstractVCSClient implements VCSClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
+
     private static final String HEAD_REVISION = "HEAD";
     private Git git;
 
@@ -42,6 +47,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
             File repositoryDir = new File(Files.createTempDir(), repoName);
             if (!repositoryDir.exists()) {
 
+                LOGGER.info("Cloning git repository with name {}", repoName);
                 Git.cloneRepository()
                         .setURI(repositoryUrl)
                         .setDirectory(repositoryDir)
@@ -124,10 +130,10 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private synchronized void pull() {
         try {
+            LOGGER.info("Pulling updates of GIT repository [{}]", repository.getDirectory().getAbsolutePath());
             git.pull().call();
         } catch (GitAPIException e) {
-            //TODO handle
-            e.printStackTrace();
+            LOGGER.error(MessageFormatter.format("Cannot PULL repository [{}]", repository.getDirectory().getAbsolutePath()).getMessage(), e);
         }
     }
 }
