@@ -41,7 +41,7 @@ public abstract class AbstractVcsModule extends AbstractModule {
     @Provides
     public VCSConfiguration loadConfiguration(Gson gson) {
         try {
-            URL resource = ResourceUtils.getResourceAsURL("vcs-config.json");
+            URL resource = ResourceUtils.getResourceAsURL(VCS_CONFIG_JSON);
             if (null == resource) {
                 throw new IncorrectConfigurationException("Unable to find VCS configuration");
             }

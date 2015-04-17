@@ -37,8 +37,8 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
 
     private static final String HEAD_REVISION = "HEAD";
-    private Git git;
 
+    private Git git;
     private Repository repository;
 
 
