@@ -64,7 +64,7 @@ public class JashingWebbitServer extends AbstractIdleService {
         Rest rest = new Rest(webServer);
 
         rest.GET("/", (request, response, control) -> {
-            Rest.redirect(response, "/sample");
+            rest.redirect(response, "/sample");
         });
 
 
@@ -72,8 +72,8 @@ public class JashingWebbitServer extends AbstractIdleService {
          * Opens widget
          */
         rest.GET("/views/{widget}", (request, response, control) -> {
-            String widget = Rest.param(request, "widget");
-            Rest.redirect(response, "/widgets/" + StringUtils.substringBefore(widget, ".html") + "/" + widget);
+            String widget = Rest.stringParam(request, "widget");
+            rest.redirect(response, "/widgets/" + StringUtils.substringBefore(widget, ".html") + "/" + widget);
         });
 
         /**
@@ -81,7 +81,7 @@ public class JashingWebbitServer extends AbstractIdleService {
          */
         rest.GET("/{dashboard}", (request, response, control) -> {
             StringWriter writer = new StringWriter();
-            conf.getTemplate("/views/dashboards/" + Rest.param(request, "dashboard") + ".ftl.html").process(Collections.EMPTY_MAP, writer);
+            conf.getTemplate("/views/dashboards/" + Rest.stringParam(request, "dashboard") + ".ftl.html").process(Collections.EMPTY_MAP, writer);
             response.content(writer.toString()).status(200).end();
         });
 
