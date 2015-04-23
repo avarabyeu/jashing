@@ -6,6 +6,7 @@ import com.github.avarabyeu.jashing.events.ListEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
@@ -34,7 +35,7 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
 
     @Override
     protected ListEvent<Integer> produceEvent() {
-        LocalDateTime fromDateTime = LocalDateTime.now().minusDays(daysBefore.longValue());
+        LocalDateTime fromDateTime = LocalDate.now().minusDays(daysBefore.longValue()).atStartOfDay();
         Map<String, Integer> commitsPerUser = svnClient.getCommitsPerUser(fromDateTime.atZone(ZoneId.systemDefault()).toInstant());
         return new ListEvent<>(commitsPerUser.entrySet()
                 .stream()
