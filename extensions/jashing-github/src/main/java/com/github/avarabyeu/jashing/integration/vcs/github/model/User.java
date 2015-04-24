@@ -90,7 +90,7 @@ public class User {
     }
 
     /**
-     * @param hireable
+     * @param hireable Hireable
      * @return this user
      */
     public User setHireable(boolean hireable) {
@@ -106,7 +106,7 @@ public class User {
     }
 
     /**
-     * @param createdAt
+     * @param createdAt Created At
      * @return this user
      */
     public User setCreatedAt(Date createdAt) {
@@ -122,7 +122,7 @@ public class User {
     }
 
     /**
-     * @param collaborators
+     * @param collaborators Collaborators
      * @return this user
      */
     public User setCollaborators(int collaborators) {
@@ -138,7 +138,7 @@ public class User {
     }
 
     /**
-     * @param diskUsage
+     * @param diskUsage Disk Usage
      * @return this user
      */
     public User setDiskUsage(int diskUsage) {
@@ -154,7 +154,7 @@ public class User {
     }
 
     /**
-     * @param followers
+     * @param followers Followers
      * @return this user
      */
     public User setFollowers(int followers) {
@@ -170,7 +170,7 @@ public class User {
     }
 
     /**
-     * @param following
+     * @param following Following
      * @return this user
      */
     public User setFollowing(int following) {
@@ -186,7 +186,7 @@ public class User {
     }
 
     /**
-     * @param id
+     * @param id ID
      * @return this user
      */
     public User setId(int id) {
@@ -202,7 +202,7 @@ public class User {
     }
 
     /**
-     * @param ownedPrivateRepos
+     * @param ownedPrivateRepos Owned Private Repos
      * @return this user
      */
     public User setOwnedPrivateRepos(int ownedPrivateRepos) {
@@ -218,7 +218,7 @@ public class User {
     }
 
     /**
-     * @param privateGists
+     * @param privateGists Private Gists
      * @return this user
      */
     public User setPrivateGists(int privateGists) {
@@ -234,7 +234,7 @@ public class User {
     }
 
     /**
-     * @param publicGists
+     * @param publicGists Public Gists
      * @return this user
      */
     public User setPublicGists(int publicGists) {
@@ -250,7 +250,7 @@ public class User {
     }
 
     /**
-     * @param publicRepos
+     * @param publicRepos Public Repos
      * @return this user
      */
     public User setPublicRepos(int publicRepos) {
@@ -266,7 +266,7 @@ public class User {
     }
 
     /**
-     * @param totalPrivateRepos
+     * @param totalPrivateRepos Total Private Repos count
      * @return this user
      */
     public User setTotalPrivateRepos(int totalPrivateRepos) {
@@ -282,7 +282,7 @@ public class User {
     }
 
     /**
-     * @param avatarUrl
+     * @param avatarUrl Avatar URL
      * @return this user
      */
     public User setAvatarUrl(String avatarUrl) {
@@ -298,7 +298,7 @@ public class User {
     }
 
     /**
-     * @param bio
+     * @param bio Biography
      * @return this user
      */
     public User setBio(String bio) {
@@ -314,7 +314,7 @@ public class User {
     }
 
     /**
-     * @param blog
+     * @param blog Blog
      * @return this user
      */
     public User setBlog(String blog) {
@@ -330,7 +330,7 @@ public class User {
     }
 
     /**
-     * @param company
+     * @param company Company
      * @return this user
      */
     public User setCompany(String company) {
@@ -346,7 +346,7 @@ public class User {
     }
 
     /**
-     * @param email
+     * @param email Email
      * @return this user
      */
     public User setEmail(String email) {
@@ -364,7 +364,7 @@ public class User {
     }
 
     /**
-     * @param gravatarId
+     * @param gravatarId Avatar ID
      * @return this user
      * @deprecated
      */
@@ -382,7 +382,7 @@ public class User {
     }
 
     /**
-     * @param htmlUrl
+     * @param htmlUrl Html URL
      * @return this user
      */
     public User setHtmlUrl(String htmlUrl) {
@@ -398,7 +398,7 @@ public class User {
     }
 
     /**
-     * @param location
+     * @param location Location
      * @return this user
      */
     public User setLocation(String location) {
@@ -414,7 +414,7 @@ public class User {
     }
 
     /**
-     * @param login
+     * @param login Login
      * @return this user
      */
     public User setLogin(String login) {
@@ -430,7 +430,7 @@ public class User {
     }
 
     /**
-     * @param name
+     * @param name Name
      * @return this user
      */
     public User setName(String name) {
@@ -446,7 +446,7 @@ public class User {
     }
 
     /**
-     * @param type
+     * @param type Type
      * @return this user
      */
     public User setType(String type) {
@@ -462,7 +462,7 @@ public class User {
     }
 
     /**
-     * @param url
+     * @param url URL
      * @return this user
      */
     public User setUrl(String url) {
@@ -478,7 +478,7 @@ public class User {
     }
 
     /**
-     * @param plan
+     * @param plan Plan
      * @return this user
      */
     public User setPlan(UserPlan plan) {

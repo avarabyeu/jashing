@@ -37,7 +37,7 @@ public class UserPlan {
     }
 
     /**
-     * @param collaborators
+     * @param collaborators Collaborators
      * @return this user plan
      */
     public UserPlan setCollaborators(long collaborators) {

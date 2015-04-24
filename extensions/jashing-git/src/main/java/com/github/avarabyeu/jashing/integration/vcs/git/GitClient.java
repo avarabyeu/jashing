@@ -7,6 +7,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -42,15 +43,12 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private static final String HEAD_REVISION = "HEAD";
 
-    private static final Supplier<File> JASHING_TEMP_DIR = Suppliers.memoize(new Supplier<File>() {
-        @Override
-        public File get() {
-
-            File jashingTempDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + File.separator + "jashing");
-            //noinspection ResultOfMethodCallIgnored
-            jashingTempDir.mkdir();
-            return jashingTempDir;
-        }});
+    private static final Supplier<File> JASHING_TEMP_DIR = Suppliers.memoize(() -> {
+        File jashingTempDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + File.separator + "jashing");
+        //noinspection ResultOfMethodCallIgnored
+        jashingTempDir.mkdir();
+        return jashingTempDir;
+    });
 
     private Git git;
 
@@ -66,8 +64,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
                 if (null != branches && !branches.isEmpty()) {
                     cloneCommand.setBranchesToClone(branches);
                 }
-                this.git = cloneCommand
-                        .call();
+                this.git = cloneCommand.call();
             } else {
                 // now open the created repository
                 FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -88,7 +85,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
-        pull();
+        fetch();
         Map<String, Integer> commiters = new HashMap<>();
         Function<RevCommit, Void> mapCommitersFunction = commit -> {
             String name = commit.getAuthorIdent().getName();
@@ -106,7 +103,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
-        pull();
+        fetch();
         final AtomicLong commits = new AtomicLong();
         Function<RevCommit, Void> countCommitsFunction = commit -> {
             commits.incrementAndGet();
@@ -143,10 +140,11 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     }
 
-    private synchronized void pull() {
+    private synchronized void fetch() {
         try {
             LOGGER.info("Pulling updates of GIT repository [{}]", git.getRepository().getDirectory().getAbsolutePath());
-            git.pull().call();
+            PullResult pullResult = git.pull().call();
+            LOGGER.info("Fetched from [{}]. Result [{}]", pullResult.getFetchedFrom(), pullResult.isSuccessful());
         } catch (GitAPIException e) {
             LOGGER.error(MessageFormatter.format("Cannot PULL repository [{}]", git.getRepository().getDirectory().getAbsolutePath()).getMessage(), e);
         }
