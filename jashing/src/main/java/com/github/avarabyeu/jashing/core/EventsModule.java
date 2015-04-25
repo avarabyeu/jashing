@@ -114,7 +114,7 @@ class EventsModule extends PrivateModule {
     Map<String, Class<? extends Service>> mapEventSources() throws IOException {
 
         /** Obtains all classpath's top level classes */
-        Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("com.github.avarabyeu");
+        Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getAllClasses();
         LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */

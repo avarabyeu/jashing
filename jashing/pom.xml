@@ -63,7 +63,7 @@
             <plugin>
                 <groupId>com.theoryinpractise</groupId>
                 <artifactId>coffee-maven-plugin</artifactId>
-                <version>1.4.12</version>
+                <version>1.4.13</version>
                 <configuration>
                     <coffeeOutputDirectory>${assets.destination}/assets/javascripts</coffeeOutputDirectory>
                     <compileIndividualFiles>false</compileIndividualFiles>
