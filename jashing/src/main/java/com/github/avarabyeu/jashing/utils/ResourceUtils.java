@@ -22,14 +22,11 @@ public class ResourceUtils {
 
 
     public static Properties getResourceAsProperties(final String resource) {
-        return getResourceAs(resource, new IOConverter<Properties>() {
-            @Override
-            public Properties convert(ByteSource source) throws IOException {
-                try (InputStream is = source.openStream()) {
-                    Properties properties = new Properties();
-                    properties.load(is);
-                    return properties;
-                }
+        return getResourceAs(resource, source -> {
+            try (InputStream is = source.openStream()) {
+                Properties properties = new Properties();
+                properties.load(is);
+                return properties;
             }
         });
     }
