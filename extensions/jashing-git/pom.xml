@@ -20,7 +20,7 @@
     <artifactId>jashing-git</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <name>jashing-git</name>
     <description>Port of Dashing on Java</description>
