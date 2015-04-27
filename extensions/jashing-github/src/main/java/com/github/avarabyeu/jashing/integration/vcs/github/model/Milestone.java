@@ -1,13 +1,15 @@
-/*******************************************************************************
- *  Copyright (c) 2011 GitHub Inc.
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  Contributors:
- *    Kevin Sawicki (GitHub Inc.) - initial API and implementation
- *******************************************************************************/
+/**
+ * ****************************************************************************
+ * Copyright (c) 2011 GitHub Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * <p>
+ * Contributors:
+ * Kevin Sawicki (GitHub Inc.) - initial API and implementation
+ * *****************************************************************************
+ */
 
 package com.github.avarabyeu.jashing.integration.vcs.github.model;
 
@@ -52,7 +54,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param createdAt
+     * @param createdAt Created at
      * @return this milestone
      */
     public Milestone setCreatedAt(Date createdAt) {
@@ -68,7 +70,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param dueOn
+     * @param dueOn Due on
      * @return this milestone
      */
     public Milestone setDueOn(Date dueOn) {
@@ -84,7 +86,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param closedIssues
+     * @param closedIssues Closed Issues
      * @return this milestone
      */
     public Milestone setClosedIssues(int closedIssues) {
@@ -100,7 +102,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param number
+     * @param number Number
      * @return this milestone
      */
     public Milestone setNumber(int number) {
@@ -116,7 +118,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param openIssues
+     * @param openIssues Open Issues
      * @return this milestone
      */
     public Milestone setOpenIssues(int openIssues) {
@@ -132,7 +134,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param description
+     * @param description Description
      * @return this milestone
      */
     public Milestone setDescription(String description) {
@@ -148,7 +150,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param state
+     * @param state State
      * @return this milestone
      */
     public Milestone setState(String state) {
@@ -164,7 +166,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param title
+     * @param title Title
      * @return this milestone
      */
     public Milestone setTitle(String title) {
@@ -180,7 +182,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param url
+     * @param url URL
      * @return this milestone
      */
     public Milestone setUrl(String url) {
@@ -196,7 +198,7 @@ public class Milestone implements Serializable {
     }
 
     /**
-     * @param creator
+     * @param creator Creator
      * @return this milestone
      */
     public Milestone setCreator(User creator) {

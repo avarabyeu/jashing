@@ -1,14 +1,16 @@
 
-/******************************************************************************
- *  Copyright (c) 2011 GitHub Inc.
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  Contributors:
- *    Kevin Sawicki (GitHub Inc.) - initial API and implementation
- *****************************************************************************/
+/**
+ * ***************************************************************************
+ * Copyright (c) 2011 GitHub Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * <p>
+ * Contributors:
+ * Kevin Sawicki (GitHub Inc.) - initial API and implementation
+ * ***************************************************************************
+ */
 package com.github.avarabyeu.jashing.integration.vcs.github.model;
 
 import com.google.gson.annotations.SerializedName;
@@ -86,7 +88,7 @@ public class Repository {
     }
 
     /**
-     * @param fork
+     * @param fork Fork
      * @return this repository
      */
     public Repository setFork(boolean fork) {
@@ -102,7 +104,7 @@ public class Repository {
     }
 
     /**
-     * @param hasDownloads
+     * @param hasDownloads Has Downloads
      * @return this repository
      */
     public Repository setHasDownloads(boolean hasDownloads) {
@@ -118,7 +120,7 @@ public class Repository {
     }
 
     /**
-     * @param hasIssues
+     * @param hasIssues Has Issues
      * @return this repository
      */
     public Repository setHasIssues(boolean hasIssues) {
@@ -134,7 +136,7 @@ public class Repository {
     }
 
     /**
-     * @param hasWiki
+     * @param hasWiki Has Wiki
      * @return this repository
      */
     public Repository setHasWiki(boolean hasWiki) {
@@ -150,7 +152,7 @@ public class Repository {
     }
 
     /**
-     * @param isPrivate
+     * @param isPrivate Is Private
      * @return this repository
      */
     public Repository setPrivate(boolean isPrivate) {
@@ -166,7 +168,7 @@ public class Repository {
     }
 
     /**
-     * @param createdAt
+     * @param createdAt Created At
      * @return this rdateepository
      */
     public Repository setCreatedAt(Date createdAt) {
@@ -182,7 +184,7 @@ public class Repository {
     }
 
     /**
-     * @param pushedAt
+     * @param pushedAt Pushed At
      * @return this repository
      */
     public Repository setPushedAt(Date pushedAt) {
@@ -198,7 +200,7 @@ public class Repository {
     }
 
     /**
-     * @param forks
+     * @param forks Forks
      * @return this repository
      */
     public Repository setForks(int forks) {
@@ -214,7 +216,7 @@ public class Repository {
     }
 
     /**
-     * @param openIssues
+     * @param openIssues Open Issues
      * @return this repository
      */
     public Repository setOpenIssues(int openIssues) {
@@ -230,7 +232,7 @@ public class Repository {
     }
 
     /**
-     * @param size
+     * @param size Size
      * @return this repository
      */
     public Repository setSize(int size) {
@@ -246,7 +248,7 @@ public class Repository {
     }
 
     /**
-     * @param watchers
+     * @param watchers Watchers
      * @return this repository
      */
     public Repository setWatchers(int watchers) {
@@ -262,7 +264,7 @@ public class Repository {
     }
 
     /**
-     * @param parent
+     * @param parent Parent
      * @return this repository
      */
     public Repository setParent(Repository parent) {
@@ -278,7 +280,7 @@ public class Repository {
     }
 
     /**
-     * @param source
+     * @param source Source
      * @return this repository
      */
     public Repository setSource(Repository source) {
@@ -294,7 +296,7 @@ public class Repository {
     }
 
     /**
-     * @param cloneUrl
+     * @param cloneUrl Clone URL
      * @return this repository
      */
     public Repository setCloneUrl(String cloneUrl) {
@@ -310,7 +312,7 @@ public class Repository {
     }
 
     /**
-     * @param description
+     * @param description Description
      * @return this repository
      */
     public Repository setDescription(String description) {
@@ -326,7 +328,7 @@ public class Repository {
     }
 
     /**
-     * @param homepage
+     * @param homepage Homepage
      * @return this repository
      */
     public Repository setHomepage(String homepage) {
@@ -342,7 +344,7 @@ public class Repository {
     }
 
     /**
-     * @param gitUrl
+     * @param gitUrl Get URL
      * @return this repository
      */
     public Repository setGitUrl(String gitUrl) {
@@ -358,7 +360,7 @@ public class Repository {
     }
 
     /**
-     * @param htmlUrl
+     * @param htmlUrl HTML URL
      * @return this repository
      */
     public Repository setHtmlUrl(String htmlUrl) {
@@ -374,7 +376,7 @@ public class Repository {
     }
 
     /**
-     * @param language
+     * @param language Language
      * @return this repository
      */
     public Repository setLanguage(String language) {
@@ -390,7 +392,7 @@ public class Repository {
     }
 
     /**
-     * @param defaultBranch
+     * @param defaultBranch Default Branch
      * @return this repository
      */
     public Repository setDefaultBranch(String defaultBranch) {
@@ -407,7 +409,7 @@ public class Repository {
     }
 
     /**
-     * @param masterBranch
+     * @param masterBranch Master Branch
      * @return this repository
      */
     @Deprecated
@@ -424,7 +426,7 @@ public class Repository {
     }
 
     /**
-     * @param mirrorUrl
+     * @param mirrorUrl Mirror URL
      * @return this repository
      */
     public Repository setMirrorUrl(String mirrorUrl) {
@@ -440,7 +442,7 @@ public class Repository {
     }
 
     /**
-     * @param name
+     * @param name Name
      * @return this repository
      */
     public Repository setName(String name) {
@@ -456,7 +458,7 @@ public class Repository {
     }
 
     /**
-     * @param sshUrl
+     * @param sshUrl SSH URL
      * @return this repository
      */
     public Repository setSshUrl(String sshUrl) {
@@ -472,7 +474,7 @@ public class Repository {
     }
 
     /**
-     * @param svnUrl
+     * @param svnUrl SVN URL
      * @return this repository
      */
     public Repository setSvnUrl(String svnUrl) {
@@ -488,7 +490,7 @@ public class Repository {
     }
 
     /**
-     * @param url
+     * @param url URL
      * @return this repository
      */
     public Repository setUrl(String url) {
@@ -504,7 +506,7 @@ public class Repository {
     }
 
     /**
-     * @param owner
+     * @param owner Owner
      * @return this repository
      */
     public Repository setOwner(User owner) {
@@ -520,7 +522,7 @@ public class Repository {
     }
 
     /**
-     * @param updatedAt
+     * @param updatedAt Updated At
      * @return this repository
      */
     public Repository setUpdatedAt(Date updatedAt) {
@@ -536,7 +538,7 @@ public class Repository {
     }
 
     /**
-     * @param id
+     * @param id ID
      * @return this repository
      */
     public Repository setId(long id) {

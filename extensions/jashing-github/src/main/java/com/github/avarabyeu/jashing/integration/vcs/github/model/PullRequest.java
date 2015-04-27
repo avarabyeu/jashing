@@ -1,13 +1,15 @@
-/*******************************************************************************
- *  Copyright (c) 2011 GitHub Inc.
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  Contributors:
- *    Kevin Sawicki (GitHub Inc.) - initial API and implementation
- *******************************************************************************/
+/**
+ * ****************************************************************************
+ * Copyright (c) 2011 GitHub Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * <p>
+ * Contributors:
+ * Kevin Sawicki (GitHub Inc.) - initial API and implementation
+ * *****************************************************************************
+ */
 
 package com.github.avarabyeu.jashing.integration.vcs.github.model;
 
@@ -91,7 +93,7 @@ public class PullRequest {
     }
 
     /**
-     * @param mergeable
+     * @param mergeable Mergeable
      * @return this pull request
      */
     public PullRequest setMergeable(boolean mergeable) {
@@ -107,7 +109,7 @@ public class PullRequest {
     }
 
     /**
-     * @param merged
+     * @param merged Merged
      * @return this pull request
      */
     public PullRequest setMerged(boolean merged) {
@@ -123,7 +125,7 @@ public class PullRequest {
     }
 
     /**
-     * @param closedAt
+     * @param closedAt Closed At
      * @return this pull request
      */
     public PullRequest setClosedAt(Date closedAt) {
@@ -139,7 +141,7 @@ public class PullRequest {
     }
 
     /**
-     * @param mergedAt
+     * @param mergedAt Merged At
      * @return this pull request
      */
     public PullRequest setMergedAt(Date mergedAt) {
@@ -155,7 +157,7 @@ public class PullRequest {
     }
 
     /**
-     * @param updatedAt
+     * @param updatedAt Updated at
      * @return this pull request
      */
     public PullRequest setUpdatedAt(Date updatedAt) {
@@ -171,7 +173,7 @@ public class PullRequest {
     }
 
     /**
-     * @param createdAt
+     * @param createdAt Created At
      * @return this pull request
      */
     public PullRequest setCreatedAt(Date createdAt) {
@@ -187,7 +189,7 @@ public class PullRequest {
     }
 
     /**
-     * @param additions
+     * @param additions Additions
      * @return this pull request
      */
     public PullRequest setAdditions(int additions) {
@@ -203,7 +205,7 @@ public class PullRequest {
     }
 
     /**
-     * @param changedFiles
+     * @param changedFiles Changed files
      * @return this pull request
      */
     public PullRequest setChangedFiles(int changedFiles) {
@@ -219,7 +221,7 @@ public class PullRequest {
     }
 
     /**
-     * @param comments
+     * @param comments Comments
      * @return this pull request
      */
     public PullRequest setComments(int comments) {
@@ -251,7 +253,7 @@ public class PullRequest {
     }
 
     /**
-     * @param commits
+     * @param commits Commits
      * @return this pull request
      */
     public PullRequest setCommits(int commits) {
@@ -267,7 +269,7 @@ public class PullRequest {
     }
 
     /**
-     * @param deletions
+     * @param deletions Deletions
      * @return this pull request
      */
     public PullRequest setDeletions(int deletions) {
@@ -283,7 +285,7 @@ public class PullRequest {
     }
 
     /**
-     * @param number
+     * @param number Number
      * @return this pull request
      */
     public PullRequest setNumber(int number) {
@@ -299,7 +301,7 @@ public class PullRequest {
     }
 
     /**
-     * @param base
+     * @param base Base
      * @return this pull request
      */
     public PullRequest setBase(PullRequestMarker base) {
@@ -315,7 +317,7 @@ public class PullRequest {
     }
 
     /**
-     * @param head
+     * @param head Head
      * @return this pull request
      */
     public PullRequest setHead(PullRequestMarker head) {
@@ -331,7 +333,7 @@ public class PullRequest {
     }
 
     /**
-     * @param body
+     * @param body Body
      * @return this pull request
      */
     public PullRequest setBody(String body) {
@@ -347,7 +349,7 @@ public class PullRequest {
     }
 
     /**
-     * @param bodyHtml
+     * @param bodyHtml Body html
      * @return this pull request
      */
     public PullRequest setBodyHtml(String bodyHtml) {
@@ -363,7 +365,7 @@ public class PullRequest {
     }
 
     /**
-     * @param bodyText
+     * @param bodyText Body Text
      * @return this pull request
      */
     public PullRequest setBodyText(String bodyText) {
@@ -379,7 +381,7 @@ public class PullRequest {
     }
 
     /**
-     * @param diffUrl
+     * @param diffUrl Diff URL
      * @return this pull request
      */
     public PullRequest setDiffUrl(String diffUrl) {
@@ -395,7 +397,7 @@ public class PullRequest {
     }
 
     /**
-     * @param htmlUrl
+     * @param htmlUrl HTML Url
      * @return this pull request
      */
     public PullRequest setHtmlUrl(String htmlUrl) {
@@ -411,7 +413,7 @@ public class PullRequest {
     }
 
     /**
-     * @param issueUrl
+     * @param issueUrl Issue URL
      * @return this pull request
      */
     public PullRequest setIssueUrl(String issueUrl) {
@@ -427,7 +429,7 @@ public class PullRequest {
     }
 
     /**
-     * @param patchUrl
+     * @param patchUrl Patch URL
      * @return this pull request
      */
     public PullRequest setPatchUrl(String patchUrl) {
@@ -443,7 +445,7 @@ public class PullRequest {
     }
 
     /**
-     * @param state
+     * @param state State
      * @return this pull request
      */
     public PullRequest setState(String state) {
@@ -459,7 +461,7 @@ public class PullRequest {
     }
 
     /**
-     * @param title
+     * @param title Title
      * @return this pull request
      */
     public PullRequest setTitle(String title) {
@@ -475,7 +477,7 @@ public class PullRequest {
     }
 
     /**
-     * @param url
+     * @param url URL
      * @return this pull request
      */
     public PullRequest setUrl(String url) {
@@ -491,7 +493,7 @@ public class PullRequest {
     }
 
     /**
-     * @param mergedBy
+     * @param mergedBy Merged By
      * @return this pull request
      */
     public PullRequest setMergedBy(User mergedBy) {
@@ -507,7 +509,7 @@ public class PullRequest {
     }
 
     /**
-     * @param user
+     * @param user User
      * @return this pull request
      */
     public PullRequest setUser(User user) {
@@ -523,7 +525,7 @@ public class PullRequest {
     }
 
     /**
-     * @param id
+     * @param id ID
      * @return this pull request
      */
     public PullRequest setId(long id) {
@@ -539,7 +541,7 @@ public class PullRequest {
     }
 
     /**
-     * @param milestone
+     * @param milestone Milestone
      * @return this pull request
      */
     public PullRequest setMilestone(Milestone milestone) {
@@ -555,7 +557,7 @@ public class PullRequest {
     }
 
     /**
-     * @param assignee
+     * @param assignee Assignee
      * @return this pull request
      */
     public PullRequest setAssignee(User assignee) {

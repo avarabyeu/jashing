@@ -53,7 +53,7 @@ public class UserPlan {
     }
 
     /**
-     * @param privateRepos
+     * @param privateRepos Private repos
      * @return this user plan
      */
     public UserPlan setPrivateRepos(long privateRepos) {
@@ -69,7 +69,7 @@ public class UserPlan {
     }
 
     /**
-     * @param space
+     * @param space Space
      * @return this user plan
      */
     public UserPlan setSpace(long space) {
@@ -85,7 +85,7 @@ public class UserPlan {
     }
 
     /**
-     * @param name
+     * @param name Name
      * @return this user plan
      */
     public UserPlan setName(String name) {

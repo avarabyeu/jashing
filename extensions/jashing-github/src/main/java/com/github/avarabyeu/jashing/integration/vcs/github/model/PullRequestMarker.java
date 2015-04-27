@@ -39,7 +39,7 @@ public class PullRequestMarker {
     }
 
     /**
-     * @param repo
+     * @param repo Repo
      * @return this marker
      */
     public PullRequestMarker setRepo(Repository repo) {
@@ -55,7 +55,7 @@ public class PullRequestMarker {
     }
 
     /**
-     * @param label
+     * @param label Label
      * @return this marker
      */
     public PullRequestMarker setLabel(String label) {
@@ -71,7 +71,7 @@ public class PullRequestMarker {
     }
 
     /**
-     * @param ref
+     * @param ref Ref
      * @return this marker
      */
     public PullRequestMarker setRef(String ref) {
@@ -87,7 +87,7 @@ public class PullRequestMarker {
     }
 
     /**
-     * @param sha
+     * @param sha Sha
      * @return this marker
      */
     public PullRequestMarker setSha(String sha) {
@@ -103,7 +103,7 @@ public class PullRequestMarker {
     }
 
     /**
-     * @param user
+     * @param user User
      * @return this marker
      */
     public PullRequestMarker setUser(User user) {
