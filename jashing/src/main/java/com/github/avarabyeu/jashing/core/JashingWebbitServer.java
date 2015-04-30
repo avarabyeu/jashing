@@ -5,6 +5,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
@@ -82,7 +84,7 @@ public class JashingWebbitServer extends AbstractIdleService {
         rest.GET("/{dashboard}", (request, response, control) -> {
             StringWriter writer = new StringWriter();
             conf.getTemplate("/views/dashboards/" + Rest.stringParam(request, "dashboard") + ".ftl.html").process(Collections.EMPTY_MAP, writer);
-            response.content(writer.toString()).status(200).end();
+            response.content(writer.toString()).header(HttpHeaders.CONTENT_TYPE, MediaType.HTML_UTF_8.toString()).status(200).end();
         });
 
         this.webServer = webServer.start().get();
