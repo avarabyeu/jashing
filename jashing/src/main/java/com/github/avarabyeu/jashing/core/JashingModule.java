@@ -1,11 +1,9 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
-import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
-import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
-import com.github.avarabyeu.jashing.core.subscribers.Timeout;
+import com.github.avarabyeu.jashing.core.subscribers.*;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
@@ -59,8 +57,6 @@ class JashingModule extends AbstractModule {
         /* Event Bus. In charge of dispatching events from message sources to event handlers */
         final EventBus eventBus = new EventBus(new LoggingSubscriberExceptionHandler());
         binder().bind(EventBus.class).toInstance(eventBus);
-        binder().bind(ServerSentEventHandler.class).to(JashingEventHandler.class);
-
 
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
@@ -88,8 +84,6 @@ class JashingModule extends AbstractModule {
 
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
 
-        binder().bind(JashingWebbitServer.class).in(Scopes.SINGLETON);
-
     }
 
 
@@ -111,6 +105,12 @@ class JashingModule extends AbstractModule {
         return jashing;
     }
 
+
+    @Provides
+    public ServerSentEventsHandler serverSentEventHandler(EventBus eventBus, Gson gson, @Timeout Optional<Long> timeout) {
+        //return new RateLimitingDecorator(new ServerSentEventHandlerImpl(eventBus, gson), timeout);
+        return new ServerSentEventHandlerImpl(eventBus, gson);
+    }
 
     private Configuration provideConfiguration(Gson gson) {
         try {

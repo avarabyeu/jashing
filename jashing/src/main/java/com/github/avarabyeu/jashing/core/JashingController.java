@@ -1,10 +1,9 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventsHandler;
 import com.github.avarabyeu.jashing.utils.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
 import freemarker.cache.ClassTemplateLoader;
 import spark.ModelAndView;
 import spark.servlet.SparkApplication;
@@ -25,11 +24,11 @@ import static spark.SparkBase.staticFileLocation;
 class JashingController implements SparkApplication {
 
 
-    private final Provider<ServerSentEventHandler> serverSentEventHandler;
+    private final Provider<ServerSentEventsHandler> serverSentEventHandler;
     private final FreeMarkerEngine freemarkerEngine;
 
     @Inject
-    public JashingController(@Nonnull Provider<ServerSentEventHandler> serverSentEventHandler) {
+    public JashingController(@Nonnull Provider<ServerSentEventsHandler> serverSentEventHandler) {
         this.serverSentEventHandler = serverSentEventHandler;
 
         freemarkerEngine = new FreeMarkerEngine();

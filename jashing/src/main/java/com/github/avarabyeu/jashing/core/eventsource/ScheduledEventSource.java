@@ -1,6 +1,7 @@
 package com.github.avarabyeu.jashing.core.eventsource;
 
 import com.github.avarabyeu.jashing.core.JashingEvent;
+import com.github.avarabyeu.jashing.core.ServerSentEvent;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.google.common.eventbus.EventBus;
@@ -55,7 +56,7 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     protected final void sendEvent(T t) {
         if (null != t) {
             t.setId(eventId);
-            this.eventBus.post(t);
+            this.eventBus.post(new ServerSentEvent<>(null, t));
         }
     }
 
