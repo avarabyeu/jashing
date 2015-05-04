@@ -3,6 +3,7 @@ package com.github.avarabyeu.jashing.core;
 import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.Timeout;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -35,6 +36,7 @@ class JashingModule extends AbstractModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(JashingModule.class);
 
     private static final String APPLICATION_CONFIG = "config.json";
+    private static final String TIMEOUT_PROPERTY = "timeout";
 
     private final Integer port;
 
@@ -70,9 +72,15 @@ class JashingModule extends AbstractModule {
 
         OptionalBinder<Integer> serverPort = OptionalBinder.newOptionalBinder(binder(), Key.get(Integer.class, Names.named("serverPort")));
         serverPort.setDefault().toInstance(DEFAULT_PORT);
-        if (null!= this.port){
+        if (null != this.port) {
             serverPort.setBinding().toInstance(this.port);
         }
+
+        OptionalBinder<Long> timeoutBinder = OptionalBinder.newOptionalBinder(binder(), Key.get(Long.class, Timeout.class));
+        if (globalProperties.containsKey(TIMEOUT_PROPERTY)) {
+            timeoutBinder.setBinding().toInstance(Long.valueOf(globalProperties.get(TIMEOUT_PROPERTY)));
+        }
+
         
 
         /* install module with events configuration */
@@ -102,9 +110,6 @@ class JashingModule extends AbstractModule {
         }, MoreExecutors.directExecutor());
         return jashing;
     }
-
-
-
 
 
     private Configuration provideConfiguration(Gson gson) {

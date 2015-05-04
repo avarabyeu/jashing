@@ -9,15 +9,19 @@ import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.RateLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import freemarker.cache.ClassTemplateLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.webbitserver.*;
 import org.webbitserver.handler.EmbeddedResourceHandler;
 import org.webbitserver.rest.Rest;
 import org.webbitserver.wrapper.EventSourceConnectionWrapper;
 
+import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +35,8 @@ import java.util.concurrent.Executors;
  * @author Andrei Varabyeu
  */
 public class JashingWebbitServer extends AbstractIdleService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JashingWebbitServer.class);
 
     @Inject
     private EventBus eventBus;
@@ -59,7 +65,6 @@ public class JashingWebbitServer extends AbstractIdleService {
         serverSentEventHandler = new ServerSentEventHandler(new Gson(), Optional.fromNullable(timeout));
 
         WebServer webServer = WebServers.createWebServer(serverPort)
-                .add(new EmbeddedResourceHandler("statics")) // path to web content
                 .add("/events", serverSentEventHandler);
 
 
@@ -83,10 +88,17 @@ public class JashingWebbitServer extends AbstractIdleService {
          */
         rest.GET("/{dashboard}", (request, response, control) -> {
             StringWriter writer = new StringWriter();
-            conf.getTemplate("/views/dashboards/" + Rest.stringParam(request, "dashboard") + ".ftl.html").process(Collections.EMPTY_MAP, writer);
-            response.content(writer.toString()).header(HttpHeaders.CONTENT_TYPE, MediaType.HTML_UTF_8.toString()).status(200).end();
+            try {
+                conf.getTemplate("/views/dashboards/" + Rest.stringParam(request, "dashboard") + ".ftl.html").process(Collections.EMPTY_MAP, writer);
+                response.content(writer.toString()).header(HttpHeaders.CONTENT_TYPE, MediaType.HTML_UTF_8.toString()).status(200).end();
+            } catch (FileNotFoundException e){
+                response.status(404).end();
+            }
+
+
         });
 
+        webServer.add(new EmbeddedResourceHandler("statics")); // path to web content
         this.webServer = webServer.start().get();
         eventBus.register(serverSentEventHandler);
     }
@@ -109,25 +121,30 @@ public class JashingWebbitServer extends AbstractIdleService {
 
         public ServerSentEventHandler(Gson serializer, Optional<Long> timeout) {
             this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
-            this.connections = new ArrayList<>();
+            this.connections = Collections.synchronizedList(new ArrayList<>());
             this.timeout = timeout;
-            this.executor = Executors.newCachedThreadPool();
+            this.executor = Executors.newFixedThreadPool(3, new ThreadFactoryBuilder()
+                    .setNameFormat("SSE Event Handler Thread-%d").build());
         }
 
 
         @Override
         public void onOpen(EventSourceConnection connection) throws Exception {
             this.connections.add(timeout.isPresent() ? new LimitedConnection(connection, timeout.get()) : connection);
+            LOGGER.debug("Connection opened. Count:{}", this.connections.size());
         }
 
         @Override
         public void onClose(EventSourceConnection connection) throws Exception {
             this.connections.remove(connection);
+            LOGGER.debug("Connection closed. Count:{}", this.connections.size());
         }
 
         @Subscribe
         public void onEvent(JashingEvent event) {
+            LOGGER.debug("Event fired: {}", event.getId());
             connections.forEach(connection -> executor.execute(() -> connection.send(new EventSourceMessage().data(serializer.toJson(event)))));
+            LOGGER.debug("Event dispatched: {}", event.getId());
         }
 
         @Subscribe
@@ -147,6 +164,16 @@ public class JashingWebbitServer extends AbstractIdleService {
         public EventSourceConnectionWrapper send(EventSourceMessage event) {
             limiter.acquire();
             return super.send(event);
+        }
+
+        @Override
+        public int hashCode() {
+            return  originalControl().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return originalControl().equals(obj);
         }
     }
 }

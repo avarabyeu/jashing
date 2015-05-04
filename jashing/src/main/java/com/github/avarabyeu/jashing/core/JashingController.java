@@ -4,6 +4,7 @@ import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
 import com.github.avarabyeu.jashing.utils.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.name.Named;
 import freemarker.cache.ClassTemplateLoader;
 import spark.ModelAndView;
 import spark.servlet.SparkApplication;

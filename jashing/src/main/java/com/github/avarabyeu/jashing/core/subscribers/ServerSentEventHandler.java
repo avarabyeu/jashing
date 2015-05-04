@@ -1,11 +1,13 @@
 package com.github.avarabyeu.jashing.core.subscribers;
 
 import com.github.avarabyeu.jashing.core.ServerSentEvent;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import com.google.common.net.HttpHeaders;
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
-import com.google.inject.Inject;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -28,6 +30,8 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
 
     private final Gson serializer;
 
+    private Optional<RateLimiter> rateLimiter;
+
     /**
      * Will be set via {@link #handle(javax.servlet.AsyncContext)} method
      */
@@ -36,18 +40,18 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     private PrintWriter writer;
 
 
-    @Inject
-    public ServerSentEventHandler(EventBus eventBus, Gson serializer) {
+    public ServerSentEventHandler(EventBus eventBus, Gson serializer, Optional<Long> timeout) {
         super(eventBus);
         this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
+        this.rateLimiter = timeout.transform(tmt -> RateLimiter.create(1.0f / tmt));
     }
 
     public void handle(AsyncContext asyncContext) throws IOException {
         this.asyncContext = asyncContext;
 
         HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-        response.addHeader("Cache-Control", "no-cache");
-        response.addHeader("Connection", "keep-alive");
+        response.addHeader(HttpHeaders.CACHE_CONTROL, "no-cache");
+        response.addHeader(HttpHeaders.CONNECTION, "keep-alive");
         response.setContentType("text/event-stream;charset=UTF-8");
 
         asyncContext.setTimeout(0);
@@ -61,11 +65,17 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
         subscribe();
     }
 
+    /* Actually, synchronization is not necessary here because Guava EventBus guarantee that this method called synchronously
+     * Anyway, keep it synchronized to avoid misunderstanding
+     */
     protected synchronized void writeEvent(ServerSentEvent event) {
 
-        /* Actually, synchronization is not necessary here because Guava EventBus guarantee that this method called synchronously
-        * Anyway, keep it synchronized to avoid misunderstanding
-        */
+
+        /* apply per-connection timeout if present */
+        if (rateLimiter.isPresent()) {
+            rateLimiter.get().acquire();
+        }
+
         if (!Strings.isNullOrEmpty(event.getId())) {
             writer.write("id: ");
             writer.write(event.getId());
