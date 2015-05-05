@@ -1,9 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.JashingEventHandler;
-import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
-import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
-import com.github.avarabyeu.jashing.core.subscribers.Timeout;
+import com.github.avarabyeu.jashing.core.subscribers.*;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -59,7 +56,7 @@ class JashingModule extends AbstractModule {
         /* Event Bus. In charge of dispatching events from message sources to event handlers */
         final EventBus eventBus = new EventBus(new LoggingSubscriberExceptionHandler());
         binder().bind(EventBus.class).toInstance(eventBus);
-        binder().bind(ServerSentEventHandler.class).to(JashingEventHandler.class);
+        binder().bind(ServerSentEventHandler.class).to(RateLimitingDecorator.class);
 
 
         Gson gson = new Gson();
@@ -87,8 +84,6 @@ class JashingModule extends AbstractModule {
         binder().install(new EventsModule(configuration.getEvents(), extensions));
 
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
-
-        binder().bind(JashingWebbitServer.class).in(Scopes.SINGLETON);
 
     }
 

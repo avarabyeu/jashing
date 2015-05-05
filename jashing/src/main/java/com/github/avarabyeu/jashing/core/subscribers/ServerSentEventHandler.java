@@ -30,8 +30,6 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
 
     private final Gson serializer;
 
-    private Optional<RateLimiter> rateLimiter;
-
     /**
      * Will be set via {@link #handle(javax.servlet.AsyncContext)} method
      */
@@ -40,10 +38,9 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     private PrintWriter writer;
 
 
-    public ServerSentEventHandler(EventBus eventBus, Gson serializer, Optional<Long> timeout) {
+    public ServerSentEventHandler(EventBus eventBus, Gson serializer) {
         super(eventBus);
         this.serializer = Preconditions.checkNotNull(serializer, "Serializer shouldn't be null");
-        this.rateLimiter = timeout.transform(tmt -> RateLimiter.create(1.0f / tmt));
     }
 
     public void handle(AsyncContext asyncContext) throws IOException {
@@ -69,12 +66,6 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
      * Anyway, keep it synchronized to avoid misunderstanding
      */
     protected synchronized void writeEvent(ServerSentEvent event) {
-
-
-        /* apply per-connection timeout if present */
-        if (rateLimiter.isPresent()) {
-            rateLimiter.get().acquire();
-        }
 
         if (!Strings.isNullOrEmpty(event.getId())) {
             writer.write("id: ");

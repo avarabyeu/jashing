@@ -4,16 +4,17 @@ import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
 import com.github.avarabyeu.jashing.utils.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
 import freemarker.cache.ClassTemplateLoader;
 import spark.ModelAndView;
 import spark.servlet.SparkApplication;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import javax.annotation.Nonnull;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.SparkBase.staticFileLocation;
 
@@ -87,6 +88,17 @@ class JashingController implements SparkApplication {
         get("/:dashboard", (request, response) ->
                         new ModelAndView(Collections.EMPTY_MAP, "/views/dashboards/" + request.params(":dashboard") + ".ftl.html"), this.freemarkerEngine
         );
+
+        exception(FileNotFoundException.class, (e, request, response) -> {
+            response.status(404);
+            response.body("Resource not found");
+        });
+
+        /* Maps template engine error */
+        exception(IllegalArgumentException.class, (e, request, response) -> {
+            response.status(404);
+            response.body("Resource not found");
+        });
 
 
     }

@@ -15,8 +15,8 @@ import javax.inject.Named;
 public class JashingEventHandler extends ServerSentEventHandler<JashingEvent> {
 
     @Inject
-    public JashingEventHandler(EventBus eventBus, Gson serializer, @Timeout Optional<Long> timeout) {
-        super(eventBus, serializer, timeout);
+    public JashingEventHandler(EventBus eventBus, Gson serializer) {
+        super(eventBus, serializer);
     }
 
     /**

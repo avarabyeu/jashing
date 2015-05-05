@@ -183,7 +183,6 @@ public class Jashing {
                 /* bootstrap server */
                 Service application = injector.getInstance(JashingServer.class);
                 application.startAsync();
-                //injector.getInstance(JashingWebbitServer.class).startAsync();
 
             }
 
