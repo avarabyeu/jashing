@@ -6,6 +6,9 @@ import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ScheduledEventSource<T extends JashingEvent> extends AbstractScheduledService {
 
+    private Logger LOGGER = LoggerFactory.getLogger(ScheduledEventSource.class);
 
     /**
      * Time period between sending events
@@ -48,7 +52,12 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
      */
     @Override
     protected final void runOneIteration() throws Exception {
-        sendEvent(produceEvent());
+        try {
+            sendEvent(produceEvent());
+        } catch (Throwable e){
+            LOGGER.error(MessageFormatter.format("Cannot produce event with id {}", eventId).getMessage(), e);
+        }
+
     }
 
 
