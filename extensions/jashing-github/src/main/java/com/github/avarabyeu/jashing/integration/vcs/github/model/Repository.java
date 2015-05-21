@@ -548,8 +548,7 @@ public class Repository {
 
     /**
      * Generate id for this repository
-     *
-     * @see
+     * @return New generated ID
      */
     public String generateId() {
         final User owner = this.owner;
