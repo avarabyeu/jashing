@@ -12,14 +12,14 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>jashing-jira</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
 
     <name>jashing-jira</name>
     <description>JIRA Integration for Jashing</description>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.avarabyeu</groupId>
