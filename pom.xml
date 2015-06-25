@@ -41,7 +41,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
-        <guice.version>4.0-beta5</guice.version>
+        <guice.version>4.0</guice.version>
         <restendpoint.version>0.0.11</restendpoint.version>
     </properties>
 
