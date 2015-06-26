@@ -15,7 +15,7 @@ public class JashingEvent {
     private String title;
 
     public JashingEvent() {
-        this.updatedAt = Instant.now().toEpochMilli();
+        this.updatedAt = Instant.now().getEpochSecond();
     }
 
     public String getId() {
