@@ -23,7 +23,6 @@
 
     <name>jashing-github</name>
     <description>GitHub Integration for Jashing</description>
-    <url>https://github.com/avarabyeu</url>
 
 
     <dependencies>

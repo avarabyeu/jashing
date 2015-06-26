@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.primitives.Primitives;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -27,7 +28,7 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
     }
 
     @Override
-    public T put(Class<? extends T> clazz, T value) {
+    public T put(@Nullable Class<? extends T> clazz, @Nullable T value) {
         return delegate.put(clazz, value);
     }
 

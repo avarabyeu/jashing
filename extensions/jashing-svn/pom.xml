@@ -22,8 +22,7 @@
     <version>0.0.3-SNAPSHOT</version>
 
     <name>jashing-svn</name>
-    <description>Port of Dashing on Java</description>
-    <url>https://github.com/avarabyeu</url>
+    <description>SVN Extension of Jashing</description>
 
 
     <dependencies>
