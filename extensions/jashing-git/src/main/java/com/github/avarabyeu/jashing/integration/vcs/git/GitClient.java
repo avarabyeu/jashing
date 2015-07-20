@@ -143,6 +143,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
     private synchronized void fetch() {
         try {
             LOGGER.info("Pulling updates of GIT repository [{}]", git.getRepository().getDirectory().getAbsolutePath());
+            git.fetch().call();
             PullResult pullResult = git.pull().call();
             LOGGER.info("Fetched from [{}]. Result [{}]", pullResult.getFetchedFrom(), pullResult.isSuccessful());
         } catch (GitAPIException e) {
