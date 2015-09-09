@@ -2,10 +2,14 @@ package com.github.avarabyeu.jashing.utils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ForwardingMap;
-import com.google.common.primitives.Primitives;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contains object as values and it's classes as keys
@@ -43,7 +47,7 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
         }
     }
 
-    public Collection<T> values(){
+    public Collection<T> values() {
         return delegate.values();
     }
 
@@ -51,10 +55,9 @@ public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
         return new Builder<>();
     }
 
-    public static <T> InstanceOfMap<T> empty(){
-      return new InstanceOfMap<>(Collections.emptyMap());
+    public static <T> InstanceOfMap<T> empty() {
+        return new InstanceOfMap<>(Collections.emptyMap());
     }
-
 
     public static class Builder<T> {
 

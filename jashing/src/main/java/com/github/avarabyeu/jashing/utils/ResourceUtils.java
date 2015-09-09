@@ -18,8 +18,10 @@ import java.util.Properties;
  *
  * @author Andrei Varabyeu
  */
-public class ResourceUtils {
+public final class ResourceUtils {
 
+    private ResourceUtils() {
+    }
 
     public static Properties getResourceAsProperties(final String resource) {
         return getResourceAs(resource, source -> {

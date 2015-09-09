@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author avarabyeu
  */
-public class Jashing {
+public final class Jashing {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Jashing.class);
 

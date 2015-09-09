@@ -37,7 +37,7 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
 
         try {
             svnUrl = SVNURL.parseURIEncoded(UrlEscapers.urlFragmentEscaper().escape(url));
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(name, password);
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(name, password.toCharArray());
             svnOperationFactory = new SvnOperationFactory();
             svnOperationFactory.setAuthenticationManager(authManager);
 

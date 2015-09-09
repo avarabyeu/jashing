@@ -7,7 +7,10 @@ import com.google.common.base.Strings;
  *
  * @author avarabyeu
  */
-public class StringUtils {
+public final class StringUtils {
+
+    private StringUtils() {
+    }
 
     /**
      * Returns substring before provided string

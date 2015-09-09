@@ -1,6 +1,9 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.*;
+import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
+import com.github.avarabyeu.jashing.core.subscribers.RateLimitingDecorator;
+import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
+import com.github.avarabyeu.jashing.core.subscribers.Timeout;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -9,7 +12,12 @@ import com.google.common.io.Resources;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.name.Names;
 import org.slf4j.Logger;
@@ -58,22 +66,24 @@ class JashingModule extends AbstractModule {
         binder().bind(EventBus.class).toInstance(eventBus);
         binder().bind(ServerSentEventHandler.class).to(RateLimitingDecorator.class);
 
-
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
 
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
         Map<String, String> globalProperties = configuration.getProperties();
-        globalProperties.entrySet().forEach(entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
+        globalProperties.entrySet().forEach(
+                entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
-        OptionalBinder<Integer> serverPort = OptionalBinder.newOptionalBinder(binder(), Key.get(Integer.class, Names.named("serverPort")));
+        OptionalBinder<Integer> serverPort = OptionalBinder
+                .newOptionalBinder(binder(), Key.get(Integer.class, Names.named("serverPort")));
         serverPort.setDefault().toInstance(DEFAULT_PORT);
         if (null != this.port) {
             serverPort.setBinding().toInstance(this.port);
         }
 
-        OptionalBinder<Long> timeoutBinder = OptionalBinder.newOptionalBinder(binder(), Key.get(Long.class, Timeout.class));
+        OptionalBinder<Long> timeoutBinder = OptionalBinder
+                .newOptionalBinder(binder(), Key.get(Long.class, Timeout.class));
         if (globalProperties.containsKey(TIMEOUT_PROPERTY)) {
             timeoutBinder.setBinding().toInstance(Long.valueOf(globalProperties.get(TIMEOUT_PROPERTY)));
         }
@@ -86,7 +96,6 @@ class JashingModule extends AbstractModule {
         binder().bind(JashingController.class).in(Scopes.SINGLETON);
 
     }
-
 
     @Provides
     @Singleton
@@ -106,17 +115,16 @@ class JashingModule extends AbstractModule {
         return jashing;
     }
 
-
     private Configuration provideConfiguration(Gson gson) {
         try {
             URL config = ResourceUtils.getResourceAsURL(APPLICATION_CONFIG);
             Preconditions.checkState(config != null, "Main application config [%s] not found", APPLICATION_CONFIG);
-            return gson.fromJson(Resources.asCharSource(config, Charsets.UTF_8).openBufferedStream(), Configuration.class);
+            return gson
+                    .fromJson(Resources.asCharSource(config, Charsets.UTF_8).openBufferedStream(), Configuration.class);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to read configuration", e);
 
         }
     }
-
 
 }
