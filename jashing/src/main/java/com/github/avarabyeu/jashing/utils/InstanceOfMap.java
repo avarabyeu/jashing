@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author Andrei Varabyeu
  */
-public class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
+public final class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
     private Map<Class<? extends T>, T> delegate;
 
     private InstanceOfMap(Map<Class<? extends T>, T> delegate) {

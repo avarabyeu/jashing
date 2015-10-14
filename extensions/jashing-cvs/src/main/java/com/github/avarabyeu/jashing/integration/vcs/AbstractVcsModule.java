@@ -31,13 +31,24 @@ public abstract class AbstractVcsModule extends AbstractModule {
                 .toProvider(() -> client));
     }
 
+    /**
+     * Creates composite VCS clients from another client in context
+     *
+     * @param clients Client delegates from context
+     * @return Composite client
+     */
     @Provides
     @Singleton
     public VCSClient vcsClient(Set<VCSClient> clients) {
         return new CompositeVCSClient(clients);
     }
 
-
+    /**
+     * Loads VCS configuration
+     *
+     * @param gson GSON for deserialization
+     * @return Loaded configuration
+     */
     @Provides
     public VCSConfiguration loadConfiguration(Gson gson) {
         try {
@@ -52,5 +63,8 @@ public abstract class AbstractVcsModule extends AbstractModule {
         }
     }
 
+    /**
+     * @return Set of VCS clients
+     */
     abstract protected List<VCSClient> getClients();
 }

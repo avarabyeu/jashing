@@ -5,6 +5,7 @@ import com.github.avarabyeu.jashing.utils.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
+import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.servlet.SparkApplication;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -16,7 +17,7 @@ import java.util.Collections;
 
 import static spark.Spark.exception;
 import static spark.Spark.get;
-import static spark.SparkBase.staticFileLocation;
+import static spark.Spark.staticFileLocation;
 
 /**
  * Specifies all needed mappings and request handlers
@@ -90,13 +91,13 @@ class JashingController implements SparkApplication {
         );
 
         exception(FileNotFoundException.class, (e, request, response) -> {
-            response.status(404);
+            response.status(HttpStatus.NOT_FOUND_404);
             response.body("Resource not found");
         });
 
         /* Maps template engine error */
         exception(IllegalArgumentException.class, (e, request, response) -> {
-            response.status(404);
+            response.status(HttpStatus.NOT_FOUND_404);
             response.body("Resource not found");
         });
 
