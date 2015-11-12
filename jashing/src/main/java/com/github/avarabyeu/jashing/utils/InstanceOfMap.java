@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Contains object as values and it's classes as keys
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author Andrei Varabyeu
  */
 public final class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T> {
+
     private Map<Class<? extends T>, T> delegate;
 
     private InstanceOfMap(Map<Class<? extends T>, T> delegate) {
@@ -47,6 +49,24 @@ public final class InstanceOfMap<T> extends ForwardingMap<Class<? extends T>, T>
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
+        InstanceOfMap<?> that = (InstanceOfMap<?>) o;
+        return Objects.equals(delegate, that.delegate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), delegate);
+    }
+
+    @Override
     public Collection<T> values() {
         return delegate.values();
     }

@@ -29,9 +29,9 @@
         <module>extensions/jashing-cvs</module>
         <module>extensions/jashing-svn</module>
         <module>extensions/jashing-git</module>
-        <module>extensions/jashing-jenkins</module>
-        <module>extensions/jashing-jira</module>
-        <module>extensions/jashing-github</module>
+        <!--<module>extensions/jashing-jenkins</module>-->
+        <!--<module>extensions/jashing-jira</module>-->
+        <!--<module>extensions/jashing-github</module>-->
     </modules>
 
     <properties>
@@ -123,13 +123,13 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.13</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

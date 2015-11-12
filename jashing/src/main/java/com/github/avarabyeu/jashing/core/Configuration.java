@@ -45,7 +45,7 @@ public class Configuration {
         /**
          * Event-scope properties. Might be injected into event source bean related to this particular event
          */
-        private Map<String, ?> properties;
+        private Map<String, Object> properties;
 
 
         public String getId() {
@@ -73,11 +73,11 @@ public class Configuration {
             this.frequency = frequency;
         }
 
-        public Map<String, ?> getProperties() {
+        public Map<String, Object> getProperties() {
             return properties;
         }
 
-        public void setProperties(Map<String, ?> properties) {
+        public void setProperties(Map<String, Object> properties) {
             this.properties = properties;
         }
     }

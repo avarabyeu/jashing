@@ -2,6 +2,7 @@ package com.github.avarabyeu.jashing.integration.vcs.git;
 
 import com.github.avarabyeu.jashing.integration.vcs.AbstractVCSClient;
 import com.github.avarabyeu.jashing.integration.vcs.VCSClient;
+import com.github.avarabyeu.jashing.integration.vcs.VCSClientException;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -132,8 +133,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
             walk.sort(RevSort.COMMIT_TIME_DESC);
             walk.forEach(function::apply);
         } catch (IOException e) {
-            //TODO handle
-            e.printStackTrace();
+           throw new VCSClientException("Cannot walk through commits", e);
         } finally {
             walk.dispose();
         }

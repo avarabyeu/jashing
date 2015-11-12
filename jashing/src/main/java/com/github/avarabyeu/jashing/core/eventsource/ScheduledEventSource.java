@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ScheduledEventSource<T extends JashingEvent> extends AbstractScheduledService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(ScheduledEventSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledEventSource.class);
 
     /**
      * Time period between sending events
@@ -54,7 +54,7 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     protected final void runOneIteration() throws Exception {
         try {
             sendEvent(produceEvent());
-        } catch (Throwable e){
+        } catch (Exception e){
             LOGGER.error(MessageFormatter.format("Cannot produce event with id {}", eventId).getMessage(), e);
         }
 
@@ -69,12 +69,12 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     }
 
     @Override
-    final protected Scheduler scheduler() {
+    protected final Scheduler scheduler() {
         return AbstractScheduledService.Scheduler.newFixedDelaySchedule(3, period.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
-    final protected String serviceName() {
+    protected final String serviceName() {
         return "ScheduledEventSource[eventID=" + eventId + "]";
     }
 

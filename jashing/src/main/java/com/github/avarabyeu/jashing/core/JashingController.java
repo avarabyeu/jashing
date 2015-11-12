@@ -6,6 +6,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import freemarker.cache.ClassTemplateLoader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.servlet.SparkApplication;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -26,6 +28,7 @@ import static spark.Spark.staticFileLocation;
  */
 class JashingController implements SparkApplication {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JashingController.class);
 
     private final Provider<ServerSentEventHandler> serverSentEventHandler;
     private final FreeMarkerEngine freemarkerEngine;
@@ -41,6 +44,7 @@ class JashingController implements SparkApplication {
     }
 
 
+    @Override
     public void init() {
 
         /**
@@ -66,6 +70,7 @@ class JashingController implements SparkApplication {
                     try {
                         serverSentEventHandler.get().handle(request.raw().startAsync());
                     } catch (IOException e) {
+                        LOGGER.error("Unable to start async request processing", e);
                         return null;
                     }
                     //return null anyway. handler takes care about response content
@@ -87,7 +92,8 @@ class JashingController implements SparkApplication {
          * Opens dashboard
          */
         get("/:dashboard", (request, response) ->
-                        new ModelAndView(Collections.EMPTY_MAP, "/views/dashboards/" + request.params(":dashboard") + ".ftl.html"), this.freemarkerEngine
+                        new ModelAndView(Collections.emptyMap(),
+                                "/views/dashboards/" + request.params(":dashboard") + ".ftl.html"), this.freemarkerEngine
         );
 
         exception(FileNotFoundException.class, (e, request, response) -> {

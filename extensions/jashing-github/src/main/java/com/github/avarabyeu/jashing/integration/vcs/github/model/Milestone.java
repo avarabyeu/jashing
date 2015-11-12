@@ -13,18 +13,12 @@
 
 package com.github.avarabyeu.jashing.integration.vcs.github.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * GitHub issue milestone class.
  */
-public class Milestone implements Serializable {
-
-    /**
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 8017385076255266092L;
+public class Milestone {
 
     private Date createdAt;
 

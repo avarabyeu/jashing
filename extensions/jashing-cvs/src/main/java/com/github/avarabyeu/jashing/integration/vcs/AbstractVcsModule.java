@@ -66,5 +66,5 @@ public abstract class AbstractVcsModule extends AbstractModule {
     /**
      * @return Set of VCS clients
      */
-    abstract protected List<VCSClient> getClients();
+    protected abstract List<VCSClient> getClients();
 }

@@ -1,12 +1,10 @@
 package com.github.avarabyeu.jashing.core.subscribers;
 
 import com.github.avarabyeu.jashing.core.ServerSentEvent;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.net.HttpHeaders;
-import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 
 import javax.servlet.AsyncContext;
@@ -27,7 +25,6 @@ import java.io.PrintWriter;
  */
 public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T> {
 
-
     private final Gson serializer;
 
     /**
@@ -36,7 +33,6 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
     private AsyncContext asyncContext;
 
     private PrintWriter writer;
-
 
     public ServerSentEventHandler(EventBus eventBus, Gson serializer) {
         super(eventBus);
@@ -103,9 +99,8 @@ public abstract class ServerSentEventHandler<T> extends IndependentSubscriber<T>
 
         @Override
         public void onStartAsync(AsyncEvent event) throws IOException {
-
+            //do nothing
         }
     }
-
 
 }

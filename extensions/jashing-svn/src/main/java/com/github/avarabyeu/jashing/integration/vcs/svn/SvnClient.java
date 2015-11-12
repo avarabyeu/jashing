@@ -47,6 +47,7 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
         }
     }
 
+    @Override
     public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
         try {
             Map<String, Integer> commiters = new HashMap<>();
@@ -67,12 +68,13 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
             run(log);
             return commiters;
         } catch (SVNException e) {
-            throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]");
+            throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]", e);
         }
 
     }
 
 
+    @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
         try {
 
@@ -88,7 +90,7 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
             run(log);
             return count.get();
         } catch (SVNException e) {
-            throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]");
+            throw new VCSClientException("Unable to get revision list for period [" + from + "," + to + "]", e);
         }
     }
 

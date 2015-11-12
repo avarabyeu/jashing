@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface EventSource {
 
-    interface NOP extends Module {}
+    interface NOP extends Module {
+    }
 
     /**
      * Event source name

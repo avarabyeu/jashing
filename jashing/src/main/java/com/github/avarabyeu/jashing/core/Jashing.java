@@ -158,12 +158,12 @@ public final class Jashing {
          * @return Jashing
          */
         Jashing build(@Nonnull Mode mode) {
-            Injector injector =
+            Injector createdInjector =
                     Guice.createInjector(new JashingModule(port, ImmutableList.<Module>builder()
                             .addAll(modules).build()));
 
 
-            return new Jashing(injector, mode);
+            return new Jashing(createdInjector, mode);
         }
     }
 
@@ -209,7 +209,7 @@ public final class Jashing {
              */
             @Override
             void shutdown(Injector injector) {
-                injector.getInstance(EventBus.class).post(new ShutdownEvent());
+                injector.getInstance(EventBus.class).post(ShutdownEvent.INSTANCE);
                 injector.getInstance(ServiceManager.class).stopAsync().awaitStopped();
             }
         };

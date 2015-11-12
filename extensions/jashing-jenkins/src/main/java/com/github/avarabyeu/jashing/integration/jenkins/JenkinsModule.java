@@ -20,7 +20,7 @@ public class JenkinsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-
+        //configure with provides methods
     }
 
     @Provides

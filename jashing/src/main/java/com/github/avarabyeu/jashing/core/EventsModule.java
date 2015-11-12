@@ -130,7 +130,8 @@ class EventsModule extends PrivateModule {
                     try {
                         /* sometimes exception occurs during class loading. Return empty/absent in this case */
                         return Optional.<Class<?>>of(classInfo.load());
-                    } catch (Throwable e) {
+                    } catch (Exception | NoClassDefFoundError e) {
+                        LOGGER.trace("Class cannot be loaded: {}", classInfo.getName(), e);
                         return Optional.<Class<?>>empty();
                     }
                 })
@@ -197,8 +198,10 @@ class EventsModule extends PrivateModule {
                     try {
                         install(extensionModuleClass.getConstructor().newInstance());
                     } catch (InvocationTargetException | InstantiationException e) {
+                        LOGGER.error("Unable to initialize extension", e);
                         addError("Unable to create instance of extension module '%s' for event with ID '%s'. Exception '%s'", extensionModuleClass, event.getId(), e.getMessage());
                     } catch (NoSuchMethodException | IllegalAccessException e) {
+                        LOGGER.error("Unable to initialize extension", e);
                         addError("Unable to create instance of extension module '%s' for event with ID '%s'. " +
                                 "Look like it doesn't have default constructor. Please, register it explicitly", extensionModuleClass, event.getId());
                     }

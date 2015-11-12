@@ -12,7 +12,7 @@ import javax.servlet.ServletException;
  *
  * @author Andrei Varabyeu
  */
-abstract public class JashingFilter extends SparkFilter {
+public abstract class JashingFilter extends SparkFilter {
 
     private Jashing jashing;
 
@@ -23,9 +23,9 @@ abstract public class JashingFilter extends SparkFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Jashing jashing = Jashing.builder().registerModule(getModules()).build(Jashing.Mode.CONTAINER);
-        jashing.bootstrap();
-        this.jashing = jashing;
+        Jashing createdJashing = Jashing.builder().registerModule(getModules()).build(Jashing.Mode.CONTAINER);
+        createdJashing.bootstrap();
+        this.jashing = createdJashing;
 
         super.init(filterConfig);
     }
@@ -36,6 +36,6 @@ abstract public class JashingFilter extends SparkFilter {
         super.destroy();
     }
 
-    abstract protected Module[] getModules();
+    protected abstract Module[] getModules();
 
 }

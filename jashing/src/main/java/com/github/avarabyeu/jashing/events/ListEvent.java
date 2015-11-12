@@ -23,8 +23,6 @@ public class ListEvent<T> extends JashingEvent {
         private String label;
         private T value;
 
-        public Item() {
-        }
 
         public Item(String label, T value) {
             this.label = label;

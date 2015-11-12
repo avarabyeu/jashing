@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author Andrey Vorobyov
  */
-abstract public class AbstractVCSClient implements VCSClient {
+public abstract class AbstractVCSClient implements VCSClient {
 
 
     @Override

@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import javax.inject.Inject;
 
 /**
- * TODO this is not decorator actually. Consider refactoring to follow pattern rules
+ * Limits rates for event handler
  *
  * @author Andrei Varabyeu
  */
@@ -23,7 +23,6 @@ public class RateLimitingDecorator extends JashingEventHandler {
         this.rateLimiter = timeout.transform(tmt -> RateLimiter.create(1.0f / tmt));
     }
 
-
     @Override
     protected synchronized void writeEvent(ServerSentEvent event) {
         /* apply per-connection timeout if present */
@@ -32,6 +31,5 @@ public class RateLimitingDecorator extends JashingEventHandler {
         }
         super.writeEvent(event);
     }
-
 
 }

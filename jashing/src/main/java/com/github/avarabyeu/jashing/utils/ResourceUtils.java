@@ -70,8 +70,8 @@ public final class ResourceUtils {
             ByteSource source = getResourceAsByteSource(resource);
             return converter.convert(source);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to convert resource with name '"
-                    + resource + "' using converter " + converter.getClass());
+            throw new IllegalArgumentException("Unable to convert resource with name '"
+                    + resource + "' using converter " + converter.getClass(), e);
         }
     }
 
