@@ -95,8 +95,8 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
 
     private synchronized <T> T streamLog(Function<Stream<RevCommit>, T> function) {
         try {
-            return function.apply(StreamSupport.stream(git.log().call().spliterator(), false));
-        } catch (GitAPIException e) {
+            return function.apply(StreamSupport.stream(git.log().all().call().spliterator(), false));
+        } catch (GitAPIException | IOException e) {
             throw new VCSClientException("Cannot walk through commits", e);
         }
 
