@@ -10,13 +10,8 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.revwalk.filter.CommitTimeRevFilter;
-import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * GIT Client
@@ -71,7 +68,7 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
                 FileRepositoryBuilder builder = new FileRepositoryBuilder();
                 Repository repository = builder.setWorkTree(repositoryDir)
                         .readEnvironment() // scan environment GIT_* variables
-                                //.findGitDir() // scan up the file system tree
+                        //.findGitDir() // scan up the file system tree
                         .setMustExist(true)
                         .build();
 
@@ -83,59 +80,24 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
         }
     }
 
-
     @Override
-    public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
+    public Map<String, Long> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
         fetch();
-        Map<String, Integer> commiters = new HashMap<>();
-        Function<RevCommit, Void> mapCommitersFunction = commit -> {
-            String name = commit.getAuthorIdent().getName();
-            Integer authorCommits = commiters.get(name);
-            if (null == authorCommits) {
-                commiters.put(name, 1);
-            } else {
-                commiters.put(name, ++authorCommits);
-            }
-            return null;
-        };
-        walkThroughCommits(from, to, mapCommitersFunction);
-        return commiters;
+        return streamLog(s -> s.filter(between(from, to))
+                .collect(Collectors.groupingBy(r -> r.getAuthorIdent().getName(), Collectors.counting())));
     }
 
     @Override
     public long getCommitsForPeriod(@Nonnull Instant from, @Nullable Instant to) {
         fetch();
-        final AtomicLong commits = new AtomicLong();
-        Function<RevCommit, Void> countCommitsFunction = commit -> {
-            commits.incrementAndGet();
-            return null;
-        };
-        walkThroughCommits(from, to, countCommitsFunction);
-        return commits.get();
+        return streamLog(s -> s.filter(between(from, to)).count());
     }
 
-
-    private synchronized void walkThroughCommits(@Nonnull Instant from, @Nullable Instant to, Function<RevCommit, ?> function) {
-        RevFilter revFilter;
-        if (null == to) {
-            revFilter = CommitTimeRevFilter.after(from.toEpochMilli());
-        } else {
-            revFilter = CommitTimeRevFilter.between(from.toEpochMilli(), to.toEpochMilli());
-        }
-
-        RevWalk walk = new RevWalk(git.getRepository());
-
-        walk.setRevFilter(revFilter);
-        walk.setRetainBody(true);
+    private synchronized <T> T streamLog(Function<Stream<RevCommit>, T> function) {
         try {
-            ObjectId head = git.getRepository().resolve(HEAD_REVISION);
-            walk.markStart(walk.lookupCommit(head));
-            walk.sort(RevSort.COMMIT_TIME_DESC);
-            walk.forEach(function::apply);
-        } catch (IOException e) {
-           throw new VCSClientException("Cannot walk through commits", e);
-        } finally {
-            walk.dispose();
+            return function.apply(StreamSupport.stream(git.log().call().spliterator(), false));
+        } catch (GitAPIException e) {
+            throw new VCSClientException("Cannot walk through commits", e);
         }
 
     }
@@ -147,7 +109,16 @@ public class GitClient extends AbstractVCSClient implements VCSClient {
             PullResult pullResult = git.pull().call();
             LOGGER.info("Fetched from [{}]. Result [{}]", pullResult.getFetchedFrom(), pullResult.isSuccessful());
         } catch (GitAPIException e) {
-            LOGGER.error(MessageFormatter.format("Cannot PULL repository [{}]", git.getRepository().getDirectory().getAbsolutePath()).getMessage(), e);
+            LOGGER.error(MessageFormatter
+                    .format("Cannot PULL repository [{}]", git.getRepository().getDirectory().getAbsolutePath())
+                    .getMessage(), e);
         }
+    }
+
+    private Predicate<RevCommit> between(@Nonnull Instant from, @Nullable Instant to) {
+        return (r -> {
+            Instant time = Instant.ofEpochSecond(r.getCommitTime());
+            return (null == to || time.isBefore(to)) && time.isAfter(from);
+        });
     }
 }

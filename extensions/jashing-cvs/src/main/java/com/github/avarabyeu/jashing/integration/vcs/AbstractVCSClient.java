@@ -12,9 +12,8 @@ import java.util.Map;
  */
 public abstract class AbstractVCSClient implements VCSClient {
 
-
     @Override
-    public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from) {
+    public Map<String, Long> getCommitsPerUser(@Nonnull Instant from) {
         return getCommitsPerUser(from, null);
     }
 

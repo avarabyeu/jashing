@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class GitTest {
                 "git@github.com:avarabyeu/jashing.git", "jashing", Collections.singletonList("master"));
         LocalDate now = LocalDate.now();
         Instant before = now.minusMonths(12).atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Map<String, Integer> commitsPerUser = gitClient.
+        Map<String, Long> commitsPerUser = gitClient.
                 getCommitsPerUser(before.
                         atZone(ZoneId.systemDefault()).toInstant());
         LOGGER.info(Joiner.on(",").withKeyValueSeparator(":").join(commitsPerUser));

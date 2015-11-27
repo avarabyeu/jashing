@@ -23,8 +23,8 @@ public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
     }
 
     @Override
-    public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
-        List<Map<String, Integer>> results = new ArrayList<>(delegates.size());
+    public Map<String, Long> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
+        List<Map<String, Long>> results = new ArrayList<>(delegates.size());
         results.addAll(delegates.stream().map(delegate -> delegate.getCommitsPerUser(from, to)).collect(Collectors.toList()));
         return results.stream()
                 .map(Map::entrySet)          // converts each map into an entry set
@@ -34,7 +34,7 @@ public class CompositeVCSClient extends AbstractVCSClient implements VCSClient {
                         Collectors.toMap(        // collects into a map
                                 Map.Entry::getKey,   // where each entry is based
                                 Map.Entry::getValue, // on the entries in the stream
-                                Integer::sum         // such that if a value already exist for
+                                Long::sum         // such that if a value already exist for
                                 // a given key, the sum of the old
                                 // and new value is taken
                         )

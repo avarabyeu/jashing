@@ -48,9 +48,9 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
     }
 
     @Override
-    public Map<String, Integer> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
+    public Map<String, Long> getCommitsPerUser(@Nonnull Instant from, @Nullable Instant to) {
         try {
-            Map<String, Integer> commiters = new HashMap<>();
+            Map<String, Long> commiters = new HashMap<>();
             final SvnLog log = svnOperationFactory.createLog();
             log.setSingleTarget(SvnTarget.fromURL(svnUrl));
 
@@ -58,9 +58,9 @@ public class SvnClient extends AbstractVCSClient implements VCSClient {
             log.addRange(SvnRevisionRange.create(SVNRevision.create(Date.from(from.atZone(ZoneId.systemDefault()).toInstant())), endRevision));
             log.setDiscoverChangedPaths(false);
             log.setReceiver((svnTarget, svnLogEntry) -> {
-                Integer authorCommits = commiters.get(svnLogEntry.getAuthor());
+                Long authorCommits = commiters.get(svnLogEntry.getAuthor());
                 if (null == authorCommits) {
-                    commiters.put(svnLogEntry.getAuthor(), 1);
+                    commiters.put(svnLogEntry.getAuthor(), 1L);
                 } else {
                     commiters.put(svnLogEntry.getAuthor(), ++authorCommits);
                 }

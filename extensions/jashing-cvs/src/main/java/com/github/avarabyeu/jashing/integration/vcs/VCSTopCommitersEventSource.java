@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
  * @author Andrey Vorobyov
  */
 @EventSource(value = "vcs-top-committers-source", explicitConfiguration = AbstractVcsModule.class)
-public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<Integer>> {
+public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<Long>> {
 
-    private static final Comparator<ListEvent.Item<Integer>> ITEM_COMPARATOR = (item1, item2) -> item1.getValue()
+    private static final Comparator<ListEvent.Item<Long>> ITEM_COMPARATOR = (item1, item2) -> item1.getValue()
             .compareTo(item2.getValue());
 
     @Inject
@@ -34,9 +34,9 @@ public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<I
     private Double daysBefore;
 
     @Override
-    protected ListEvent<Integer> produceEvent() {
+    protected ListEvent<Long> produceEvent() {
         LocalDateTime fromDateTime = LocalDate.now().minusDays(daysBefore.longValue()).atStartOfDay();
-        Map<String, Integer> commitsPerUser = svnClient
+        Map<String, Long> commitsPerUser = svnClient
                 .getCommitsPerUser(fromDateTime.atZone(ZoneId.systemDefault()).toInstant());
         return new ListEvent<>(commitsPerUser.entrySet()
                 .stream()
