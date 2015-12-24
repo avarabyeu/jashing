@@ -12,25 +12,23 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.6-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>jashing-github</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
 
     <name>jashing-github</name>
     <description>GitHub Integration for Jashing</description>
 
-
     <dependencies>
-
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>0.0.6-SNAPSHOT</version>
         </dependency>
         
 

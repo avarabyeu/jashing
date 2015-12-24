@@ -1,6 +1,5 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.LoggingSubscriberExceptionHandler;
 import com.github.avarabyeu.jashing.core.subscribers.RateLimitingDecorator;
 import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
 import com.github.avarabyeu.jashing.core.subscribers.Timeout;
@@ -12,12 +11,7 @@ import com.google.common.io.Resources;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.AbstractModule;
-import com.google.inject.Key;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Scopes;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.name.Names;
 import org.slf4j.Logger;
@@ -62,7 +56,11 @@ class JashingModule extends AbstractModule {
         binder().requireExplicitBindings();
 
         /* Event Bus. In charge of dispatching events from message sources to event handlers */
-        final EventBus eventBus = new EventBus(new LoggingSubscriberExceptionHandler());
+        final EventBus eventBus = new EventBus(
+                (exception, context) -> LOGGER.error("Could not dispatch event: {} to {}",
+                        context.getSubscriber(), context.getSubscriberMethod(),
+                        exception.getCause()));
+
         binder().bind(EventBus.class).toInstance(eventBus);
         binder().bind(ServerSentEventHandler.class).to(RateLimitingDecorator.class);
 
@@ -93,14 +91,12 @@ class JashingModule extends AbstractModule {
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents(), extensions));
 
-        binder().bind(JashingController.class).in(Scopes.SINGLETON);
-
     }
 
     @Provides
     @Singleton
-    public JashingServer jashingServer(JashingController jashingController) {
-        JashingServer jashing = new JashingServer(port, jashingController);
+    public JashingServer jashingServer(EventBus eventBus) {
+        JashingServer jashing = new JashingServer(port, eventBus);
         jashing.addListener(new Service.Listener() {
             @Override
             public void running() {

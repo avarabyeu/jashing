@@ -1,11 +1,11 @@
 package com.github.avarabyeu.jashing.integration.jenkins;
 
-
 import com.github.avarabyeu.restendpoint.http.HttpMethod;
 import com.github.avarabyeu.restendpoint.http.annotation.Path;
 import com.github.avarabyeu.restendpoint.http.annotation.Request;
 import com.github.avarabyeu.restendpoint.http.exception.RestEndpointClientException;
-import com.github.avarabyeu.wills.Will;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Simple Jenkins client. Do not have implementation since uses RestEndpoint's proxy mechanism
@@ -25,6 +25,6 @@ public interface JenkinsClient {
      * Get progress of job with provided name
      */
     @Request(method = HttpMethod.GET, url = "job/{jobName}/lastBuild/api/xml?depth=1&xpath=*/executor/progress/text()")
-    Will<Byte> getJobProgress(@Path("jobName") String jobName) throws RestEndpointClientException;
+    CompletableFuture<Byte> getJobProgress(@Path("jobName") String jobName) throws RestEndpointClientException;
 
 }

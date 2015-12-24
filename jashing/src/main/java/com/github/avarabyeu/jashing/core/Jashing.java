@@ -78,15 +78,6 @@ public final class Jashing {
     }
 
     /**
-     * Obtains application controller. Used in {@link com.github.avarabyeu.jashing.core.JashingFilter} for bootstrapping {@link javax.servlet.Filter}
-     *
-     * @return Jashing controller
-     */
-    JashingController getController() {
-        return injector.getInstance(JashingController.class);
-    }
-
-    /**
      * Creates new Jashing builder
      *
      * @return Builder of Jashing instance

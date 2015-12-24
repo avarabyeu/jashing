@@ -3,10 +3,10 @@ package com.github.avarabyeu.jashing.integration.jenkins;
 import com.github.avarabyeu.jashing.core.EventSource;
 import com.github.avarabyeu.jashing.core.eventsource.ScheduledEventSource;
 import com.github.avarabyeu.jashing.events.MeterEvent;
-import com.github.avarabyeu.wills.Wills;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,7 +30,6 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
         return null;
     }
 
-
     public class JobTracker {
 
         private final String job;
@@ -40,15 +39,18 @@ public class JenkinsActiveJobsEventSource extends ScheduledEventSource<MeterEven
         }
 
         protected void track() {
-            Byte progress;
+            Byte progress = 100;
             do {
-                progress = jenkinsClient.getJobProgress(job).replaceFailed(Wills.of((byte) 100)).obtain();
-                sendEvent(new MeterEvent(job, progress));
-                Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+                try {
+                    progress = jenkinsClient.getJobProgress(job).exceptionally(t -> (byte) 100).get();
+                    sendEvent(new MeterEvent(job, progress));
+                    Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
             } while (progress < 100);
 
         }
     }
-
 
 }

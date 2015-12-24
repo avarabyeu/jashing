@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Andrey Vorobyov
@@ -25,13 +26,13 @@ public class JenkinsTest {
 
     @Test
     @Ignore
-    public void testClient() throws SerializerException {
+    public void testClient() throws SerializerException, ExecutionException, InterruptedException {
         JenkinsClient jenkinsClient = RestEndpoints.create().withBaseUrl("http://jenkins.cte-minsk.local:8080/")
                 .withSerializer(new JaxbSerializer(Jobs.class)).withSerializer(new GsonSerializer()).withSerializer(new TextSerializer())
                 .forInterface(JenkinsClient.class);
         System.out.println(jenkinsClient.getRunningJobs());
         //System.out.println(jenkinsClient.getJobProgress("DFGFG"));
-        System.out.println(jenkinsClient.getJobProgress("225 antifraud").obtain());
+        System.out.println(jenkinsClient.getJobProgress("225 antifraud").get());
         for (String job : jenkinsClient.getRunningJobs().getNames()) {
             System.out.println(job);
             System.out.println(jenkinsClient.getJobProgress(job));
