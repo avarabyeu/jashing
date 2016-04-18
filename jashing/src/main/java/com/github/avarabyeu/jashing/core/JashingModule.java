@@ -1,8 +1,5 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.core.subscribers.RateLimitingDecorator;
-import com.github.avarabyeu.jashing.core.subscribers.ServerSentEventHandler;
-import com.github.avarabyeu.jashing.core.subscribers.Timeout;
 import com.github.avarabyeu.jashing.utils.ResourceUtils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -11,8 +8,9 @@ import com.google.common.io.Resources;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
-import com.google.inject.*;
-import com.google.inject.multibindings.OptionalBinder;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Main application configuration module. Configures server and all necessary stuff
@@ -31,14 +30,11 @@ import java.util.Map;
 class JashingModule extends AbstractModule {
 
     private static final Integer DEFAULT_PORT = 8181;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JashingModule.class);
-
     private static final String APPLICATION_CONFIG = "config.json";
     private static final String TIMEOUT_PROPERTY = "timeout";
 
     private final Integer port;
-
     private final List<Module> extensions;
 
     public JashingModule(List<Module> extensions) {
@@ -62,7 +58,6 @@ class JashingModule extends AbstractModule {
                         exception.getCause()));
 
         binder().bind(EventBus.class).toInstance(eventBus);
-        binder().bind(ServerSentEventHandler.class).to(RateLimitingDecorator.class);
 
         Gson gson = new Gson();
         binder().bind(Gson.class).toInstance(gson);
@@ -73,42 +68,30 @@ class JashingModule extends AbstractModule {
         globalProperties.entrySet().forEach(
                 entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 
-        OptionalBinder<Integer> serverPort = OptionalBinder
-                .newOptionalBinder(binder(), Key.get(Integer.class, Names.named("serverPort")));
-        serverPort.setDefault().toInstance(DEFAULT_PORT);
-        if (null != this.port) {
-            serverPort.setBinding().toInstance(this.port);
-        }
-
-        OptionalBinder<Long> timeoutBinder = OptionalBinder
-                .newOptionalBinder(binder(), Key.get(Long.class, Timeout.class));
-        if (globalProperties.containsKey(TIMEOUT_PROPERTY)) {
-            timeoutBinder.setBinding().toInstance(Long.valueOf(globalProperties.get(TIMEOUT_PROPERTY)));
-        }
-
-        
 
         /* install module with events configuration */
         binder().install(new EventsModule(configuration.getEvents(), extensions));
 
-    }
+        binder().bind(JashingServer.class).toProvider(() -> {
+            Optional<Long> timeout = globalProperties.containsKey(TIMEOUT_PROPERTY) ?
+                    Optional.of(Long.valueOf(globalProperties.get(TIMEOUT_PROPERTY))) :
+                    Optional.empty();
+            JashingServer jashing = new JashingServer(this.port == null ? DEFAULT_PORT : this.port, eventBus, gson,
+                    timeout);
+            jashing.addListener(new Service.Listener() {
+                @Override
+                public void running() {
+                    LOGGER.info("Embedded Jashing server has started on port [{}]", port);
+                }
 
-    @Provides
-    @Singleton
-    public JashingServer jashingServer(EventBus eventBus) {
-        JashingServer jashing = new JashingServer(port, eventBus);
-        jashing.addListener(new Service.Listener() {
-            @Override
-            public void running() {
-                LOGGER.info("Embedded Jashing server has started on port [{}]", port);
-            }
+                @Override
+                public void stopping(Service.State from) {
+                    LOGGER.info("Stopping embedded Jashing server");
+                }
+            }, MoreExecutors.directExecutor());
+            return jashing;
+        }).in(Scopes.SINGLETON);
 
-            @Override
-            public void stopping(Service.State from) {
-                LOGGER.info("Stopping embedded Jashing server");
-            }
-        }, MoreExecutors.directExecutor());
-        return jashing;
     }
 
     private Configuration provideConfiguration(Gson gson) {
