@@ -102,7 +102,7 @@ class JashingServer extends AbstractIdleService {
                 .predicate(Predicates.or(Predicates.prefix("/assets"), Predicates.prefix("/widgets")), staticsHandler,
                         routingHandler);
 
-        server = Undertow.builder().addHttpListener(port, "localhost")
+        server = Undertow.builder().addHttpListener(port, "127.0.0.1")
                 .setHandler(handler).build();
 
         server.start();
