@@ -68,7 +68,7 @@ class JashingServer extends AbstractIdleService {
                         .parallelStream().forEach(c -> {
                     //wait if there is rate limiter
                     Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
-                    c.send(gson.toJson(new ServerSentEvent<>(null, serverSentEvent)));
+                    c.send(gson.toJson(serverSentEvent));
                 });
             }
         });
