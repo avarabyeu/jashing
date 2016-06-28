@@ -18,7 +18,7 @@
     <artifactId>jashing-parent</artifactId>
     <packaging>pom</packaging>
     <groupId>com.github.avarabyeu.jashing</groupId>
-    <version>0.0.8</version>
+    <version>0.0.9-SNAPSHOT</version>
 
     <name>jashing-parent</name>
     <description>Java Port of Dashing. Parent Module</description>
