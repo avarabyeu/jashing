@@ -12,14 +12,14 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.9</version>
+        <version>0.0.10-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>jashing-cvs</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>0.0.9</version>
+    <version>0.0.10-SNAPSHOT</version>
 
     <name>jashing-cvs</name>
     <description>CVS base module for Jashing</description>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
-            <version>0.0.9</version>
+            <version>0.0.10-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
