@@ -5,30 +5,11 @@
         <meta charset="utf-8">
         <title>${title}</title>
 
-        <link rel="icon" type="image/x-icon" href="/assets/images/logo.png" />
+        <script type="text/javascript" src="/assets/application.js"></script>
+        <link rel="stylesheet" href="/assets/application.css">
 
-        <link rel="stylesheet" href="/assets/stylesheets/application-all.css">
-
-        <script type="text/javascript" src="/assets/javascripts/dashing/es5-shim.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/dashing/jquery.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/dashing/batman.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/dashing/batman.jquery.js"></script>
-
-
-        <script type="text/javascript" src="/assets/javascripts/gridster/jquery.gridster.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/gridster/jquery.leanModal.min.js"></script>
-        <!--<script type="text/javascript" src="http://cdn.jsdelivr.net/gridster.js/0.5.0/jquery.gridster.js"></script>-->
-        <!--<script type="text/javascript" src="http://cdn.jsdelivr.net/jquery.leanmodal/1.1/jquery.leanmodal.min.js"></script>-->
-
-
-        <script type="text/javascript" src="/assets/javascripts/d3-3.2.8.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/jquery.knob.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/rickshaw.min.js"></script>
-
-        <!--<script type="text/javascript" src="/assets/javascripts/libs-all.js"></script>-->
-
-        <script type="text/javascript" src="/assets/javascripts/dashing.js"></script>
-        <script type="text/javascript" src="/assets/javascripts/application.js"></script>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+        <link rel="icon" href="/assets/favicon.ico">
     </head>
     <body>
 
@@ -36,7 +17,7 @@
         $(function () {
             // These settings override the defaults set in application.coffee. You can do this on a per dashboard basis.
             Dashing.widget_base_dimensions = [370, 340]
-            //Dashing.numColumns = 5
+            Dashing.numColumns = 5
         });
     </script>
     <div class="container">

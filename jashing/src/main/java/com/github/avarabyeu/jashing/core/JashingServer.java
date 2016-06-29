@@ -1,6 +1,5 @@
 package com.github.avarabyeu.jashing.core;
 
-import com.github.avarabyeu.jashing.utils.StringUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractIdleService;
@@ -9,20 +8,31 @@ import com.google.gson.Gson;
 import freemarker.cache.ClassTemplateLoader;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.predicate.Predicates;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
-import io.undertow.server.handlers.PredicateHandler;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.sse.ServerSentEventConnection;
 import io.undertow.server.handlers.sse.ServerSentEventHandler;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.InstanceFactory;
+import io.undertow.servlet.api.InstanceHandle;
+import io.undertow.servlet.util.ImmediateInstanceHandle;
 import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
+import ro.isdc.wro.http.ConfigurableWroFilter;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletException;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static com.github.avarabyeu.jashing.utils.StringUtils.substringBefore;
 
 /**
  * HTTP Server Controller. Bootstraps server and specifies all needed mappings and request handlers
@@ -32,13 +42,14 @@ import java.util.function.Consumer;
 class JashingServer extends AbstractIdleService {
 
     public static final AttachmentKey<RateLimiter> RATE_LIMITER_KEY = AttachmentKey.create(RateLimiter.class);
-    /* 4567 is default Spart port */
+
     private final Integer port;
 
     private final EventBus eventBus;
     private final Gson gson;
     private final Optional<Long> timeout;
 
+    private ServerSentEventHandler sseHandler;
     private Undertow server;
 
     public JashingServer(Integer port, EventBus eventBus, Gson gson, Optional<Long> timeout) {
@@ -54,17 +65,19 @@ class JashingServer extends AbstractIdleService {
                 freemarker.template.Configuration.VERSION_2_3_23);
         configuration.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
 
-        ServerSentEventHandler sshHandler = Handlers
+        sseHandler = Handlers
                 .serverSentEvents((connection, lastEventId) -> {
-                    connection
-                            .putAttachment(RATE_LIMITER_KEY, RateLimiter.create(0.05));
+                    if (timeout.isPresent()) {
+                        connection
+                                .putAttachment(RATE_LIMITER_KEY, RateLimiter.create(timeout.get()));
+                    }
                 });
 
         eventBus.register(new Consumer<JashingEvent>() {
             @Subscribe
             @Override
             public void accept(JashingEvent serverSentEvent) {
-                sshHandler.getConnections()
+                sseHandler.getConnections()
                         .parallelStream().forEach(c -> {
                     //wait if there is rate limiter
                     Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
@@ -73,18 +86,19 @@ class JashingServer extends AbstractIdleService {
             }
         });
 
-        ResourceHandler staticsHandler = Handlers.resource(
+        ResourceHandler widgetsHandler = Handlers.resource(
                 new ClassPathResourceManager(Thread.currentThread().getContextClassLoader(),
-                        "statics"));
+                        "statics/widgets"));
 
         RoutingHandler routingHandler = Handlers.routing()
                 .get("/views/{widget}", exchange -> {
+
                     exchange.setStatusCode(StatusCodes.FOUND);
                     String widgetName = exchange.getQueryParameters().get("widget").getFirst();
                     exchange.getResponseHeaders().put(Headers.LOCATION,
-                            "/widgets/" + StringUtils.substringBefore(widgetName, ".html") + "/"
-                                    + widgetName);
+                            "/widgets/" + substringBefore(widgetName, ".html") + "/" + widgetName);
                     exchange.endExchange();
+
                 })
                 .get("/{dashboard}", exchange -> {
                     StringWriter out = new StringWriter();
@@ -95,21 +109,53 @@ class JashingServer extends AbstractIdleService {
 
                     exchange.getResponseSender().send(out.toString());
                 })
-                .get("/events", sshHandler)
+                .get("/events", sseHandler)
                 .get("/", Handlers.redirect("/sample"));
 
-        PredicateHandler handler = Handlers
-                .predicate(Predicates.or(Predicates.prefix("/assets"), Predicates.prefix("/widgets")), staticsHandler,
-                        routingHandler);
+        HttpHandler rootHandler = Handlers.path(routingHandler)
+                .addPrefixPath("/widgets", widgetsHandler)
+                .addPrefixPath("/assets", getStaticsHandler());
 
         server = Undertow.builder().addHttpListener(port, "0.0.0.0")
-                .setHandler(handler).build();
+                .setHandler(rootHandler).build();
 
         server.start();
     }
 
+    /**
+     * Uses Wro4j Filter to pre-process resources
+     * Required for coffee scripts compilation and saas processing
+     * Wro4j uses Servlet API so we make fake Servlet Deployment here to emulate servlet-based environment
+     *
+     * @return Static resources handler
+     */
+    private HttpHandler getStaticsHandler() throws ServletException {
+        DeploymentInfo deploymentInfo = Servlets
+                .deployment()
+                .setClassLoader(JashingServer.class.getClassLoader())
+                .setContextPath("/")
+                .setDeploymentName("jashing")
+                .addFilterUrlMapping("wro4j", "/*", DispatcherType.REQUEST)
+                .addFilter(Servlets.filter("wro4j", ConfigurableWroFilter.class,
+                        new InstanceFactory<ConfigurableWroFilter>() {
+                            @Override
+                            public InstanceHandle<ConfigurableWroFilter> createInstance()
+                                    throws InstantiationException {
+                                ConfigurableWroFilter filter = new ConfigurableWroFilter();
+                                filter.setWroManagerFactory(new WroManagerFactory());
+                                return new ImmediateInstanceHandle<>(filter);
+                            }
+                        }));
+        DeploymentManager deployment = Servlets.defaultContainer().addDeployment(deploymentInfo);
+        deployment.deploy();
+        return deployment.start();
+    }
+
     @Override
     protected void shutDown() throws Exception {
+        /* close connections */
+        sseHandler.getConnections().forEach(ServerSentEventConnection::shutdown);
+
         /* stop the server */
         server.stop();
 
