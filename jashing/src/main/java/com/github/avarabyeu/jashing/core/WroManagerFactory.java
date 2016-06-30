@@ -11,6 +11,7 @@ import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.processor.decorator.ProcessorDecorator;
 import ro.isdc.wro.model.resource.processor.factory.ProcessorsFactory;
 import ro.isdc.wro.model.resource.processor.factory.SimpleProcessorsFactory;
+import ro.isdc.wro.model.resource.processor.impl.css.CssUrlRewritingProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ class WroManagerFactory extends ConfigurableWroManagerFactory {
                 }
             }
         });
+        factory.addPreProcessor(new CssUrlRewritingProcessor());
         factory.addPostProcessor(new RubySassCssProcessor());
 
         return factory;

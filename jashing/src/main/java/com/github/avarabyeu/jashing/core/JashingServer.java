@@ -88,7 +88,7 @@ class JashingServer extends AbstractIdleService {
 
         ResourceHandler widgetsHandler = Handlers.resource(
                 new ClassPathResourceManager(Thread.currentThread().getContextClassLoader(),
-                        "statics/widgets"));
+                        "statics"));
 
         RoutingHandler routingHandler = Handlers.routing()
                 .get("/views/{widget}", exchange -> {
@@ -96,7 +96,7 @@ class JashingServer extends AbstractIdleService {
                     exchange.setStatusCode(StatusCodes.FOUND);
                     String widgetName = exchange.getQueryParameters().get("widget").getFirst();
                     exchange.getResponseHeaders().put(Headers.LOCATION,
-                            "/widgets/" + substringBefore(widgetName, ".html") + "/" + widgetName);
+                            "/assets/widgets/" + substringBefore(widgetName, ".html") + "/" + widgetName);
                     exchange.endExchange();
 
                 })
@@ -113,8 +113,8 @@ class JashingServer extends AbstractIdleService {
                 .get("/", Handlers.redirect("/sample"));
 
         HttpHandler rootHandler = Handlers.path(routingHandler)
-                .addPrefixPath("/widgets", widgetsHandler)
-                .addPrefixPath("/assets", getStaticsHandler());
+                .addPrefixPath("/assets", widgetsHandler)
+                .addPrefixPath("/compiled", getAggregationHandler());
 
         server = Undertow.builder().addHttpListener(port, "0.0.0.0")
                 .setHandler(rootHandler).build();
@@ -129,7 +129,7 @@ class JashingServer extends AbstractIdleService {
      *
      * @return Static resources handler
      */
-    private HttpHandler getStaticsHandler() throws ServletException {
+    private HttpHandler getAggregationHandler() throws ServletException {
         DeploymentInfo deploymentInfo = Servlets
                 .deployment()
                 .setClassLoader(JashingServer.class.getClassLoader())
