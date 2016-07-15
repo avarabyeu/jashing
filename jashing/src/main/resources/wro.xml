@@ -9,10 +9,10 @@
     </group>
 
     <group name="widgets">
-        <js>classpath:statics/widgets/**.coffee</js>
-        <js>classpath:statics/widgets/**.js</js>
-        <css>classpath:statics/widgets/**.css</css>
-        <css>classpath:statics/widgets/**.scss</css>
+        <js>multipleclasspath:statics/widgets/**.coffee</js>
+        <js>multipleclasspath:statics/widgets/**.js</js>
+        <css>multipleclasspath:statics/widgets/**.css</css>
+        <css>multipleclasspath:statics/widgets/**.scss</css>
     </group>
 
     <group name="assets">

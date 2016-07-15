@@ -8,6 +8,9 @@ import ro.isdc.wro.manager.factory.ConfigurableWroManagerFactory;
 import ro.isdc.wro.model.factory.WroModelFactory;
 import ro.isdc.wro.model.factory.XmlModelFactory;
 import ro.isdc.wro.model.resource.Resource;
+import ro.isdc.wro.model.resource.locator.UriLocator;
+import ro.isdc.wro.model.resource.locator.factory.SimpleUriLocatorFactory;
+import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
 import ro.isdc.wro.model.resource.processor.decorator.ProcessorDecorator;
 import ro.isdc.wro.model.resource.processor.factory.ProcessorsFactory;
 import ro.isdc.wro.model.resource.processor.factory.SimpleProcessorsFactory;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.google.common.io.Resources.getResource;
@@ -70,4 +74,8 @@ class WroManagerFactory extends ConfigurableWroManagerFactory {
         return properties;
     }
 
+    @Override
+    protected void contributeLocators(Map<String, UriLocator> map) {
+        map.put(MultipleClasspathUrlLocator.ALIAS, new MultipleClasspathUrlLocator());
+    }
 }
