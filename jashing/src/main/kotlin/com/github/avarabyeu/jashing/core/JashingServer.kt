@@ -20,7 +20,6 @@ import io.undertow.util.StatusCodes
 import ro.isdc.wro.http.ConfigurableWroFilter
 import java.io.StringWriter
 import java.util.*
-import java.util.function.Consumer
 import javax.servlet.DispatcherType
 import javax.servlet.ServletException
 
@@ -29,7 +28,10 @@ import javax.servlet.ServletException
 
  * @author avarabyeu
  */
-internal class JashingServer(private val port: Int, private val eventBus: EventBus, private val gson: Gson, private val timeout: Long?) : AbstractIdleService() {
+internal class JashingServer(private val port: Int,
+                             private val eventBus: EventBus,
+                             private val gson: Gson,
+                             private val timeout: Long?) : AbstractIdleService() {
 
     private lateinit var sseHandler: ServerSentEventHandler
     private lateinit var server: Undertow
@@ -75,10 +77,12 @@ internal class JashingServer(private val port: Int, private val eventBus: EventB
             exchange.responseSender.send(out.toString())
         }].get("/events", sseHandler).get("/", Handlers.redirect("/sample"))
 
-        val rootHandler = Handlers.path(routingHandler).addPrefixPath("/assets", widgetsHandler).addPrefixPath("/compiled", aggregationHandler)
+        val rootHandler = Handlers
+                .path(routingHandler)
+                .addPrefixPath("/assets", widgetsHandler)
+                .addPrefixPath("/compiled", aggregationHandler())
 
         server = Undertow.builder().addHttpListener(port, "0.0.0.0").setHandler(rootHandler).build()
-
         server.start()
     }
 
@@ -89,19 +93,22 @@ internal class JashingServer(private val port: Int, private val eventBus: EventB
 
      * @return Static resources handler
      */
-    private val aggregationHandler: HttpHandler
-        @Throws(ServletException::class)
-        get() {
-            val deploymentInfo = Servlets.deployment().setClassLoader(JashingServer::class.java.classLoader).setContextPath("/").setDeploymentName("jashing").addFilterUrlMapping("wro4j", "/*", DispatcherType.REQUEST).addFilter(Servlets.filter("wro4j", ConfigurableWroFilter::class.java
-            ) {
-                val filter = ConfigurableWroFilter()
-                filter.wroManagerFactory = WroManagerFactory()
-                ImmediateInstanceHandle(filter)
-            })
-            val deployment = Servlets.defaultContainer().addDeployment(deploymentInfo)
-            deployment.deploy()
-            return deployment.start()
-        }
+    @Throws(ServletException::class)
+    private fun aggregationHandler(): HttpHandler {
+        val deploymentInfo = Servlets.deployment()
+                .setClassLoader(JashingServer::class.java.classLoader)
+                .setContextPath("/")
+                .setDeploymentName("jashing")
+                .addFilterUrlMapping("wro4j", "/*", DispatcherType.REQUEST)
+                .addFilter(Servlets.filter("wro4j", ConfigurableWroFilter::class.java) {
+                    val filter = ConfigurableWroFilter()
+                    filter.wroManagerFactory = WroManagerFactory()
+                    ImmediateInstanceHandle(filter)
+                })
+        val deployment = Servlets.defaultContainer().addDeployment(deploymentInfo)
+        deployment.deploy()
+        return deployment.start()
+    }
 
     @Throws(Exception::class)
     override fun shutDown() {
@@ -117,13 +124,10 @@ internal class JashingServer(private val port: Int, private val eventBus: EventB
      * We need Guava's Subscribe annotation to be placed on callback function.
      * This is why we just wrap callback with this class
      */
-    class Subscriber(val callback: (event: JashingEvent) -> Unit) : Consumer<JashingEvent> {
-
-        @Subscribe
-        override fun accept(event: JashingEvent?) {
+    class Subscriber(val callback: (event: JashingEvent) -> Unit) {
+        @Subscribe fun accept(event: JashingEvent?) {
             event?.let { callback.invoke(it) }
         }
-
     }
 
     companion object {

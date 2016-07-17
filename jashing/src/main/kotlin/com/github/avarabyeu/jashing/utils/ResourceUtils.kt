@@ -51,6 +51,7 @@ object ResourceUtils {
         return getResourceAs(resource, { it.read() })
     }
 
+    @JvmStatic
     fun getResourceAsURL(resource: String): URL {
         return Resources.getResource(resource)
     }

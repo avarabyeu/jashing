@@ -33,7 +33,7 @@ public class EventsModuleTest {
     @BeforeClass
     public static void prepare() throws IOException {
         configuration = new Gson().fromJson(ResourceUtils.getResourceAsByteSource("test-config.json").asCharSource(Charsets.UTF_8).openBufferedStream(), Configuration.class);
-        eventsModule = new EventsModule(configuration.getEvents());
+        eventsModule = new EventsModule(configuration.getEvents(), null);
         injector = Guice.createInjector(eventsModule);
 
 

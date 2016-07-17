@@ -10,7 +10,7 @@ class Configuration {
     /**
      * application-scope properties, might be injected into event source beans
      */
-    var properties: Map<String, String>? = null
+    var properties: Map<String, String>? = emptyMap()
 
     /**
      * events configuration

@@ -7,7 +7,6 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Module
 import org.slf4j.LoggerFactory
-import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -133,16 +132,7 @@ class Jashing private constructor(private val injector: Injector) {
         fun builder(): Builder {
             return Builder()
         }
-
-        @Throws(InterruptedException::class, IOException::class)
-        @JvmStatic fun main(args: Array<String>) {
-            try {
-                Jashing.builder().build().bootstrap()
-            } catch (e: Exception) {
-                LOGGER.error("Jashing cannot start", e)
-            }
-
-        }
+        
     }
 
 }

@@ -13,7 +13,6 @@ import com.google.inject.Scopes
 import com.google.inject.name.Names
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.util.*
 
 /**
  * Main application configuration module. Configures server and all necessary stuff
@@ -44,7 +43,10 @@ internal class JashingModule(private val port: Int?, private val extensions: Lis
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         val configuration = provideConfiguration(gson)
         val globalProperties = configuration.properties
-        globalProperties!!.entries.forEach { entry -> binder().bindConstant().annotatedWith(Names.named(entry.key)).to(entry.value) }
+        globalProperties!!.entries.forEach { entry ->
+            binder().bindConstant()
+                    .annotatedWith(Names.named(entry.key)).to(entry.value)
+        }
 
 
         /* install module with events configuration */

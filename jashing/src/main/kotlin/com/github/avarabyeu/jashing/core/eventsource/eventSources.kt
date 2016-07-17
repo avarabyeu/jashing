@@ -1,9 +1,8 @@
 package com.github.avarabyeu.jashing.core.eventsource
 
 import com.github.avarabyeu.jashing.core.JashingEvent
-import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId
-import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency
 import com.google.common.eventbus.EventBus
+import com.google.common.util.concurrent.AbstractExecutionThreadService
 import com.google.common.util.concurrent.AbstractScheduledService
 import com.google.inject.Inject
 import org.slf4j.LoggerFactory
@@ -27,20 +26,20 @@ abstract class ScheduledEventSource<T : JashingEvent> : AbstractScheduledService
      */
     @Frequency
     @Inject
-    private val period: Duration? = null
+    lateinit var period: Duration
 
     /**
      * ID of event this event source bound to
      */
     @EventId
     @Inject
-    private lateinit var eventId: String
+    lateinit var eventId: String
 
     /**
      * EventBus to send events
      */
     @Inject
-    private val eventBus: EventBus? = null
+    lateinit var eventBus: EventBus
 
 
     /**
@@ -63,12 +62,12 @@ abstract class ScheduledEventSource<T : JashingEvent> : AbstractScheduledService
     protected fun sendEvent(t: T?) {
         if (null != t) {
             t.id = eventId
-            this.eventBus!!.post(t)
+            this.eventBus.post(t)
         }
     }
 
     override fun scheduler(): AbstractScheduledService.Scheduler {
-        return AbstractScheduledService.Scheduler.newFixedDelaySchedule(3, period!!.toMillis(), TimeUnit.MILLISECONDS)
+        return AbstractScheduledService.Scheduler.newFixedDelaySchedule(3, period.toMillis(), TimeUnit.MILLISECONDS)
     }
 
     override fun serviceName(): String {
@@ -79,3 +78,44 @@ abstract class ScheduledEventSource<T : JashingEvent> : AbstractScheduledService
 
 
 }
+
+internal abstract class SimpleEventSource<T : JashingEvent> : AbstractExecutionThreadService() {
+
+
+    /**
+     * EventBus to send events
+     */
+    @javax.inject.Inject
+    private val eventBus: EventBus? = null
+
+    /**
+     * ID of event this event source bound to
+     */
+    @EventId
+    @javax.inject.Inject
+    private val eventId: String? = null
+
+    protected fun sendEvent(t: T?) {
+        if (null != t) {
+            t.id = eventId!!
+            this.eventBus!!.post(t)
+        }
+    }
+
+    @Throws(Exception::class)
+    override fun startUp() {
+        /* no any lifecycle-related logic */
+    }
+
+    @Throws(Exception::class)
+    override fun shutDown() {
+        /* no any lifecycle-related logic */
+    }
+
+    protected abstract fun produceEvent(): T
+
+    override fun serviceName(): String {
+        return "SimpleEventSource[eventID=$eventId]"
+    }
+}
+

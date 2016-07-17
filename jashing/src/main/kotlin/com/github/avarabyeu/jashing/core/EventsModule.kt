@@ -1,7 +1,7 @@
 package com.github.avarabyeu.jashing.core
 
-import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId
-import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency
+import com.github.avarabyeu.jashing.core.eventsource.EventId
+import com.github.avarabyeu.jashing.core.eventsource.Frequency
 import com.github.avarabyeu.jashing.utils.InstanceOfMap
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.base.Joiner
@@ -27,11 +27,12 @@ import java.util.*
 
  * @author avarabyeu
  */
-internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configuration.EventConfig>, extensions: List<Module>? = null) : PrivateModule() {
+internal class EventsModule
+@JvmOverloads
+constructor(eventConfigs: List<Configuration.EventConfig>, extensions: List<Module>? = null) : PrivateModule() {
 
 
     private val eventConfigs: List<Configuration.EventConfig>
-
     private val extensionsMap: InstanceOfMap<Module>
 
     init {
@@ -46,7 +47,7 @@ internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configu
 
             val eventSources = mapEventSources()
 
-            val eventSourceMultibinder = Multibinder.newSetBinder(binder(), com.google.common.util.concurrent.Service::class.java)
+            val eventSourceMultibinder = Multibinder.newSetBinder(binder(), Service::class.java)
 
             for (event in eventConfigs) {
                 if (Strings.isNullOrEmpty(event.source)) {
@@ -93,7 +94,6 @@ internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configu
      * *
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     @VisibleForTesting
     @Throws(IOException::class)
     fun mapEventSources(): Map<String, Class<out Service>> {
@@ -102,6 +102,7 @@ internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configu
         val classes = ClassPath.from(Thread.currentThread().contextClassLoader).allClasses
         LOGGER.info("Scanning classpath for EventHandlers....")
 
+        @Suppress("UNCHECKED_CAST")
         val collected = classes
                 .map {
                     try {
@@ -114,7 +115,7 @@ internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configu
                 .map { it.get() }
                 .filter { it.isAnnotationPresent(EventSource::class.java) }
                 .filter { Service::class.java.isAssignableFrom(it) }
-                .associateBy({ it.getAnnotation(EventSource::class.java).value }, { it as Class<out com.google.common.util.concurrent.Service> })
+                .associateBy({ it.getAnnotation(EventSource::class.java).value }, { it as Class<out Service> })
 
 
 
@@ -135,16 +136,14 @@ internal class EventsModule @JvmOverloads constructor(eventConfigs: List<Configu
             binder().bind(Duration::class.java).annotatedWith(Frequency::class.java).toInstance(Duration.ofSeconds(event.frequency))
             binder().bind(String::class.java).annotatedWith(EventId::class.java).toInstance(event.id)
 
-            val eventSourceKey = Key.get(com.google.common.util.concurrent.Service::class.java, Names.named(event.id!!))
+            val eventSourceKey = Key.get(Service::class.java, Names.named(event.id!!))
             binder().bind(eventSourceKey).to(eventSourceClass)
 
             expose(eventSourceKey)
 
             multibinder.addBinding().to(eventSourceKey)
 
-            if (null != event.properties) {
-                event.properties!!.entries.forEach { entry -> bindProperty(entry.key, entry.value) }
-            }
+            event.properties?.let { it.entries.forEach { entry -> bindProperty(entry.key, entry.value) } }
 
             /* each event handler may have own explicit guice configuration. Install it if so */
             if (NOP::class.java != eventSourceClass.getAnnotation(EventSource::class.java).explicitConfiguration) {
