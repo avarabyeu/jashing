@@ -10,7 +10,7 @@ import javax.inject.Inject;
 /**
  * @author Andrei Varabyeu
  */
-abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService {
+public abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService {
 
 
     /**

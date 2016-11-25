@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Simple SVN client
  *
- * @author Andrey Vorobyov
+ * @author Andrei Varabyeu
  */
 public class SvnClient extends AbstractVCSClient implements VCSClient {
 

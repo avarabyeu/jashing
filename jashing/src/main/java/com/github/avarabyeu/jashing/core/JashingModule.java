@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Main application configuration module. Configures server and all necessary stuff
@@ -64,7 +65,13 @@ class JashingModule extends AbstractModule {
 
         /* binds properties. Replaces property files with json-based configuration. Just to have all events-related properties in one file */
         Configuration configuration = provideConfiguration(gson);
-        Map<String, String> globalProperties = configuration.getProperties();
+        final Map<String, String> properties = configuration.getProperties();
+
+        /* replace with JVM arg if exist */
+        Map<String, String> globalProperties =
+                properties.entrySet().stream().collect(Collectors.toMap(
+                        Map.Entry::getKey, e -> System.getProperty(e.getKey(), e.getValue())));
+
         globalProperties.entrySet().forEach(
                 entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
 

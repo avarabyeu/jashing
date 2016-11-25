@@ -130,7 +130,7 @@ class EventsModule extends PrivateModule {
                     try {
                         /* sometimes exception occurs during class loading. Return empty/absent in this case */
                         return Optional.<Class<?>>of(classInfo.load());
-                    } catch (Exception | NoClassDefFoundError e) {
+                    } catch (Exception | NoClassDefFoundError | IncompatibleClassChangeError e) {
                         LOGGER.trace("Class cannot be loaded: {}", classInfo.getName(), e);
                         return Optional.<Class<?>>empty();
                     }

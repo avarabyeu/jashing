@@ -29,9 +29,10 @@
         <module>extensions/jashing-cvs</module>
         <module>extensions/jashing-svn</module>
         <module>extensions/jashing-git</module>
-        <module>extensions/jashing-jenkins</module>
+        <module>extensions/jashing-social</module>
+        <!--<module>extensions/jashing-jenkins</module>-->
         <!--<module>extensions/jashing-jira</module>-->
-        <!--<module>extensions/jashing-github</module>-->
+
     </modules>
 
     <properties>
@@ -41,7 +42,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Have to use beta version, because last stable 3.0 has compatibility issues with JDK8 -->
-        <guice.version>4.0</guice.version>
+        <guice.version>4.1.0</guice.version>
         <restendpoint.version>0.1.0</restendpoint.version>
     </properties>
 
@@ -118,7 +119,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>20.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

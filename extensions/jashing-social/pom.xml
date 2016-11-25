@@ -16,42 +16,43 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <artifactId>jashing-git</artifactId>
+    <artifactId>jashing-social</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
     <version>0.0.12-SNAPSHOT</version>
 
-    <name>jashing-git</name>
-    <description>GIT Extension for Jashing</description>
-
+    <name>jashing-social</name>
+    <description>Social integrations: GitHub, StackOverflow</description>
 
     <dependencies>
-
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
             <version>0.0.12-SNAPSHOT</version>
         </dependency>
+        
 
         <dependency>
-            <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-            <artifactId>jashing-cvs</artifactId>
-            <version>0.0.12-SNAPSHOT</version>
-        </dependency>
-
-        <!-- GIT API -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.5.0.201609210915-r</version>
+            <groupId>com.github.avarabyeu</groupId>
+            <artifactId>restendpoint</artifactId>
+            <version>${restendpoint.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
+                    <artifactId>httpasyncclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.5</version>
+        </dependency>
 
     </dependencies>
 

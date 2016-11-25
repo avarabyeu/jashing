@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 @EventSource(value = "vcs-top-committers-source", explicitConfiguration = AbstractVcsModule.class)
 public class VCSTopCommitersEventSource extends ScheduledEventSource<ListEvent<Long>> {
 
-    private static final Comparator<ListEvent.Item<Long>> ITEM_COMPARATOR = (item1, item2) -> item1.getValue()
-            .compareTo(item2.getValue());
+    private static final Comparator<ListEvent.Item<Long>> ITEM_COMPARATOR = Comparator.comparing(ListEvent.Item::getValue);
 
     @Inject
     private VCSClient svnClient;
