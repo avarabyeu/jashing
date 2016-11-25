@@ -67,10 +67,12 @@ class JashingModule extends AbstractModule {
         Configuration configuration = provideConfiguration(gson);
         final Map<String, String> properties = configuration.getProperties();
 
-        /* replace with JVM arg if exist */
+        Map<String, String> envVars = System.getenv();
+        /* replace with ENV arg if exist */
         Map<String, String> globalProperties =
                 properties.entrySet().stream().collect(Collectors.toMap(
-                        Map.Entry::getKey, e -> System.getProperty(e.getKey(), e.getValue())));
+                        Map.Entry::getKey, e -> envVars.getOrDefault(e.getKey(), e.getValue())));
+
 
         globalProperties.entrySet().forEach(
                 entry -> binder().bindConstant().annotatedWith(Names.named(entry.getKey())).to(entry.getValue()));
