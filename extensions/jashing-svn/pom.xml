@@ -12,14 +12,14 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.14</version>
+        <version>0.0.15-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>jashing-svn</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>0.0.14</version>
+    <version>0.0.15-SNAPSHOT</version>
 
     <name>jashing-svn</name>
     <description>SVN Extension of Jashing</description>
@@ -30,13 +30,13 @@
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
-            <version>0.0.14</version>
+            <version>0.0.15-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.avarabyeu.jashing.extensions</groupId>
             <artifactId>jashing-cvs</artifactId>
-            <version>0.0.14</version>
+            <version>0.0.15-SNAPSHOT</version>
         </dependency>
 
         <!-- SVN API -->
