@@ -19,6 +19,7 @@ public class Question {
     private Instant lastActivityDate;
     private Instant creationDate;
     private Instant questionId;
+    private Instant closedDate;
     private String link;
     private String title;
 
@@ -110,6 +111,14 @@ public class Question {
         this.title = title;
     }
 
+    public Instant getClosedDate() {
+        return closedDate;
+    }
+
+    public void setClosedDate(Instant closedDate) {
+        this.closedDate = closedDate;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -122,6 +131,7 @@ public class Question {
                 .add("lastActivityDate", lastActivityDate)
                 .add("creationDate", creationDate)
                 .add("questionId", questionId)
+                .add("closedDate", closedDate)
                 .add("link", link)
                 .add("title", title)
                 .toString();

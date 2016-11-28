@@ -31,7 +31,11 @@ public class StackOverflowUnansweredSource extends ScheduledEventSource<StatusAw
                 .getTaggedQuestions(tag)
                 .getItems()
                     .stream()
-                    .filter(q -> !q.isAnswered()).collect(Collectors.toList());
+                    //NOT closed
+                    .filter(q -> null == q.getClosedDate())
+                    //NOT answered
+                    .filter(q -> !q.isAnswered())
+                    .collect(Collectors.toList());
 
         final int count = questions.size();
         final Long notTodayCount = questions.stream()
