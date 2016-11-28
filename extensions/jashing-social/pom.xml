@@ -12,14 +12,14 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.15</version>
+        <version>0.0.16-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>jashing-social</artifactId>
     <packaging>jar</packaging>
     <groupId>com.github.avarabyeu.jashing.extensions</groupId>
-    <version>0.0.15</version>
+    <version>0.0.16-SNAPSHOT</version>
 
     <name>jashing-social</name>
     <description>Social integrations: GitHub, StackOverflow</description>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.github.avarabyeu.jashing</groupId>
             <artifactId>jashing</artifactId>
-            <version>0.0.15</version>
+            <version>0.0.16-SNAPSHOT</version>
         </dependency>
         
 
