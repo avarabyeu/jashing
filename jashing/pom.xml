@@ -12,12 +12,12 @@
     <parent>
         <groupId>com.github.avarabyeu.jashing</groupId>
         <artifactId>jashing-parent</artifactId>
-        <version>0.0.15-SNAPSHOT</version>
+        <version>0.0.15</version>
     </parent>
 
     <artifactId>jashing</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.15</version>
 
     <name>Jashing</name>
     <description>Java Port of Dashing</description>
