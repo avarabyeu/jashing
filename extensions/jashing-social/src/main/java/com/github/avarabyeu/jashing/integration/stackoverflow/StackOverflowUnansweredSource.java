@@ -10,6 +10,7 @@ import javax.inject.Named;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Andrei Varabyeu
@@ -26,7 +27,11 @@ public class StackOverflowUnansweredSource extends ScheduledEventSource<StatusAw
 
     @Override
     protected StatusAwareNumberEvent produceEvent() {
-        final List<Question> questions = client.getTaggedQuestions(tag).getItems();
+        final List<Question> questions = client
+                .getTaggedQuestions(tag)
+                .getItems()
+                    .stream()
+                    .filter(q -> !q.isAnswered()).collect(Collectors.toList());
 
         final int count = questions.size();
         final Long notTodayCount = questions.stream()
