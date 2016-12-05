@@ -1,9 +1,8 @@
 package com.github.avarabyeu.jashing.eventsource;
 
-import com.github.avarabyeu.jashing.integration.github.Filters;
 import com.github.avarabyeu.jashing.integration.github.GitHubClient;
 import com.github.avarabyeu.jashing.integration.github.GithubModule;
-import com.github.avarabyeu.jashing.integration.github.model.PullRequest;
+import com.github.avarabyeu.jashing.integration.github.PullRequest;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -39,10 +38,13 @@ public class GithubTest {
 
         GitHubClient gitHub = injector.getInstance(GitHubClient.class);
 
+
         String orgName = "reportportal";
+        System.out.println(gitHub.getOpenedIssues(orgName));
+
         final List<PullRequest> openedRequests = gitHub.getOpenedIssues(orgName)
                 .stream()
-                .filter(Filters.IS_PULL_REQUEST)
+//                .filter(Filters.IS_PULL_REQUEST)
                 .map(issue -> {
                     System.out.println("ID:" + StringUtils.substringAfterLast(issue.getPullRequest().getUrl(), "/"));
                     return issue;

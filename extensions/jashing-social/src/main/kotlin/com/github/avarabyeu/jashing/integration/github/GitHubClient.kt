@@ -1,20 +1,10 @@
-package com.github.avarabyeu.jashing.integration.github;
+package com.github.avarabyeu.jashing.integration.github
 
-import com.github.avarabyeu.jashing.integration.github.model.Issue;
-import com.github.avarabyeu.jashing.integration.github.model.PullRequest;
-import com.github.avarabyeu.jashing.integration.github.model.Repository;
-import com.github.avarabyeu.restendpoint.http.HttpMethod;
-import com.github.avarabyeu.restendpoint.http.annotation.Path;
-import com.github.avarabyeu.restendpoint.http.annotation.Request;
+import com.github.avarabyeu.restendpoint.http.HttpMethod
+import com.github.avarabyeu.restendpoint.http.annotation.Path
+import com.github.avarabyeu.restendpoint.http.annotation.Request
 
-import java.util.List;
-
-/**
- * GitHub client
- *
- * @author Andrei Varabyeu
- */
-public interface GitHubClient {
+interface GitHubClient {
 
     /**
      * Obtains list of repositories for logged in user
@@ -22,7 +12,7 @@ public interface GitHubClient {
      * @return Repositories list
      */
     @Request(method = HttpMethod.GET, url = "/user/repos")
-    List<Repository> getUserRepositories();
+    fun getUserRepositories(): List<Repository>
 
     /**
      * Obtains list of repositories for provided organization
@@ -31,7 +21,7 @@ public interface GitHubClient {
      * @return Repositories list
      */
     @Request(method = HttpMethod.GET, url = "/orgs/{org}/repos")
-    List<Repository> getOrganizationRepositories(@Path("org") String org);
+    fun getOrganizationRepositories(@Path("org") org: String): List<Repository>
 
     /**
      * Obtains list of repositories for provided user
@@ -40,7 +30,7 @@ public interface GitHubClient {
      * @return Repositories list
      */
     @Request(method = HttpMethod.GET, url = "/users/{username}/repos")
-    List<Repository> getUserRepositories(@Path("username") String username);
+    fun getUserRepositories(@Path("username") username: String): List<Repository>
 
     /**
      * Obtains repository for provided user
@@ -50,7 +40,7 @@ public interface GitHubClient {
      * @return Repository
      */
     @Request(method = HttpMethod.GET, url = "/repos/{owner}/{repo}")
-    Repository getUserRepository(@Path("owner") String owner, @Path("repo") String repository);
+    fun getUserRepository(@Path("owner") owner: String, @Path("repo") repository: String): Repository
 
     /**
      * Obtains pull requests for provided user and repository
@@ -60,7 +50,7 @@ public interface GitHubClient {
      * @return Pull Requests list
      */
     @Request(method = HttpMethod.GET, url = "/repos/{owner}/{repo}/pulls?state=open")
-    List<PullRequest> getOpenedPullRequests(@Path("owner") String owner, @Path("repo") String repository);
+    fun getOpenedPullRequests(@Path("owner") owner: String, @Path("repo") repository: String): List<PullRequest>
 
     /**
      * Obtains pull request by it's number
@@ -71,7 +61,7 @@ public interface GitHubClient {
      * @return Pull Requests list
      */
     @Request(method = HttpMethod.GET, url = "/repos/{owner}/{repo}/pulls/{number}")
-    PullRequest getPullRequest(@Path("owner") String owner, @Path("repo") String repository, @Path("number") String id);
+    fun getPullRequest(@Path("owner") owner: String, @Path("repo") repository: String, @Path("number") id: String): PullRequest
 
     /**
      * Obtains pull requests for provided user and repository
@@ -80,6 +70,6 @@ public interface GitHubClient {
      * @return List of pull requests
      */
     @Request(method = HttpMethod.GET, url = "/orgs/{org}/issues?filter=all&state=opened")
-    List<Issue> getOpenedIssues(@Path("org") String organization);
+    fun getOpenedIssues(@Path("org") organization: String): List<Issue>
 
 }
