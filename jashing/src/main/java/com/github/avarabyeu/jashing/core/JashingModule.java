@@ -85,7 +85,8 @@ class JashingModule extends AbstractModule {
             Optional<Long> timeout = globalProperties.containsKey(TIMEOUT_PROPERTY) ?
                     Optional.of(Long.valueOf(globalProperties.get(TIMEOUT_PROPERTY))) :
                     Optional.empty();
-            JashingServer jashing = new JashingServer(this.port == null ? DEFAULT_PORT : this.port, eventBus, gson,
+            Integer port = this.port == null ? DEFAULT_PORT : this.port;
+            JashingServer jashing = new JashingServer(port, eventBus, gson,
                     timeout);
             jashing.addListener(new Service.Listener() {
                 @Override
