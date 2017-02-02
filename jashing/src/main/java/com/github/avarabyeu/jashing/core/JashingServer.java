@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractIdleService;
@@ -30,6 +31,8 @@ import javax.servlet.ServletException;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.github.avarabyeu.jashing.utils.StringUtils.substringBefore;
@@ -65,11 +68,19 @@ class JashingServer extends AbstractIdleService {
                 freemarker.template.Configuration.VERSION_2_3_23);
         configuration.setTemplateLoader(new ClassTemplateLoader(Jashing.class, "/"));
 
+        ConcurrentMap<String, JashingEvent> eventCache = Maps.newConcurrentMap();
+
+        BiConsumer<ServerSentEventConnection, JashingEvent> sendEvent =
+                (ServerSentEventConnection c, JashingEvent serverSentEvent) -> {
+            Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
+            c.send(gson.toJson(serverSentEvent));
+        };
+
         sseHandler = Handlers
                 .serverSentEvents((connection, lastEventId) -> {
                     if (timeout.isPresent()) {
-                        connection
-                                .putAttachment(RATE_LIMITER_KEY, RateLimiter.create(timeout.get()));
+                        connection.putAttachment(RATE_LIMITER_KEY, RateLimiter.create(timeout.get()));
+                        eventCache.values().forEach(serverSentEvent -> sendEvent.accept(connection, serverSentEvent));
                     }
                 });
 
@@ -77,11 +88,11 @@ class JashingServer extends AbstractIdleService {
             @Subscribe
             @Override
             public void accept(JashingEvent serverSentEvent) {
+                eventCache.put(serverSentEvent.getId(), serverSentEvent);
                 sseHandler.getConnections()
                         .parallelStream().forEach(c -> {
                     //wait if there is rate limiter
-                    Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
-                    c.send(gson.toJson(serverSentEvent));
+                    sendEvent.accept(c, serverSentEvent);
                 });
             }
         });
