@@ -21,6 +21,9 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.Type;
+import org.apache.bcel.util.ClassLoaderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -119,8 +124,10 @@ class EventsModule extends PrivateModule {
     @VisibleForTesting
     Map<String, Class<? extends Service>> mapEventSources() throws IOException {
 
-        /** Obtains all classpath's top level classes */
-        Set<ClassPath.ClassInfo> classes = ClassPath.from(Thread.currentThread().getContextClassLoader()).getAllClasses();
+        /* Obtains all classpath's top level classes */
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Set<ClassPath.ClassInfo> classes = ClassPath.from(classLoader).getAllClasses();
+        ClassLoaderRepository repository = new ClassLoaderRepository(classLoader);
         LOGGER.info("Scanning classpath for EventHandlers....");
 
         /* iterates over all classes, filter by HandlesEvent annotation and transforms stream to needed form */
@@ -129,18 +136,39 @@ class EventsModule extends PrivateModule {
                 .map(classInfo -> {
                     try {
                         /* sometimes exception occurs during class loading. Return empty/absent in this case */
-                        return Optional.<Class<?>>of(classInfo.load());
-                    } catch (Exception | NoClassDefFoundError | IncompatibleClassChangeError e) {
+                        return Optional.of(repository.loadClass(classInfo.getName()));
+                    } catch (ClassNotFoundException e) {
                         LOGGER.trace("Class cannot be loaded: {}", classInfo.getName(), e);
-                        return Optional.<Class<?>>empty();
+                        return Optional.<JavaClass>empty();
                     }
                 })
-                /* filters classes which is present and marked with HandlesEvent annotation */
-                .filter(((Predicate<Optional<Class<?>>>) Optional::isPresent)
-                        .and(classOptional -> classOptional.get().isAnnotationPresent(EventSource.class))
-                        .and(classOptional -> Service.class.isAssignableFrom(classOptional.get())))
-                /* transforms from Optional<Class> to Class (obtaining values from Optionals) */
-                .map(optional -> (Class<? extends Service>) optional.get())
+                /* filters classes which is present and marked with EventSource annotation */
+                .filter(((Predicate<Optional<JavaClass>>) Optional::isPresent)
+                        .and(javaClassOptional -> {
+                            return Arrays.stream(javaClassOptional.get().getAnnotationEntries()).anyMatch(annotationEntry -> {
+                                return Type.getType(annotationEntry.getAnnotationType()).toString().equals(EventSource.class.getCanonicalName());
+                            });
+                        })
+                        .and(javaClassOptional -> {
+                            try {
+                                return Arrays.stream(javaClassOptional.get().getAllInterfaces()).anyMatch(iface -> {
+                                    return iface.getClassName().equals(Service.class.getCanonicalName());
+                                });
+                            } catch (ClassNotFoundException e) {
+                                LOGGER.trace("Class annotations cannot be loaded: {}", javaClassOptional.get().getClassName(), e);
+                                return false;
+                            }
+                        }))
+                /* transforms from Optional<JavaClass> to Class (obtaining values from Optionals) */
+                .map(javaClassOptional -> {
+                    try {
+                        return (Class<? extends Service>) classLoader.loadClass(javaClassOptional.get().getClassName());
+                    } catch (ClassNotFoundException e) {
+                        LOGGER.trace("Class cannot be loaded: {}", javaClassOptional.get().getClassName(), e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(clazz -> clazz.getAnnotation(EventSource.class).value(), clazz -> clazz));
 
         LOGGER.info("Found {} event handlers", collected.size());
