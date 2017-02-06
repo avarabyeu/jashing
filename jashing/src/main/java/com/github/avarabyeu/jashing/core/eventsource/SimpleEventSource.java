@@ -43,8 +43,6 @@ public abstract class SimpleEventSource<T extends JashingEvent> extends Abstract
         /* no any lifecycle-related logic */
     }
 
-    protected abstract T produceEvent();
-
     @Override
     protected String serviceName() {
         return "SimpleEventSource[eventID=" + eventId + "]";

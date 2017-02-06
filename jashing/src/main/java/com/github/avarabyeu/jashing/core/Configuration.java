@@ -40,7 +40,7 @@ public class Configuration {
     public static class EventConfig {
         private String id;
         private String source;
-        private long frequency;
+        private Long frequency;
 
         /**
          * Event-scope properties. Might be injected into event source bean related to this particular event
@@ -65,11 +65,11 @@ public class Configuration {
             this.source = source;
         }
 
-        public long getFrequency() {
+        public Long getFrequency() {
             return frequency;
         }
 
-        public void setFrequency(long frequency) {
+        public void setFrequency(Long frequency) {
             this.frequency = frequency;
         }
 
