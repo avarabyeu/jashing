@@ -10,7 +10,7 @@ import javax.inject.Inject;
 /**
  * @author Andrei Varabyeu
  */
-public abstract class SimpleEventSource<T extends JashingEvent> extends AbstractExecutionThreadService {
+public abstract class SimpleEventSource extends AbstractExecutionThreadService {
 
 
     /**
@@ -26,7 +26,7 @@ public abstract class SimpleEventSource<T extends JashingEvent> extends Abstract
     @Inject
     private String eventId;
 
-    protected final void sendEvent(T t) {
+    protected final void sendEvent(JashingEvent t) {
         if (null != t) {
             t.setId(eventId);
             this.eventBus.post(t);
