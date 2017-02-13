@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
+import com.github.avarabyeu.jashing.core.eventsource.annotation.NoCache;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -70,30 +71,22 @@ class JashingServer extends AbstractIdleService {
 
         ConcurrentMap<String, JashingEvent> eventCache = Maps.newConcurrentMap();
 
-        BiConsumer<ServerSentEventConnection, JashingEvent> sendEvent =
-                (ServerSentEventConnection c, JashingEvent serverSentEvent) -> {
-            Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
-            c.send(gson.toJson(serverSentEvent));
-        };
-
         sseHandler = Handlers
                 .serverSentEvents((connection, lastEventId) -> {
-                    if (timeout.isPresent()) {
-                        connection.putAttachment(RATE_LIMITER_KEY, RateLimiter.create(timeout.get()));
-                        eventCache.values().forEach(serverSentEvent -> sendEvent.accept(connection, serverSentEvent));
-                    }
+                    timeout.ifPresent(timeout -> {
+                        connection.putAttachment(RATE_LIMITER_KEY, RateLimiter.create(timeout));
+                        eventCache.values().forEach(serverSentEvent -> sendEvent(connection, serverSentEvent));
+                    });
                 });
 
         eventBus.register(new Consumer<JashingEvent>() {
             @Subscribe
             @Override
             public void accept(JashingEvent serverSentEvent) {
-                eventCache.put(serverSentEvent.getId(), serverSentEvent);
-                sseHandler.getConnections()
-                        .parallelStream().forEach(c -> {
-                    //wait if there is rate limiter
-                    sendEvent.accept(c, serverSentEvent);
-                });
+                if (!serverSentEvent.getClass().isAnnotationPresent(NoCache.class)) {
+                    eventCache.put(serverSentEvent.getId(), serverSentEvent);
+                }
+                sseHandler.getConnections().parallelStream().forEach(c -> sendEvent(c, serverSentEvent));
             }
         });
 
@@ -131,6 +124,12 @@ class JashingServer extends AbstractIdleService {
                 .setHandler(rootHandler).build();
 
         server.start();
+    }
+
+    private void sendEvent(ServerSentEventConnection c, JashingEvent serverSentEvent) {
+        //wait if there is rate limiter
+        Optional.ofNullable(c.getAttachment(RATE_LIMITER_KEY)).ifPresent(RateLimiter::acquire);
+        c.send(gson.toJson(serverSentEvent));
     }
 
     /**
