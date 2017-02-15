@@ -1,5 +1,6 @@
 package com.github.avarabyeu.jashing.core;
 
+import com.github.avarabyeu.jashing.core.eventsource.SimpleEventSource;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.EventId;
 import com.github.avarabyeu.jashing.core.eventsource.annotation.Frequency;
 import com.github.avarabyeu.jashing.utils.InstanceOfMap;
@@ -198,7 +199,9 @@ class EventsModule extends PrivateModule {
             LOGGER.info("Registering event source [{}] for event [{}]", eventSourceClass.getSimpleName(), event.getId());
             validateEvent();
 
-            binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
+            if (!Objects.isNull(event.getFrequency())) {
+                binder().bind(Duration.class).annotatedWith(Frequency.class).toInstance(Duration.ofSeconds(event.getFrequency()));
+            }
             binder().bind(String.class).annotatedWith(EventId.class).toInstance(event.getId());
 
             Key<Service> eventSourceKey = Key.get(Service.class, Names.named(event.getId()));
@@ -247,7 +250,7 @@ class EventsModule extends PrivateModule {
         }
 
         private void validateEvent() {
-            if (event.getFrequency() <= 0) {
+            if (!SimpleEventSource.class.isAssignableFrom(eventSourceClass) && (event.getFrequency() == null || event.getFrequency() <= 0)) {
                 binder().addError("Frequency of event with ID '%s' is not specified", event.getId());
             }
 
