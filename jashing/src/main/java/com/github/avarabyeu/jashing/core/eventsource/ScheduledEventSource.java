@@ -61,7 +61,7 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     }
 
 
-    protected final void sendEvent(T t) {
+    protected final void sendEvent(JashingEvent t) {
         if (null != t) {
             t.setId(eventId);
             this.eventBus.post(t);
