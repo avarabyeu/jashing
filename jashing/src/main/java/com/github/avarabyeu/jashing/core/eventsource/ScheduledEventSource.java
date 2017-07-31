@@ -13,6 +13,8 @@ import org.slf4j.helpers.MessageFormatter;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Objects.isNull;
+
 /**
  * Scheduled EventSource - produces events with specified time period.
  * Basically, based on Guava's {@link com.google.common.util.concurrent.AbstractScheduledService}
@@ -61,9 +63,9 @@ public abstract class ScheduledEventSource<T extends JashingEvent> extends Abstr
     }
 
 
-    protected final void sendEvent(T t) {
+    protected final void sendEvent(JashingEvent t) {
         if (null != t) {
-            t.setId(eventId);
+            if (isNull(t.getId())) t.setId(eventId);
             this.eventBus.post(t);
         }
     }
